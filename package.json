@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Svg flowchart visualization",
   "scripts": {
-    "build": "webpack -c ./.config/webpack/webpack.config.ts --env production",
-    "dev": "webpack -w -c ./.config/webpack/webpack.config.ts --env development",
+    "build": "webpack -c ./webpack.config.ts --env production",
+    "dev": "webpack -w -c ./webpack.config.ts --env development",
     "test": "jest --watch --onlyChanged",
     "test:ci": "jest --passWithNoTests --maxWorkers 4",
     "typecheck": "tsc --noEmit",
@@ -61,8 +61,9 @@
     "@emotion/css": "11.10.6",
     "@grafana/data": "10.0.3",
     "@grafana/runtime": "10.0.3",
-    "@grafana/ui": "10.0.3",
     "@grafana/schema": "10.0.3",
+    "@grafana/ui": "10.0.3",
+    "js-yaml-loader": "^1.2.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "tslib": "2.5.3"

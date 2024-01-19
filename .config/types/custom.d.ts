@@ -29,6 +29,11 @@ declare module '*.svg' {
   export default content;
 }
 
+declare module '*.yaml' {
+  const content: string;
+  export default content;
+}
+
 // Font declarations
 declare module '*.woff';
 declare module '*.woff2';

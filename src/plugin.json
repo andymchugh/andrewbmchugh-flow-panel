@@ -14,7 +14,10 @@
       "large": "img/logo.svg"
     },
     "links": [],
-    "screenshots": [],
+    "screenshots": [
+      {"name": "Getting Started", "path": "img/example1.png"},
+      {"name": "Middleware Bus", "path": "img/example2.png"}
+    ],
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },

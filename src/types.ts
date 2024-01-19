@@ -1,7 +1,15 @@
-type SeriesSize = 'sm' | 'md' | 'lg';
+export type TroubleshootingCtrs = {
+  colorsCtr: number;
+  mappingsCtr: number;
+  dataCtr: number;
+};
 
-export interface SimpleOptions {
-  text: string;
-  showSeriesCount: boolean;
-  seriesCountSize: SeriesSize;
-}
+export interface FlowOptions {
+  svg: string;
+  panelConfig: string;
+  siteConfig: string;
+  timeSliderEnabled: boolean;
+  troubleshootingDataCtr: number;
+  troubleshootingCtr: TroubleshootingCtrs;
+  testDataEnabled: boolean;
+};
