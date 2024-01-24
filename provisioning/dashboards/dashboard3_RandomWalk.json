@@ -1,0 +1,213 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 6,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 123130,
+        "options": {
+          "code": {
+            "language": "plaintext",
+            "showLineNumbers": false,
+            "showMiniMap": false
+          },
+          "content": "# Random Walk Data Feed\n\nThis dashboard shows our default SVG hooked into Grafanas Random Walk time series.\n\nThere's no way to seed this data to get a predictable range so it's not that useful for demonstrating the\nfeature set of colors and thresholds. But is useful for showing how the panel accepts normal Grafana time series.\n\nThe first panel hooks the A series into the two depth widgets and the B series into the two rate widgets.\n\nThe second panel only has one of the two time series present so you see a functional panel but with half\nthe widgets not being driven.\n\nThe third panel shows the behaviour where there's no relevant data. The panel renders correctly but there's\nnothing to drive.\n\nIn all three panels, move the time-slider back and forth to see the widgets respond. Click on the time-picker 'refresh'\nand see the time-slider time readout update and the new time-series values be rendered.\n\n",
+          "mode": "markdown"
+        },
+        "pluginVersion": "10.0.3",
+        "type": "text"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "description": "This example  shows panels displaying the Random Walk Time Series.\n\nTime Series A is shown on 'Inbox Depth' and 'Active Workers'\n\nTime Series B is shown on 'start rate' and 'Transactions'.",
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 8
+        },
+        "id": 123127,
+        "options": {
+          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/panelConfigRandomWalk.yaml",
+          "siteConfig": "",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg1.svg",
+          "testDataEnabled": true,
+          "timeSliderEnabled": true,
+          "troubleshootingCtr": {
+            "dataCtr": 2,
+            "mappingsCtr": 0
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "datasource",
+              "uid": "grafana"
+            },
+            "queryType": "randomWalk",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "datasource",
+              "uid": "grafana"
+            },
+            "hide": false,
+            "queryType": "randomWalk",
+            "refId": "B"
+          }
+        ],
+        "title": "Random Walk -  A & B Time Series in place",
+        "type": "andrewbmchugh-flow-panel"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "description": "This example  shows panels displaying the Random Walk Time Series.\n\nTime Series A is shown on 'Inbox Depth' and 'Active Workers'\n\nTime Series B is shown on 'start rate' and 'Transactions'.",
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 16
+        },
+        "id": 123129,
+        "options": {
+          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/panelConfigRandomWalk.yaml",
+          "siteConfig": "",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg1.svg",
+          "testDataEnabled": false,
+          "timeSliderEnabled": true,
+          "troubleshootingCtr": {
+            "dataCtr": 2,
+            "mappingsCtr": 0
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "datasource",
+              "uid": "grafana"
+            },
+            "hide": false,
+            "queryType": "randomWalk",
+            "refId": "B"
+          }
+        ],
+        "title": "Random Walk - Time Series A missing",
+        "type": "andrewbmchugh-flow-panel"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "description": "This example shows panels displaying the Random Walk Time Series.\n\nTime Series A is shown on 'Inbox Depth' and 'Active Workers'\n\nTime Series B is shown on 'start rate' and 'Transactions'.",
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 24
+        },
+        "id": 123128,
+        "options": {
+          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/panelConfigRandomWalk.yaml",
+          "siteConfig": "",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg1.svg",
+          "testDataEnabled": false,
+          "timeSliderEnabled": true,
+          "troubleshootingCtr": {
+            "dataCtr": 2,
+            "mappingsCtr": 0
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "datasource",
+              "uid": "grafana"
+            },
+            "queryType": "randomWalk",
+            "refId": "C"
+          }
+        ],
+        "title": "Random Walk - Time Series A & B missing",
+        "type": "andrewbmchugh-flow-panel"
+      }
+    ],
+    "refresh": "",
+    "schemaVersion": 38,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {
+      "hidden": false,
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h",
+        "12h",
+        "24h",
+        "2d",
+        "7d",
+        "30d"
+      ],
+      "type": "timepicker"
+    },
+    "timezone": "browser",
+    "title": "Random Walk",
+    "version": 8,
+    "weekStart": ""
+  }

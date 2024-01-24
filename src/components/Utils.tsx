@@ -202,13 +202,13 @@ export function getColor(cellColorData: PanelConfigCellColor, value: number) {
       threshold = thresholds[i];
       if (value < threshold.level) {
         const thresholdLwr = thresholds[i - 1];
-        if (cellColorData.mode === 'gradient') {
+        if (cellColorData.gradientMode === 'hue') {
           const scalar = (value - thresholdLwr.level) / (threshold.level - thresholdLwr.level);
           const color = colorGradient(thresholdLwr.color, threshold.color, scalar);
           return color;
         }
         else {
-          // The only other mode is 'step'
+          // The only other mode is 'none'
           return colorLookup(thresholdLwr.color);
         }
       }

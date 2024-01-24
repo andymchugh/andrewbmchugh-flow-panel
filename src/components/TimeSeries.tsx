@@ -88,14 +88,13 @@ export function seriesTransform(series: any, timeMin: number, timeMax: number): 
   };
 }
 
-// This transforms the data so we have name-indexable sets of time and value.
-// i.e.:
-// - series: [fields: [{name, values}]] =>
-// - {name: {time: {timeIndex, values}, values}}
+// This receives the timeSlider position and uses it to interpolate the time-series
+// data.
 export function seriesInterpolate(tsData: TimeSeriesData, timeSliderScalar: number) {
   const targetTime = sliderTime(tsData, timeSliderScalar);
 
   tsData.ts.forEach((ts) => {
+    // ts.time can be shared across series so we only have to interpolate it once.
     if (!ts.time.valuesIndex) {
       let closestDeltaTime = null;
       let closestIndex = null;

@@ -1,4 +1,4 @@
-export type ColorMode = 'step' | 'gradient';
+export type ColorGradientMode = 'none' | 'hue';
 export type LabelSeparator = 'cr' | 'colon' | 'space' | 'replace';
 export type LinkUrlParams = 'none' | 'time' | 'all';
 
@@ -25,7 +25,7 @@ export type PanelConfigCellLabel = {
 }
 
 export type PanelConfigCellColor = {
-  mode: ColorMode | undefined;
+  gradientMode: ColorGradientMode | undefined;
   thresholdsRef: string | undefined;
   thresholds: Threshold[] | undefined;
 }
@@ -48,7 +48,7 @@ export type SiteConfig = {
 
 export type PanelConfig = {
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
-  colorMode: ColorMode;
+  gradientMode: ColorGradientMode;
   cellIdPreamble: string;
   cellIdExtender: string;
   cells: Map<string, PanelConfigCell>;
@@ -58,7 +58,7 @@ export function panelConfigFactory(config: any) {
   config = config || {};
   return {
     variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(Object.entries(config.variableThresholdScalars || {})),
-    colorMode: config.colorMode || 'step',
+    gradientMode: config.gradientMode || 'none',
     cellIdPreamble: config.cellIdPreamble || '',
     cellIdExtender: config.cellIdExtender || '@flowrpt',
     cells: new Map<string, Object>(Object.entries(config.cells || {})),
@@ -86,7 +86,7 @@ function siteConfigDereference(siteConfig: SiteConfig) {
 function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig) {
   function colorDeref(color: PanelConfigCellColor | undefined) {
     if (color) {
-      color.mode = color.mode || panelConfig.colorMode;
+      color.gradientMode = color.gradientMode || panelConfig.gradientMode;
       if (color.thresholds) {
         color.thresholds.forEach(function(threshold) {
           threshold.color = siteConfig.colors.get(threshold.color) || threshold.color;

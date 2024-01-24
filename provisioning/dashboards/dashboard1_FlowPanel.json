@@ -1,0 +1,143 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 10,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 9,
+        "x": 0,
+        "y": 0
+      },
+      "id": 123127,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# The Flow Panel\n\nThis dashboard along with the two companion dashboards demonstrate the core functionality of the Flow panel:\n|Features|Features|Features|Features|\n|--------|--------|--------|--------|\n|label content|panel config|units|time-slider|\n|label color|site config|tooltips|url links|\n|fill color|variable config overrides|auto-scaling|hue gradient|\n\n\nThe first panel is what you get out-the-box when you create a FLow panel. A basic SVG driven\nfrom test data via sample config. It shows everything working and is the starting point\nfor someone to go exploring. How they should explore is explained in the\n[Docs](https://github.com/andymchugh/andrewbmchugh-flow-panel-docs/blob/main/README.md) which are\nreachable from the SVG widget as well as the 'Docs' button in the Troubleshooting section of\nthe editor.\n\nThe second panel shows a more typical usage to give a sense of the range of widget support\nyou get from using a product like draw.io. It's more aspirational, helping them reason\nabout how to apply it to their own architecture and see the benefits of a shared siteConfig\nin terms of data maintenance.\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "10.0.3",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 15,
+        "x": 9,
+        "y": 0
+      },
+      "id": 123125,
+      "options": {
+        "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/panelConfig1.yaml",
+        "siteConfig": "",
+        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg1.svg",
+        "testDataEnabled": true,
+        "timeSliderEnabled": true,
+        "troubleshootingCtr": {
+          "dataCtr": 0,
+          "mappingsCtr": 0
+        }
+      },
+      "type": "andrewbmchugh-flow-panel"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 123126,
+      "options": {
+        "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/panelConfig2.yaml",
+        "siteConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/siteConfig.yaml",
+        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg2.svg",
+        "testDataEnabled": true,
+        "timeSliderEnabled": true,
+        "troubleshootingCtr": {
+          "dataCtr": 0,
+          "mappingsCtr": 0
+        }
+      },
+      "title": "Example Middleware Bus",
+      "type": "andrewbmchugh-flow-panel"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "timepicker": {
+    "hidden": false,
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ],
+    "type": "timepicker"
+  },
+  "timezone": "browser",
+  "title": "The Flow Panel",
+  "version": 2,
+  "weekStart": ""
+}

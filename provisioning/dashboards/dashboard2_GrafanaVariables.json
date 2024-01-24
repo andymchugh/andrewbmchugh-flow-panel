@@ -1,0 +1,184 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 8,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 123128,
+        "options": {
+          "code": {
+            "language": "plaintext",
+            "showLineNumbers": false,
+            "showMiniMap": false
+          },
+          "content": "# Variable Scalars\n\nThis dashboard demonstrates how threshold levels can be scaled based off of grafana variables. Note that\nthis needs the variables to be relevant to the time series queries, which isn't possible with test data.\nTo work around that we put the variables in the panel title. That gives us the refresh cycle we need\nto re-render the SVG. Normally we'd get this for free virtue of updated time-series based off of the new\nvariable values.\n\nAll the widgets are being driven from the same time series but the 'Inbox Depth' in configured to have\nadjusted thresholds given certain variable values. The thresholds in the config are set as follows:\n\n- Green = under 400\n- Amber = 400 to 800\n- Red = 800 and over\n\nBut with environment set to 'prod' those levels will half on the 'Inbox Depth'. With the site\nset to 'Cicely', the thresholds will again half. With both 'prod' and 'Cicely' the scaling accumulates\nso the thresholds are a quarter of the other widgets.\n\nMove the time-sider up and down exploring the transitions  with the variable values in the \ndifferent configurations.\n",
+          "mode": "markdown"
+        },
+        "pluginVersion": "10.0.3",
+        "title": "Variable Scalars for ${site} ${environment}",
+        "type": "text"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 13,
+          "w": 24,
+          "x": 0,
+          "y": 8
+        },
+        "id": 123125,
+        "options": {
+          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/panelConfigGrafanaVariables.yaml",
+          "siteConfig": "",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg1.svg",
+          "testDataEnabled": true,
+          "timeSliderEnabled": true,
+          "troubleshootingCtr": {
+            "dataCtr": 0,
+            "mappingsCtr": 0
+          }
+        },
+        "title": "Example 1 - ${site} - ${environment}",
+        "type": "andrewbmchugh-flow-panel"
+      }
+    ],
+    "refresh": "",
+    "schemaVersion": 38,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "selected": false,
+            "text": "prod",
+            "value": "prod"
+          },
+          "hide": 0,
+          "includeAll": false,
+          "multi": false,
+          "name": "environment",
+          "options": [
+            {
+              "selected": false,
+              "text": "dev",
+              "value": "dev"
+            },
+            {
+              "selected": false,
+              "text": "beta",
+              "value": "beta"
+            },
+            {
+              "selected": true,
+              "text": "prod",
+              "value": "prod"
+            }
+          ],
+          "query": "dev,beta,prod",
+          "queryValue": "",
+          "skipUrlSync": false,
+          "type": "custom"
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "New York",
+            "value": "New York"
+          },
+          "hide": 0,
+          "includeAll": false,
+          "multi": false,
+          "name": "site",
+          "options": [
+            {
+              "selected": false,
+              "text": "London",
+              "value": "London"
+            },
+            {
+              "selected": true,
+              "text": "New York",
+              "value": "New York"
+            },
+            {
+              "selected": false,
+              "text": "Cicely",
+              "value": "Cicely"
+            }
+          ],
+          "query": "London, New York, Cicely",
+          "queryValue": "",
+          "skipUrlSync": false,
+          "type": "custom"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {
+      "hidden": true,
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h",
+        "12h",
+        "24h",
+        "2d",
+        "7d",
+        "30d"
+      ],
+      "type": "timepicker"
+    },
+    "timezone": "browser",
+    "title": "Grafana Variables",
+    "version": 9,
+    "weekStart": ""
+  }

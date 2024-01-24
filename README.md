@@ -8,5 +8,6 @@ The plugin was created from this [grafana template](https://grafana.com/develope
 ## Getting started with creating panels
 Go to the [documentation](https://github.com/andymchugh/andrewbmchugh-flow-panel-docs/blob/main/README.md) repository for full details on how to use the panel.
 
-## Getting started with addng new features
-Go to the [Getting Started](./grafana-getting-started.md) guide to get going with adding changes on your fork.
+## Getting started with adding new features
+Go to the [Grafana Getting Started](./grafana-getting-started.md) guide to get going with downloading a fork and setting up your test environment.
+Once up you'll find three dashboards available (from the provisioning directory) that act as demonstrators for the functionality.
