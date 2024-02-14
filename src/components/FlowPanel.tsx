@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { css, cx } from '@emotion/css';
 import { useStyles2, useTheme2 } from '@grafana/ui';
 import { getTemplateSrv } from '@grafana/runtime';
-import { GrafanaTheme2, PanelProps } from '@grafana/data';
+import { GrafanaTheme2, PanelProps, toDataFrame } from '@grafana/data';
 import { FlowOptions, TroubleshootingCtrs } from '../types';
 import { configInit, Link, panelConfigFactory, PanelConfig, siteConfigFactory, SiteConfig } from 'components/Config';
 import { loadSvg, loadYaml } from 'components/Loader';
@@ -111,7 +111,8 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   const templateSrv = getTemplateSrv();
   const timeMin = Number(templateSrv.replace("${__from}"));
   const timeMax = Number(templateSrv.replace("${__to}"));
-  let tsData = seriesTransform(data.series, timeMin, timeMax);
+  const dataFrames = data.series ? data.series.map((item) => toDataFrame(item)) : [];
+  let tsData = seriesTransform(dataFrames, timeMin, timeMax);
 
   if (options.testDataEnabled) {
     seriesExtend(tsData, timeMin, timeMax);
