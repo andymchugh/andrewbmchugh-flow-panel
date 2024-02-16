@@ -1,7 +1,7 @@
 import { PanelPlugin } from '@grafana/data';
 import { FlowOptions } from './types';
 import { FlowPanel } from './components/FlowPanel';
-import { TroubleshootingEditor } from './components/TroubleshootingEditor';
+import { DebuggingEditor } from './components/DebuggingEditor';
 import {config} from '@grafana/runtime';
 
 export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((builder) => {
@@ -55,13 +55,13 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
     defaultValue: true,
   })
   .addCustomEditor({
-    category: ['Troubleshooting'],
-    id: 'troubleshootingCtr',
-    path: 'troubleshootingCtr',
+    category: ['Debugging'],
+    id: 'debuggingCtr',
+    path: 'debuggingCtr',
     name: `These buttons log relevant output to the browser console.
     Press '<CTRL><SHFT>J to view the console in Chrome.
     For details on how to use, refer to the docs.`,
-    editor: TroubleshootingEditor,
+    editor: DebuggingEditor,
     defaultValue: {dataCtr: 0, mappingsCtr: 0},
   });
 });

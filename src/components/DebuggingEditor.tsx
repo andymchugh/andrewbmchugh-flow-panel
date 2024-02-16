@@ -11,7 +11,7 @@ function displayDocs() {
 }
 
 function displayUnits() {
-  console.log(`Troubleshooting TimeSeries Unit Map of Category -> Subcategory -> {text, value}
+  console.log(`Debugging TimeSeries Unit Map of Category -> Subcategory -> {text, value}
   where 'text' is the unit displayed and 'value' is the 'id' you enter in the yaml config.`,
   getValueFormats());
 }
@@ -23,8 +23,8 @@ function displayData(context: any, onChange: any) {
 }
 
 export function displayDataInner(rawSeries: any, tsData: TimeSeriesData) {
-  console.log('Troubleshooting Data enriched:', tsData);
-  console.log('Troubleshooting Data raw:', rawSeries);
+  console.log('Debugging Data enriched:', tsData);
+  console.log('Debugging Data raw:', rawSeries);
 }
 
 function displayMappings(context: any, onChange: any) {
@@ -57,10 +57,10 @@ export function displayMappingsInner(panelConfig: PanelConfig, svgHolder: SvgHol
     unmappedSvgIds.delete(v.cellId);
   });
 
-  console.log('Troubleshooting Mappings: abstract:', abstract);
-  console.log('Troubleshooting Mappings: verbose:', svgHolder.attribs);
-  console.log('Troubleshooting Mappings: unmapped config ids:', unmappedConfigIds);
-  console.log('Troubleshooting Mappings: unmapped svg ids:', unmappedSvgIds);
+  console.log('Debugging Mappings: abstract:', abstract);
+  console.log('Debugging Mappings: verbose:', svgHolder.attribs);
+  console.log('Debugging Mappings: unmapped config ids:', unmappedConfigIds);
+  console.log('Debugging Mappings: unmapped svg ids:', unmappedSvgIds);
 }
 
 function displayColors(context: any, onChange: any) {
@@ -70,10 +70,10 @@ function displayColors(context: any, onChange: any) {
 }
 
 export function displayColorsInner(colors: any) {
-  console.log('Troubleshooting Colors:', colors);
+  console.log('Debugging Colors:', colors);
 }
 
-export const TroubleshootingEditor = ({context, onChange}: StandardEditorProps<number>) => {
+export const DebuggingEditor = ({context, onChange}: StandardEditorProps<number>) => {
   return <div>
     <div className={cx(
       css`

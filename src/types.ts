@@ -1,4 +1,4 @@
-export type TroubleshootingCtrs = {
+export type DebuggingCtrs = {
   colorsCtr: number;
   mappingsCtr: number;
   dataCtr: number;
@@ -9,7 +9,6 @@ export interface FlowOptions {
   panelConfig: string;
   siteConfig: string;
   timeSliderEnabled: boolean;
-  troubleshootingDataCtr: number;
-  troubleshootingCtr: TroubleshootingCtrs;
+  debuggingCtr: DebuggingCtrs;
   testDataEnabled: boolean;
 };

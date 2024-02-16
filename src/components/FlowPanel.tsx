@@ -3,13 +3,13 @@ import { css, cx } from '@emotion/css';
 import { useStyles2, useTheme2 } from '@grafana/ui';
 import { getTemplateSrv } from '@grafana/runtime';
 import { GrafanaTheme2, PanelProps, toDataFrame } from '@grafana/data';
-import { FlowOptions, TroubleshootingCtrs } from '../types';
+import { FlowOptions, DebuggingCtrs } from '../types';
 import { configInit, Link, panelConfigFactory, PanelConfig, siteConfigFactory, SiteConfig } from 'components/Config';
 import { loadSvg, loadYaml } from 'components/Loader';
 import { svgInit, svgUpdate, SvgHolder } from 'components/SvgUpdater';
 import { seriesExtend, seriesInterpolate , seriesTransform } from 'components/TimeSeries';
 import { TimeSliderFactory } from 'components/TimeSlider';
-import { displayColorsInner, displayDataInner, displayMappingsInner } from 'components/TroubleshootingEditor';
+import { displayColorsInner, displayDataInner, displayMappingsInner } from 'components/DebuggingEditor';
 import { primeColorCache, appendUrlParams } from 'components/Utils';
 import { addHook, sanitize } from 'dompurify';
 
@@ -81,7 +81,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   const [initialized, setInitialized] = useState<boolean>(false);
   const [timeSliderLabel, setTimeSliderLabel] = useState<string>();
   const timeSliderScalarRef = useRef<number>(1);
-  const troubleshootingCtrRef = useRef<TroubleshootingCtrs>({...options.troubleshootingCtr});
+  const debuggingCtrRef = useRef<DebuggingCtrs>({...options.debuggingCtr});
   const svgHolderRef = useRef<SvgHolder>();
   const clickHandlerRef = useRef<any>(null);
   const svgDocBlankRef = useRef<Document>(new DOMParser().parseFromString('<svg/>', "text/xml"));
@@ -137,32 +137,32 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   seriesInterpolate(tsData, timeSliderScalarRef.current);
 
   //---------------------------------------------------------------------------
-  // Troubleshooting data exports
+  // Debugging data exports
 
   useEffect(() => {
-    if (svgHolderRef.current && troubleshootingCtrRef.current) {
-      if (options.troubleshootingCtr.colorsCtr) {
-        if (options.troubleshootingCtr.colorsCtr !== troubleshootingCtrRef.current.colorsCtr) {
-          troubleshootingCtrRef.current.colorsCtr = options.troubleshootingCtr.colorsCtr;
+    if (svgHolderRef.current && debuggingCtrRef.current) {
+      if (options.debuggingCtr.colorsCtr) {
+        if (options.debuggingCtr.colorsCtr !== debuggingCtrRef.current.colorsCtr) {
+          debuggingCtrRef.current.colorsCtr = options.debuggingCtr.colorsCtr;
           displayColorsInner(grafanaTheme.current.visualization.hues);
         }
       }
 
-      if (options.troubleshootingCtr.mappingsCtr && panelConfig) {
-        if (options.troubleshootingCtr.mappingsCtr !== troubleshootingCtrRef.current.mappingsCtr) {
-          troubleshootingCtrRef.current.mappingsCtr = options.troubleshootingCtr.mappingsCtr;
+      if (options.debuggingCtr.mappingsCtr && panelConfig) {
+        if (options.debuggingCtr.mappingsCtr !== debuggingCtrRef.current.mappingsCtr) {
+          debuggingCtrRef.current.mappingsCtr = options.debuggingCtr.mappingsCtr;
           displayMappingsInner(panelConfig, svgHolderRef.current);
         }
       }
 
-      if (options.troubleshootingCtr.dataCtr) {
-        if (options.troubleshootingCtr.dataCtr !== troubleshootingCtrRef.current.dataCtr) {
-          troubleshootingCtrRef.current.dataCtr = options.troubleshootingCtr.dataCtr;
+      if (options.debuggingCtr.dataCtr) {
+        if (options.debuggingCtr.dataCtr !== debuggingCtrRef.current.dataCtr) {
+          debuggingCtrRef.current.dataCtr = options.debuggingCtr.dataCtr;
           displayDataInner(data.series, tsData);
         }
       }
     }
-  }, [options.troubleshootingCtr, data.series, tsData, panelConfig]);
+  }, [options.debuggingCtr, data.series, tsData, panelConfig]);
 
   //---------------------------------------------------------------------------
   // Update the SVG Attributes with the interpolated time-series data 
