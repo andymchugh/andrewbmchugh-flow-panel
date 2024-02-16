@@ -74,8 +74,12 @@ function dimensionCoherence(doc: Document) {
 function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellIdMaker): boolean {
   const setAttributes = function(el: HTMLElement) {
     el.style.whiteSpace = 'pre';
-    el.style.cursor = 'pointer';
-    el.setAttribute('cursor', 'pointer');
+
+    if (cellData.cellProps.link) {
+      el.style.cursor = 'pointer';
+      el.setAttribute('cursor', 'pointer');
+    }
+
     if (!el.id) {
       el.setAttribute('id', cellIdMaker());
     }
@@ -130,12 +134,10 @@ export function svgInit(doc: Document, panelConfig: PanelConfig, siteConfig: Sit
     const link = panelConfigCell ? panelConfigCell.link : null;
     if (link) {
       cell.textElements.forEach((el) => {
-        let cellId = el.id;
-        elementLinks.set(cellId, link);
+        elementLinks.set(el.id, link);
       });
       cell.fillElements.forEach((el) => {
-        let cellId = el.id;
-        elementLinks.set(cellId, link);
+        elementLinks.set(el.id, link);
       });
     }
   });

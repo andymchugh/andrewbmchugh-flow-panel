@@ -43,7 +43,7 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
     path: 'timeSliderEnabled',
     name: 'Time Slider',
     description: `When enabled a time-slider is added to the bottom of
-    the panel to support visualisaion of any time point in the time range.`,
+    the panel to support visualization of any time point in the time range.`,
     defaultValue: true,
   })
   .addBooleanSwitch({
