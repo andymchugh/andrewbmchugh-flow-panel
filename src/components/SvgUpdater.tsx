@@ -59,7 +59,7 @@ function dimensionCoherence(doc: Document) {
     return {
       width: viewBox[2] - viewBox[0],
       height: viewBox[3] - viewBox[1],
-      scaleDrive: (typeof width == 'string') && !width.includes('%'),
+      scaleDrive: (typeof width === 'string') && !width.includes('%'),
     }
   }
   else {
