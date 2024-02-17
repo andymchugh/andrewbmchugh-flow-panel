@@ -209,7 +209,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   //---------------------------------------------------------------------------
   // Define the canvas
 
-  const svgAttribs = svgHolder ? svgHolder.attribs : {width: 0, height: 0};
+  const svgAttribs = svgHolder ? svgHolder.attribs : {width: 0, height: 0, scaleDrive: false};
   const svgWidth = svgAttribs.width;
   const svgHeight = svgAttribs.height;
   const timeSliderHeight = timeSliderEnabled ? 60 : 0;
@@ -219,7 +219,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   const svgPaddingTop = Math.max(0, (svgViewHeight - svgHeight) * 0.5);
   const svgScaleX = (svgViewWidth / svgWidth);
   const svgScaleY = (svgViewHeight / svgHeight);
-  const svgScale = Math.min(svgScaleX, svgScaleY) * 0.9 * 100;
+  const svgScale = svgAttribs.scaleDrive ? Math.min(svgScaleX, svgScaleY) * 0.9 * 100 : 100;
 
   //---------------------------------------------------------------------------
   // Create the JSX

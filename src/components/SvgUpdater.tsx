@@ -21,6 +21,7 @@ export type SvgCell = {
 export type SvgAttribs = {
   width: number;
   height: number;
+  scaleDrive: boolean;
   cells: Map<string, SvgCell>;
   elementLinks: Map<string, Link>;
   variableValues: Map<string, string>;
@@ -51,23 +52,22 @@ function generateLabelPreamble(label: string | null, separator: LabelSeparator |
 }
 
 function dimensionCoherence(doc: Document) {
-  let width = doc.documentElement.getAttribute('width');
-  let height = doc.documentElement.getAttribute('height');
+  const width = doc.documentElement.getAttribute('width');
   const viewBox: number[] = (doc.documentElement.getAttribute('viewBox') || '').split(' ').map(Number);
 
   if (viewBox.length === 4) {
-    if (!width) {
-      width = (viewBox[2] - viewBox[0]).toString();
-      doc.documentElement.setAttribute('width', width);
-    }
-    if (!height) {
-      height = (viewBox[3] - viewBox[1]).toString();
-      doc.documentElement.setAttribute('height', height);
+    return {
+      width: viewBox[2] - viewBox[0],
+      height: viewBox[3] - viewBox[1],
+      scaleDrive: (typeof width == 'string') && !width.includes('%'),
     }
   }
-  return {
-    width: parseInt(width || '', 10),
-    height: parseInt(height || '', 10),
+  else {
+    return {
+      width: 100,
+      height: 100,
+      scaleDrive: false,
+    }
   }
 }
 
@@ -153,8 +153,9 @@ export function svgInit(doc: Document, panelConfig: PanelConfig, siteConfig: Sit
   let dimensions = dimensionCoherence(doc);
 
   return {
-    width: dimensions.width || 0,
-    height: dimensions.height || 0,
+    width: dimensions.width,
+    height: dimensions.height,
+    scaleDrive: dimensions.scaleDrive,
     cells: cells,
     elementLinks: elementLinks,
     variableValues: variableValues,
