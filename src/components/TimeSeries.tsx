@@ -48,32 +48,34 @@ export function seriesExtend(tsData: TimeSeriesData, timeMin: number, timeMax: n
 // This transforms the data so we have name-indexable sets of time and value.
 // i.e.:
 // - series: [fields: [{name, values}]] => Map<string, TimeSeries>
-export function seriesTransform(series: any, timeMin: number, timeMax: number): TimeSeriesData {
+export function seriesTransform(series: any[], timeMin: number, timeMax: number): TimeSeriesData {
   const timeSeries = new Map<string, TimeSeries>();
 
   series.forEach((frame: any) => {
-    let tsTime = null;
-    let tsNamed: Record<string, any> = {};
-
-    frame.fields.forEach(function(ts: any) {
-      if (ts.name === 'time') {
-        // The index is stored alongside the ts because it has potential to be shared
-        // and if so, only has to be calculated once.
-        tsTime = {valuesIndex: null, values: ts.values};
-        if (tsTime.values.length > 0) {
-          const maxInd = tsTime.values.length - 1;
-          timeMin = Math.min(timeMin ?? tsTime.values[0], tsTime.values[0]);
-          timeMax = Math.max(timeMax ?? tsTime.values[maxInd], tsTime.values[maxInd]);
+    if (('fields' in frame) && Array.isArray(frame.fields)) {
+      let tsTime = null;
+      let tsNamed: Record<string, any> = {};
+  
+      frame.fields.forEach(function(ts: any) {
+        if (ts.name === 'time') {
+          // The index is stored alongside the ts because it has potential to be shared
+          // and if so, only has to be calculated once.
+          tsTime = {valuesIndex: null, values: ts.values};
+          if (tsTime.values.length > 0) {
+            const maxInd = tsTime.values.length - 1;
+            timeMin = Math.min(timeMin ?? tsTime.values[0], tsTime.values[0]);
+            timeMax = Math.max(timeMax ?? tsTime.values[maxInd], tsTime.values[maxInd]);
+          }
         }
+        else {
+          tsNamed[ts.name] = {values: ts.values, time: null};
+        }
+      });
+      // Embed a time shallow copy against each ts in the frame and export to holder
+      for (const [name, ts] of Object.entries<any>(tsNamed)) {
+          ts.time = tsTime;
+          timeSeries.set(name, ts);
       }
-      else {
-        tsNamed[ts.name] = {values: ts.values, time: null};
-      }
-    });
-    // Embed a time shallow copy against each ts in the frame and export to holder
-    for (const [name, ts] of Object.entries<any>(tsNamed)) {
-        ts.time = tsTime;
-        timeSeries.set(name, ts);
     }
   });
       
