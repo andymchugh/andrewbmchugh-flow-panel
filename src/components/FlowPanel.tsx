@@ -15,6 +15,7 @@ import { addHook, sanitize } from 'dompurify';
 
 interface Props extends PanelProps<FlowOptions> {}
 
+//-----------------------------------------------------------------------------
 // Sanitize externally defined SVG using DOMPurify. DrawIO svg's rely on
 // foreignObject. In addition, the cursor changing to a pointer on mouse-over of
 // cells with links, relies on foreignObject defining 'pointer-events: none'. As
@@ -28,6 +29,8 @@ addHook('afterSanitizeAttributes', function(el) {
 function sanitizeSvgStr(svgStr: string) {
   return sanitize(svgStr, {ADD_TAGS: ['foreignObject']});
 }
+
+//-----------------------------------------------------------------------------
 
 const getStyles = () => {
   return {
@@ -240,7 +243,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
         `
         )}
         onClick={clickHandlerRef.current}
-        // The externally received svg is sanitised when read in via sanitizeSvgStr which uses
+        // The externally received svg is sanitized when read in via sanitizeSvgStr which uses
         // dompurify. We don't re-sanitize it on each rendering as we are in control of the
         // modifications being made.
         dangerouslySetInnerHTML={{__html: svgElement.outerHTML}}/>

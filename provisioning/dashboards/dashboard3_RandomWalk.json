@@ -65,7 +65,7 @@
           "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg1.svg",
           "testDataEnabled": true,
           "timeSliderEnabled": true,
-          "troubleshootingCtr": {
+          "debuggingCtr": {
             "dataCtr": 2,
             "mappingsCtr": 0
           }
@@ -111,7 +111,7 @@
           "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg1.svg",
           "testDataEnabled": false,
           "timeSliderEnabled": true,
-          "troubleshootingCtr": {
+          "debuggingCtr": {
             "dataCtr": 2,
             "mappingsCtr": 0
           }
@@ -149,7 +149,7 @@
           "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg1.svg",
           "testDataEnabled": false,
           "timeSliderEnabled": true,
-          "troubleshootingCtr": {
+          "debuggingCtr": {
             "dataCtr": 2,
             "mappingsCtr": 0
           }

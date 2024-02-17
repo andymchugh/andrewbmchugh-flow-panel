@@ -1,7 +1,7 @@
 import { getValueFormatterIndex, formattedValueToString } from '@grafana/data';
 import { 
    LabelSeparator, Link,
-   PanelConfig, PanelConfigCell, PanelConfigCellLabel,
+   PanelConfig, PanelConfigCell, PanelConfigCellColor, PanelConfigCellLabel,
    SiteConfig, VariableThresholdScalars } from 'components/Config';
 import { TimeSeriesData } from 'components/TimeSeries';
 import {
@@ -161,9 +161,8 @@ export function svgInit(doc: Document, panelConfig: PanelConfig, siteConfig: Sit
   };
 } 
 
-function getCellValue(cellData: SvgCell, tsData: TimeSeriesData) {
+function getCellValue(tsName: string, tsData: TimeSeriesData) {
   let value = null;
-  const tsName = cellData.cellProps.dataRef;
   const ts = tsData.ts.get(tsName);
   if (ts && (typeof ts.time.valuesIndex === 'number')) {
     value = ts.values[ts.time.valuesIndex];
@@ -171,7 +170,7 @@ function getCellValue(cellData: SvgCell, tsData: TimeSeriesData) {
   return value;
 }
 
-function getCellLabel(cellLabelData: PanelConfigCellLabel, value: number) {
+function formatCellValue(cellLabelData: PanelConfigCellLabel, value: number) {
   const format = cellLabelData.units || 'none';
   const decimalPoints = cellLabelData.decimalPoints || 0;
   const formatter = getValueFormatterIndex()[format];
@@ -184,18 +183,37 @@ function getCellLabel(cellLabelData: PanelConfigCellLabel, value: number) {
 }
 
 export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData) {
+  const variableValues = svgHolder.attribs.variableValues;
   const cells = svgHolder.attribs.cells;
   cells.forEach((cellData) => {
-    const cellValue = getCellValue(cellData, tsData);
-    const cellValueValid = typeof cellValue === 'number';
-    const scaledCellValue = cellValueValid ? variableThresholdScaleValue(svgHolder.attribs.variableValues, cellData, cellValue) : null;
-    const scaledCellValueValid = typeof scaledCellValue === 'number';
+
+    // This function sources the dataRef from the inner paramData and scales it using
+    // the variables to a threshold seed. If it doesn't exist it returns the passed in
+    // default.
+    function thresholdSeed(paramData: PanelConfigCellColor | undefined, defaultSeed: number | null) {
+      if (paramData?.dataRef) {
+        const cellValue = getCellValue(paramData.dataRef, tsData);
+        return variableThresholdScaleValue(variableValues, cellData, cellValue);
+      }
+      else {
+        return paramData ? defaultSeed : null;
+      }
+    }
+    const cellDataRef = cellData.cellProps.dataRef;
+    const cellValue = cellDataRef ? getCellValue(cellDataRef, tsData) : null;
+    const cellValueSeed = variableThresholdScaleValue(variableValues, cellData, cellValue);
+
     const cellLabelData = cellData.cellProps.label;
-    const cellLabel = cellLabelData && cellValueValid ? getCellLabel(cellLabelData, cellValue) : null;
+    const cellLabelValue = cellLabelData?.dataRef ? getCellValue(cellLabelData.dataRef, tsData) : cellValue;
+    const cellLabel = cellLabelData && (typeof cellLabelValue === 'number') ? formatCellValue(cellLabelData, cellLabelValue) : null;
+
     const cellFillColorData = cellData.cellProps.fillColor;
-    const cellFillColor =  cellFillColorData && scaledCellValueValid ? getColor(cellFillColorData, scaledCellValue) : null;
+    const cellFillColorSeed = thresholdSeed(cellFillColorData, cellValueSeed);
+    const cellFillColor = cellFillColorData && (typeof cellFillColorSeed === 'number') ? getColor(cellFillColorData, cellFillColorSeed) : null;
+
     const cellLabelColorData = cellData.cellProps.labelColor;
-    const cellLabelColor =  cellLabelColorData && scaledCellValueValid ? getColor(cellLabelColorData, scaledCellValue) : null;
+    const cellLabelColorSeed = thresholdSeed(cellLabelColorData, cellValueSeed);
+    const cellLabelColor = cellLabelColorData && (typeof cellLabelColorSeed === 'number') ? getColor(cellLabelColorData, cellLabelColorSeed) : null;
 
     cellData.fillElements.forEach((el: HTMLElement) => {
       if (cellFillColorData) {

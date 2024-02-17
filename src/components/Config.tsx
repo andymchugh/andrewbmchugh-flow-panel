@@ -19,19 +19,21 @@ export type Link = {
 };
 
 export type PanelConfigCellLabel = {
+  dataRef: string | undefined;
   separator: LabelSeparator;
   units: string;
   decimalPoints: number;
 }
 
 export type PanelConfigCellColor = {
+  dataRef: string | undefined;
   gradientMode: ColorGradientMode | undefined;
   thresholdsRef: string | undefined;
   thresholds: Threshold[] | undefined;
 }
 
 export type PanelConfigCell = {
-  dataRef: string;
+  dataRef: string | undefined;
   linkRef: string | undefined;
   link: Link | undefined;
   label: PanelConfigCellLabel | undefined;
