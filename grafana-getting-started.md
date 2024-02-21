@@ -1,5 +1,7 @@
 # Getting started with Development
 
+The repo and associated plugin were created from this [grafana template](https://grafana.com/developers/plugin-tools/tutorials/build-a-panel-plugin).
+
 ## Frontend
 
 1. Install dependencies
