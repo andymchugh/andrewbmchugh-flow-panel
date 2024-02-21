@@ -130,6 +130,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   const templateSrv = getTemplateSrv();
   const timeMin = Number(templateSrv.replace("${__from}"));
   const timeMax = Number(templateSrv.replace("${__to}"));
+
   const dataFrames = data.series ? data.series.map((item) => toDataFrame(item)) : [];
   let tsData = seriesTransform(dataFrames, timeMin, timeMax);
 
