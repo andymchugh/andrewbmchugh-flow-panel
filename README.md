@@ -46,8 +46,8 @@ Create a Flow Panel in your dashboard. The initial setup loads the first example
   - Edit the SVG reference and see the SVG dissapear. Change it back and see it reappear.
   - Edit the Panel Config reference and see the annotation dissapear. Change it back and see it reappear.
   - Change the links over to the second example. This shows a bus middleware example and also demonstrates use of a the shared siteConfig file:
-    - svg: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/svg2.svg
-    - panelConfig: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig2.yaml
+    - svg: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg2.svg
+    - https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/examples/darkThemeSvg2.svg
     - siteConfig: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/siteConfig.yaml
 - Test Data Generation:
   - Deselect generation and see the SVG change to unannotated. Reselect and see the color and values come back.
