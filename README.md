@@ -1,5 +1,5 @@
 # Grafana Flow Panel Plugin
-The plugin was created from this [grafana template](https://grafana.com/developers/plugin-tools/tutorials/build-a-panel-plugin). It provides side-by-side metric visualization on SVG diagrams. You provide the SVG diagram along with configuration on how you want the diagram to behave. The panel then combines these with your time-series data to bring your diagram to life.
+The Flow plugin provides side-by-side metric visualization on SVG diagrams. You provide the SVG diagram along with configuration on how you want the diagram to behave. The panel then combines these with your time-series data to bring your diagram to life.
 
 ## Example 1
 ![example1](src/img/example1.png)
