@@ -7,7 +7,7 @@ import { SvgHolder } from 'components/SvgUpdater';
 import { TimeSeriesData } from 'components/TimeSeries';
 
 function displayDocs() {
-  window.open('https://github.com/andymchugh/andrewbmchugh-flow-panel-docs/blob/main/README.md');
+  window.open('https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/README.md');
 }
 
 function displayUnits() {

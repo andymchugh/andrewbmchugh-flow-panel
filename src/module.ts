@@ -13,7 +13,7 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
     path: 'svg',
     name: 'SVG',
     description: `This holds the SVG element or a url to the SVG element.`,
-    defaultValue: 'https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/' + svgName,
+    defaultValue: 'https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/' + svgName,
     settings: {
       useTextarea: true,
       rows: 2,
@@ -23,7 +23,7 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
     path: 'panelConfig',
     name: 'Panel Config',
     description: `YAML file containing the panel config.`,
-    defaultValue: 'https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/panelConfig1.yaml',
+    defaultValue: 'https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig1.yaml',
     settings: {
       useTextarea: true,
       rows: 2,

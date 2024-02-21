@@ -60,9 +60,9 @@
         },
         "id": 123127,
         "options": {
-          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/panelConfigRandomWalk.yaml",
+          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfigRandomWalk.yaml",
           "siteConfig": "",
-          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg1.svg",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
           "testDataEnabled": true,
           "timeSliderEnabled": true,
           "debuggingCtr": {
@@ -106,9 +106,9 @@
         },
         "id": 123129,
         "options": {
-          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/panelConfigRandomWalk.yaml",
+          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfigRandomWalk.yaml",
           "siteConfig": "",
-          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg1.svg",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
           "testDataEnabled": false,
           "timeSliderEnabled": true,
           "debuggingCtr": {
@@ -144,9 +144,9 @@
         },
         "id": 123128,
         "options": {
-          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/panelConfigRandomWalk.yaml",
+          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfigRandomWalk.yaml",
           "siteConfig": "",
-          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg1.svg",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
           "testDataEnabled": false,
           "timeSliderEnabled": true,
           "debuggingCtr": {

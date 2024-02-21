@@ -89,9 +89,9 @@
           "dataCtr": 0,
           "mappingsCtr": 0
         },
-        "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/panelConfigGrafanaVariables.yaml",
+        "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfigGrafanaVariables.yaml",
         "siteConfig": "",
-        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg1.svg",
+        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
         "testDataEnabled": true,
         "timeSliderEnabled": true,
         "debuggingCtr": {
@@ -119,9 +119,9 @@
           "dataCtr": 0,
           "mappingsCtr": 0
         },
-        "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/panelConfigGrafanaVariablesWithDataRefOverrides.yaml",
+        "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfigGrafanaVariablesWithDataRefOverrides.yaml",
         "siteConfig": "",
-        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg1.svg",
+        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
         "testDataEnabled": true,
         "timeSliderEnabled": true,
         "debuggingCtr": {

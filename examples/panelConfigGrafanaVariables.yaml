@@ -43,7 +43,7 @@ cells:
       url: "https://app.diagrams.net/?p=svgdata"
   docs:
     link:
-      url: "https://github.com/andymchugh/andrewbmchugh-flow-panel-docs/blob/main/README.md"
+      url: "https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/README.md"
   inbox_depth:
     dataRef: "test-data-large-cos"
     label:

@@ -40,7 +40,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "# The Flow Panel\n\nThis dashboard along with the two companion dashboards demonstrate the core functionality of the Flow panel:\n|Features|Features|Features|Features|\n|--------|--------|--------|--------|\n|label content|panel config|units|time-slider|\n|label color|site config|tooltips|url links|\n|fill color|variable config overrides|auto-scaling|hue gradient|\n\n\nThe first panel is what you get out-the-box when you create a FLow panel. A basic SVG driven\nfrom test data via sample config. It shows everything working and is the starting point\nfor someone to go exploring. How they should explore is explained in the\n[Docs](https://github.com/andymchugh/andrewbmchugh-flow-panel-docs/blob/main/README.md) which are\nreachable from the SVG widget as well as the 'Docs' button in the Debugging section of\nthe editor.\n\nThe second panel shows a more typical usage to give a sense of the range of widget support\nyou get from using a product like draw.io. It's more aspirational, helping them reason\nabout how to apply it to their own architecture and see the benefits of a shared siteConfig\nin terms of data maintenance.\n",
+        "content": "# The Flow Panel\n\nThis dashboard along with the two companion dashboards demonstrate the core functionality of the Flow panel:\n|Features|Features|Features|Features|\n|--------|--------|--------|--------|\n|label content|panel config|units|time-slider|\n|label color|site config|tooltips|url links|\n|fill color|variable config overrides|auto-scaling|hue gradient|\n\n\nThe first panel is what you get out-the-box when you create a FLow panel. A basic SVG driven\nfrom test data via sample config. It shows everything working and is the starting point\nfor someone to go exploring. How they should explore is explained in the\n[Docs](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/README.md) which are\nreachable from the SVG widget as well as the 'Docs' button in the Debugging section of\nthe editor.\n\nThe second panel shows a more typical usage to give a sense of the range of widget support\nyou get from using a product like draw.io. It's more aspirational, helping them reason\nabout how to apply it to their own architecture and see the benefits of a shared siteConfig\nin terms of data maintenance.\n",
         "mode": "markdown"
       },
       "pluginVersion": "10.0.3",
@@ -59,9 +59,9 @@
       },
       "id": 123125,
       "options": {
-        "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/panelConfig1.yaml",
+        "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig1.yaml",
         "siteConfig": "",
-        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg1.svg",
+        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
         "testDataEnabled": true,
         "timeSliderEnabled": true,
         "debuggingCtr": {
@@ -84,9 +84,9 @@
       },
       "id": 123126,
       "options": {
-        "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/panelConfig2.yaml",
-        "siteConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/siteConfig.yaml",
-        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel-docs/main/examples/darkThemeSvg2.svg",
+        "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig2.yaml",
+        "siteConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/siteConfig.yaml",
+        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg2.svg",
         "testDataEnabled": true,
         "timeSliderEnabled": true,
         "debuggingCtr": {
