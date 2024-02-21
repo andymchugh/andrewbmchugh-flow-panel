@@ -30,7 +30,7 @@ The supported visualizations are:
 
 *Note that tooltips have no inbuilt support in the panel, but can be defined in the SVG and will appear in the panel on-hover courtesy of the underlying framework. To set a tooltip in draw.io, `select widget -> Edit -> Edit Tooltip`; or `select widget -> <ALT><SHFT>T`.*
 
-## Getting started
+## Getting Started
 Create a Flow Panel in your dashboard. The initial setup loads the first example from this repo via urls. It also enables *test-timeseries-enrichment*. These test timeseries ensure the initial dashboard has some data to show. It gives you a working example straight out of the box.
 
 ### Explore
@@ -90,6 +90,6 @@ Once your familiar with the controls creating your first proper panel boils down
 - Use the time-slider to see your value being correctly echoed in the SVG.
 - Rinse / Repeat. 
 
-## Want to Make Changes?
+## Want to make changes?
 Go to the [Grafana Getting Started](./grafana-getting-started.md) guide to get going with downloading a fork and setting up your test environment.
 Once up you'll find dashboards available (sourced from the provisioning directory) that act as demonstrators for the functionality.
