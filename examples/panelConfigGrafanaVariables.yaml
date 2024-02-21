@@ -1,0 +1,82 @@
+---
+
+# This panelConfig is intended for use with Svg1. It sets all the widgets to drive from the
+# same time series with the same thresholds and no gradient to make it easier to understand.
+#
+# To work, the grafana variable has to impact a query, which is impossible to do with a
+# test data drive. But we can work around that by adding the variable to the panel title.
+# To explore this feature:
+# - Add a grafana text variable 'site'
+# - Add a grafana text variable 'environment'
+# - Change your panel title to 'Example Flow Panel - ${site} - ${environment}'
+#
+# With that in place:
+# - Set site='Cicely'. See the threshold values (impacting color) on 'Inbox Depth' half
+# - Set environment='prod'. See the threshold values (impacting color) on 'Inbox Depth' half
+# - Set both and now the Inbox thresholds are a quarter
+variableThresholdScalars:
+  site:
+    - {variableValuePattern: ".*Cicely.*", thresholdScalar: 0.5, cellIdPatternScope: [".*box.*"]}
+  environment:
+    - {variableValuePattern: "prod", thresholdScalar: 0.5, cellIdPatternScope: [".*box.*"]}
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - link: &grafana-home
+      url: "https://grafana.com/"
+      params: "time"
+  - thresholds: &thresholds
+    - {color: "semi-dark-green", level: 0}
+    - {color: "orange", level: 400}
+    - {color: "red", level: 800}
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+gradientMode: "none"
+cellIdPreamble: "cell-"
+cells: 
+  drawio:
+    link:
+      url: "https://app.diagrams.net/?p=svgdata"
+  docs:
+    link:
+      url: "https://github.com/andymchugh/andrewbmchugh-flow-panel-docs/blob/main/README.md"
+  inbox_depth:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "none"
+      decimalPoints: 0
+    labelColor:
+      thresholds: *thresholds
+    link: *grafana-home
+  db_transactions:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "ops"
+      decimalPoints: 0
+    fillColor:
+      thresholds: *thresholds
+    link: *grafana-home
+  start_rate:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "colon"
+      units: "pps"
+      decimalPoints: 0
+    labelColor:
+      thresholds: *thresholds
+    link: *grafana-home
+  active_workers:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "none"
+      decimalPoints: 0
+    labelColor:
+      thresholds: *thresholds
+    link: *grafana-home

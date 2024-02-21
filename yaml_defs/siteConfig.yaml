@@ -1,0 +1,46 @@
+---
+
+# These scalars provide a way for grafana variable settings to adjust the threshold
+# limits. They are explained in the panelConfig documentation. These scalar
+# rules across the two files are additive. As in the panelConfig rules are added first, then
+# the siteConfig rules are postpended to the variable rule arrays. As such panelConfig rules
+# get the first opportunity to match.
+variableThresholdScalars:
+  client:
+    - {variableValuePattern: ".*busy.*", thresholdScalar: 2, cellIdPatternScope: [".*box.*"]}
+  environment:
+    - {variableValuePattern: "dev", thresholdScalar: 0.2, cellIdPatternScope: ["inbox_depth"]}
+
+# These are referenced from panelConfig via the 'linkRef' field.
+# The fields inside a link are explained in the panelConfig documentation.
+# i.e. In panelConfig you see: linkRef: "drawio"
+links:
+  drawio:
+    url: "https://app.diagrams.net/?p=svgdata"
+    params: "none"
+  grafana:
+    url: "https://grafana.com/products/cloud/"
+    params: "none"
+
+# These are referenced from panelConfig via the 'thresholds->color' field.
+# Every color value is passed via these lookup before finalizing the value.
+# As such names can be used herer for defining your system theme allowing
+# you to change it in a single place. The values you assign to names can be
+# any of the value forms explained in the panelConfig documentation.
+colors:
+  red: "#FF0000"
+  amber: "#FFBF00"
+  green: "#00AA00"
+
+# These are refenced from panelConfig via the 'thresholdsRef' field.
+# i.e. in panelConfig you see: thresholdsRef: "queueCount".
+# The fields inside a link are explained in the panelConfig documentation.
+thresholds:
+  queuecount:
+    - {color: "green", level: 10}
+    - {color: "amber", level: 30}
+    - {color: "red", level: 60}
+  queuedepth:
+    - {color: "green", level: 200}
+    - {color: "amber", level: 300}
+    - {color: "red", level: 1500}
