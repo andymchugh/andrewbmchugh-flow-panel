@@ -8,7 +8,7 @@ The Flow plugin provides side-by-side metric visualization on SVG diagrams. You 
 ![example2](src/img/example2.png)
 
 ## Target Audience
-Dashboards detailing flow through distributed systems, quickly get big and often benefit from some kind of lead in architecture diagram. This panel is aimed at supporting these diagrams. You create the SVG in a rich editor such as draw.io and then associate the data-series and thresholds with yaml config. As well as annotating the diagram with data, you can also add links allowing you to click on the different widgets and dive into an 'exploded' view of the selected component.
+Dashboards detailing flow through distributed systems quickly get big and often benefit from some kind of lead in architecture diagram. This panel is aimed at supporting these diagrams. You create the SVG in a rich editor such as draw.io and then associate the data-series and thresholds via yaml config. As well as annotating the diagram with data, you can also add links allowing you to click on the different widgets and dive into an 'exploded' view of the selected component.
 
 Think glass-cockpit with layers of detail; each layer giving ever increasing detail on system health. When creating dashboard suites such as these you often end up with many similar widgets that benefit from sharing the same threshold config. This panel actively supports this by allowing you to share thresholds and links, both within a panel and also across panels. It even goes one step further by allowing you to tailor threshold sets based off of grafana variable selections. This really helps make the thresholds relevant in all situations.
 
