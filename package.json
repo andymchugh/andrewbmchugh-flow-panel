@@ -1,6 +1,6 @@
 {
   "name": "flow",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Svg flowchart visualization",
   "scripts": {
     "build": "webpack -c ./webpack.config.ts --env production",
