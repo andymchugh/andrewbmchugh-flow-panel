@@ -17,7 +17,7 @@ function displayUnits() {
 }
 
 function displayData(context: any, onChange: any) {
-  const ctrs = {...context.options.troubleshootingCtr};
+  const ctrs = {...context.options.debuggingCtr};
   ctrs.dataCtr = (ctrs.dataCtr || 0) + 1;
   onChange(ctrs);
 }
@@ -28,7 +28,7 @@ export function displayDataInner(rawSeries: any, tsData: TimeSeriesData) {
 }
 
 function displayMappings(context: any, onChange: any) {
-  const ctrs = {...context.options.troubleshootingCtr};
+  const ctrs = {...context.options.debuggingCtr};
   ctrs.mappingsCtr = (ctrs.mappingsCtr || 0) + 1;
   onChange(ctrs);
 }
@@ -64,7 +64,7 @@ export function displayMappingsInner(panelConfig: PanelConfig, svgHolder: SvgHol
 }
 
 function displayColors(context: any, onChange: any) {
-  const ctrs = {...context.options.troubleshootingCtr};
+  const ctrs = {...context.options.debuggingCtr};
   ctrs.colorsCtr = (ctrs.colorsCtr || 0) + 1;
   onChange(ctrs);
 }
