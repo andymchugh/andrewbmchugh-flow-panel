@@ -1,4 +1,5 @@
 export type DebuggingCtrs = {
+  timingsCtr: number;
   colorsCtr: number;
   mappingsCtr: number;
   dataCtr: number;

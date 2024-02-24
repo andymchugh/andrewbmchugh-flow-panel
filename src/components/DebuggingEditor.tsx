@@ -63,6 +63,12 @@ export function displayMappingsInner(panelConfig: PanelConfig, svgHolder: SvgHol
   console.log('Debugging Mappings: unmapped svg ids:', unmappedSvgIds);
 }
 
+function displayTimings(context: any, onChange: any) {
+  const ctrs = {...context.options.debuggingCtr};
+  ctrs.timingsCtr = (ctrs.timingsCtr || 0) + 1;
+  onChange(ctrs);
+}
+
 function displayColors(context: any, onChange: any) {
   const ctrs = {...context.options.debuggingCtr};
   ctrs.colorsCtr = (ctrs.colorsCtr || 0) + 1;
@@ -105,6 +111,7 @@ export const DebuggingEditor = ({context, onChange}: StandardEditorProps<number>
       <Button onClick={() => displayUnits()}>Units</Button>
       <Button onClick={() => displayColors(context, onChange)}>Colors</Button>
       <Button onClick={() => displaySvg(context, onChange)}>SVG</Button>
+      <Button onClick={() => displayTimings(context, onChange)}>Timings</Button>
     </div>
   </div>
 };

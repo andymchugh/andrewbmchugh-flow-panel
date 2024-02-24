@@ -74,6 +74,22 @@ function clickHandlerFactory(elementLinks: Map<string, Link>) {
   }
 }
 
+function wrapperTimer(label: string, fn: Function) {
+  return function(...args: any[]) {
+    const start = performance.now();
+    const fnResult = fn(...args);
+    const delta = performance.now() - start;
+    console.log(`Debugging time: ${label}: ${delta.toFixed(3)} ms`);
+    return fnResult;
+  };
+}
+
+function wrapperPassThrough(label: string, fn: Function) {
+  return function(...args: any[]) {
+    return fn(...args);
+   };
+}
+
 export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZone }) => {
   //---------------------------------------------------------------------------
   // State for 'load -> init -> update' startup phasing
@@ -127,24 +143,57 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   //---------------------------------------------------------------------------
   // Interpolate time-series data
 
+  const instrument = options.debuggingCtr.timingsCtr && (options.debuggingCtr.timingsCtr !== debuggingCtrRef.current.timingsCtr) ? wrapperTimer : wrapperPassThrough;
   const templateSrv = getTemplateSrv();
   const timeMin = Number(templateSrv.replace("${__from}"));
   const timeMax = Number(templateSrv.replace("${__to}"));
 
-  const dataFrames = data.series ? data.series.map((item) => toDataFrame(item)) : [];
-  let tsData = seriesTransform(dataFrames, timeMin, timeMax);
+  const dataConverter = function(arr: any[]) { return arr.map((item: any) => toDataFrame(item)) };
+  const dataFrames = instrument('toDataFrame', dataConverter)(data.series || []);
+  let tsData = instrument('transform', seriesTransform)(dataFrames, timeMin, timeMax);
 
   if (options.testDataEnabled) {
-    seriesExtend(tsData, timeMin, timeMax);
+    instrument('seriesExtend', seriesExtend)(tsData, timeMin, timeMax);
   }
   
-  seriesInterpolate(tsData, timeSliderScalarRef.current);
+  instrument('seriesInterpolate', seriesInterpolate)(tsData, timeSliderScalarRef.current);
+
+  //---------------------------------------------------------------------------
+  // Update the SVG Attributes with the interpolated time-series data 
+
+  let svgHolder = svgHolderRef.current;
+  if (svgHolder) {
+    // Snapshot the monitored variable states
+    const variableValues = svgHolder.attribs.variableValues;
+    templateSrv.getVariables().forEach((variable: any) => {
+      try {
+        if (typeof variableValues.get(variable.id) !== 'undefined') {
+          variableValues.set(variable.id, variable.current.value);
+        }
+      }
+      catch (err) {
+        console.log('Error occured accessing variable', variable, ', error =', err);
+      }
+    });
+  
+    // Update the svg with current time-series and variable settings
+    instrument('svgUpdate', svgUpdate)(svgHolder, tsData);
+  }
+  const svgElement = (svgHolder ? svgHolder.doc : svgDocBlankRef.current).childNodes[0] as HTMLElement;
 
   //---------------------------------------------------------------------------
   // Debugging data exports
 
   useEffect(() => {
     if (svgHolderRef.current && debuggingCtrRef.current) {
+      if (options.debuggingCtr.timingsCtr) {
+        if (options.debuggingCtr.timingsCtr !== debuggingCtrRef.current.timingsCtr) {
+          // The ctr delta was detected upstream and the timings enabled for this pass
+          // via the instrument function. Here we just reset the timers.
+          debuggingCtrRef.current.timingsCtr = options.debuggingCtr.timingsCtr;
+        }
+      }
+
       if (options.debuggingCtr.colorsCtr) {
         if (options.debuggingCtr.colorsCtr !== debuggingCtrRef.current.colorsCtr) {
           debuggingCtrRef.current.colorsCtr = options.debuggingCtr.colorsCtr;
@@ -172,30 +221,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
         }
       }
     }
-  }, [options.debuggingCtr, data.series, tsData, panelConfig]);
-
-  //---------------------------------------------------------------------------
-  // Update the SVG Attributes with the interpolated time-series data 
-
-  let svgHolder = svgHolderRef.current;
-  if (svgHolder) {
-    // Snapshot the monitored variable states
-    const variableValues = svgHolder.attribs.variableValues;
-    templateSrv.getVariables().forEach((variable: any) => {
-      try {
-        if (typeof variableValues.get(variable.id) !== 'undefined') {
-          variableValues.set(variable.id, variable.current.value);
-        }
-      }
-      catch (err) {
-        console.log('Error occured accessing variable', variable, ', error =', err);
-      }
-    });
-  
-    // Update the svg with current time-series and variable settings
-    svgUpdate(svgHolder, tsData);
-  }
-  const svgElement = (svgHolder ? svgHolder.doc : svgDocBlankRef.current).childNodes[0] as HTMLElement;
+  }, [options.debuggingCtr, data.series, tsData, svgElement.outerHTML, panelConfig]);
 
   //---------------------------------------------------------------------------
   // TimeSlider
