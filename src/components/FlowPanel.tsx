@@ -9,7 +9,7 @@ import { loadSvg, loadYaml } from 'components/Loader';
 import { svgInit, svgUpdate, SvgHolder } from 'components/SvgUpdater';
 import { seriesExtend, seriesInterpolate , seriesTransform } from 'components/TimeSeries';
 import { TimeSliderFactory } from 'components/TimeSlider';
-import { displayColorsInner, displayDataInner, displayMappingsInner } from 'components/DebuggingEditor';
+import { displayColorsInner, displayDataInner, displayMappingsInner, displaySvgInner } from 'components/DebuggingEditor';
 import { primeColorCache, appendUrlParams } from 'components/Utils';
 import { addHook, sanitize } from 'dompurify';
 
@@ -163,6 +163,12 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
         if (options.debuggingCtr.dataCtr !== debuggingCtrRef.current.dataCtr) {
           debuggingCtrRef.current.dataCtr = options.debuggingCtr.dataCtr;
           displayDataInner(data.series, tsData);
+        }
+      }
+      if (options.debuggingCtr.displaySvgCtr) {
+        if (options.debuggingCtr.displaySvgCtr !== debuggingCtrRef.current.displaySvgCtr) {
+          debuggingCtrRef.current.displaySvgCtr = options.debuggingCtr.displaySvgCtr;
+          displaySvgInner(svgElement.outerHTML);
         }
       }
     }

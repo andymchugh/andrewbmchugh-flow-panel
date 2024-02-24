@@ -73,6 +73,16 @@ export function displayColorsInner(colors: any) {
   console.log('Debugging Colors:', colors);
 }
 
+function displaySvg(context: any, onChange: any) {
+  const ctrs = {...context.options.debuggingCtr};
+  ctrs.displaySvgCtr = (ctrs.displaySvgCtr || 0) + 1;
+  onChange(ctrs);
+}
+
+export function displaySvgInner(svgStr: string) {
+  console.log('Debugging svg:', svgStr);
+}
+
 export const DebuggingEditor = ({context, onChange}: StandardEditorProps<number>) => {
   return <div>
     <div className={cx(
@@ -94,6 +104,7 @@ export const DebuggingEditor = ({context, onChange}: StandardEditorProps<number>
       )}>
       <Button onClick={() => displayUnits()}>Units</Button>
       <Button onClick={() => displayColors(context, onChange)}>Colors</Button>
+      <Button onClick={() => displaySvg(context, onChange)}>SVG</Button>
     </div>
   </div>
 };

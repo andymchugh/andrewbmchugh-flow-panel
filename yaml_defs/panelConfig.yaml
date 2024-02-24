@@ -67,7 +67,7 @@ cells:
       separator: "cr"
 
       # This defines the units of the value. The strings that should be entered can be
-      # listed using the 'Troubleshooting Units' button in the panel. A few example values
+      # listed using the 'Debugging Units' button in the panel. A few example values
       # would be none, ops, pps, litreh, forcekNm
       units: "none"
 
@@ -92,7 +92,7 @@ cells:
       # the "hue" gradientMode as it determines the value at which the color should start to transition.
       #
       # The color can be in the following formats:
-      # - a grafana color as can be seen from 'Troubleshooting Colors'.
+      # - a grafana color as can be seen from 'Debugging Colors'.
       # - a color reference to a color name in the siteConfig
       # - shorthex: i.e. 'f00'
       # - longhex: i.e. 'f00000'

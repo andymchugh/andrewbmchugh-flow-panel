@@ -2,6 +2,7 @@ export type DebuggingCtrs = {
   colorsCtr: number;
   mappingsCtr: number;
   dataCtr: number;
+  displaySvgCtr: number;
 };
 
 export interface FlowOptions {
