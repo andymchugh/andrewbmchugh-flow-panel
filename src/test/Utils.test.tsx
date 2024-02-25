@@ -248,7 +248,7 @@ test('variableThresholdScalars_2var1match1not', () => {
 })
 
 test('instrumenter', () => {
-    function inner(a:number, b: number, c: number) {
+    function inner(a: number, b: number, c: number) {
         expect(a + b + c).toEqual(6);
     }
 
