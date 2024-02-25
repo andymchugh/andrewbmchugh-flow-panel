@@ -10,7 +10,7 @@ import { svgInit, svgUpdate, SvgHolder } from 'components/SvgUpdater';
 import { seriesExtend, seriesInterpolate , seriesTransform } from 'components/TimeSeries';
 import { TimeSliderFactory } from 'components/TimeSlider';
 import { displayColorsInner, displayDataInner, displayMappingsInner, displaySvgInner } from 'components/DebuggingEditor';
-import { primeColorCache, appendUrlParams } from 'components/Utils';
+import { primeColorCache, appendUrlParams, getInstrumenter } from 'components/Utils';
 import { addHook, sanitize } from 'dompurify';
 
 interface Props extends PanelProps<FlowOptions> {}
@@ -74,22 +74,6 @@ function clickHandlerFactory(elementLinks: Map<string, Link>) {
   }
 }
 
-function wrapperTimer(label: string, fn: Function) {
-  return function(...args: any[]) {
-    const start = performance.now();
-    const fnResult = fn(...args);
-    const delta = performance.now() - start;
-    console.log(`Debugging time: ${label}: ${delta.toFixed(3)} ms`);
-    return fnResult;
-  };
-}
-
-function wrapperPassThrough(label: string, fn: Function) {
-  return function(...args: any[]) {
-    return fn(...args);
-   };
-}
-
 export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZone }) => {
   //---------------------------------------------------------------------------
   // State for 'load -> init -> update' startup phasing
@@ -143,7 +127,9 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   //---------------------------------------------------------------------------
   // Interpolate time-series data
 
-  const instrument = options.debuggingCtr.timingsCtr && (options.debuggingCtr.timingsCtr !== debuggingCtrRef.current.timingsCtr) ? wrapperTimer : wrapperPassThrough;
+  const timingsEnabled = (typeof options.debuggingCtr.timingsCtr === 'number') &&
+    (options.debuggingCtr.timingsCtr !== debuggingCtrRef.current.timingsCtr);
+  const instrument = getInstrumenter(timingsEnabled);
   const templateSrv = getTemplateSrv();
   const timeMin = Number(templateSrv.replace("${__from}"));
   const timeMax = Number(templateSrv.replace("${__to}"));
@@ -256,7 +242,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
 
   //---------------------------------------------------------------------------
   // Create the JSX
-  return (
+  const jsx = instrument('createJsx', () => (
     <div className={cx(
       styles.wrapper,
       css`
@@ -283,5 +269,6 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
         <hr/>
       <div>{timeSliderEnabled && timeSlider}</div>
     </div>
-  );
+  ))();
+  return jsx;
 };

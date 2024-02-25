@@ -217,3 +217,23 @@ export function getColor(cellColorData: PanelConfigCellColor, value: number) {
   }
   return null;
 }
+
+function instrumenterTimer(label: string, fn: Function) {
+  return function(...args: any[]) {
+    const start = performance.now();
+    const fnResult = fn(...args);
+    const delta = performance.now() - start;
+    console.log(`Debugging time: ${label}: ${delta.toFixed(3)} ms`);
+    return fnResult;
+  };
+}
+
+function instrumenterPassThrough(label: string, fn: Function) {
+  return function(...args: any[]) {
+    return fn(...args);
+   };
+}
+
+export function getInstrumenter(timer: boolean) {
+  return timer ? instrumenterTimer : instrumenterPassThrough;
+}

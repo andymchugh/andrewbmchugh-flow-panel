@@ -1,6 +1,6 @@
 import { GrafanaTheme2, createTheme } from '@grafana/data';
 import { appendUrlParams, cellIdFactory, colorGradient,
-    colorLookup, colorStringToRgb, isUrl, regExpMatch,
+    colorLookup, colorStringToRgb, getInstrumenter, isUrl, regExpMatch,
     variableThresholdScalarsInit, variableThresholdScaleValue } from 'components/Utils';
 import {SvgCell } from 'components/SvgUpdater';
 import { VariableThresholdScalars } from 'components/Config';
@@ -245,4 +245,16 @@ test('variableThresholdScalars_2var1match1not', () => {
     cellValues.set('cell-cvbn', {valBefore: 100, valAfter: 100});
 
     testThresholds(cellValues, variableThresholdScalars, variableValues);
+})
+
+test('instrumenter', () => {
+    function inner(a:number, b: number, c: number) {
+        expect(a + b + c).toEqual(6);
+    }
+
+    const instrumentTimeOff = getInstrumenter(false);
+    const instrumentTimeOn = getInstrumenter(true);
+
+    instrumentTimeOff('label', inner)(1, 2, 3);
+    instrumentTimeOn('label', inner)(1, 2, 3);
 })

@@ -63,6 +63,7 @@ Create a Flow Panel in your dashboard. The initial setup loads the first example
     * seriesExtend: This adds in the test time-series. You will only see this if test time series are enabled in the panel options.
     * seriesInterpolate: This interpolates each of the time arrays to determine the correct index for the given timeSlider position.
     * svgUpdate: This applies the label and threshold settings to the document.
+    * createJsx: This creates the JSX from the svg document html.
 
 ### Using draw.io to create your SVG
 Any tool can be used to maintain your SVG but [draw.io](https://app.diagrams.net/?p=svgData) is the tool used for all of these examples. draw.io is available online and also as an app download. When launching the online version remember to include the *?p=svgdata* as an argument. This loads the svgdata plugin and ensures your cell IDs will be saved down in your SVG file. Via the app, you get the same by going to *Extras->plugins->Add->svgdata.js*. With the plugin, any ID can be edited in-situ by selecting the cell then *Edit->Edit Data->Double click on the ID value->edit the ID*.
