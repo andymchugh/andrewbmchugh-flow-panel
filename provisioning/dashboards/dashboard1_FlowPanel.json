@@ -65,8 +65,11 @@
         "testDataEnabled": true,
         "timeSliderEnabled": true,
         "debuggingCtr": {
+          "timingsCtr": 0,
+          "colorsCtr": 0,
+          "mappingsCtr": 0,
           "dataCtr": 0,
-          "mappingsCtr": 0
+          "displaySvgCtr": 0
         }
       },
       "type": "andrewbmchugh-flow-panel"
@@ -90,8 +93,11 @@
         "testDataEnabled": true,
         "timeSliderEnabled": true,
         "debuggingCtr": {
+          "timingsCtr": 0,
+          "colorsCtr": 0,
+          "mappingsCtr": 0,
           "dataCtr": 0,
-          "mappingsCtr": 0
+          "displaySvgCtr": 0
         }
       },
       "title": "Example Middleware Bus",

@@ -62,6 +62,12 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
     Press '<CTRL><SHFT>J to view the console in Chrome.
     For details on how to use, refer to the docs.`,
     editor: DebuggingEditor,
-    defaultValue: {dataCtr: 0, mappingsCtr: 0},
+    defaultValue: {
+      timingsCtr: 0,
+      colorsCtr: 0,
+      mappingsCtr: 0,
+      dataCtr: 0,
+      displaySvgCtr: 0,
+    },
   });
 });

@@ -66,8 +66,11 @@
           "testDataEnabled": true,
           "timeSliderEnabled": true,
           "debuggingCtr": {
-            "dataCtr": 2,
-            "mappingsCtr": 0
+            "timingsCtr": 0,
+            "colorsCtr": 0,
+            "mappingsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 0
           }
         },
         "targets": [
@@ -112,8 +115,11 @@
           "testDataEnabled": false,
           "timeSliderEnabled": true,
           "debuggingCtr": {
-            "dataCtr": 2,
-            "mappingsCtr": 0
+            "timingsCtr": 0,
+            "colorsCtr": 0,
+            "mappingsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 0
           }
         },
         "targets": [
@@ -150,8 +156,11 @@
           "testDataEnabled": false,
           "timeSliderEnabled": true,
           "debuggingCtr": {
-            "dataCtr": 2,
-            "mappingsCtr": 0
+            "timingsCtr": 0,
+            "colorsCtr": 0,
+            "mappingsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 0
           }
         },
         "targets": [
