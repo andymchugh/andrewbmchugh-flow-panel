@@ -94,6 +94,9 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
         const separator = cellData.cellProps.label ? cellData.cellProps.label.separator : null;
         cellData.text = generateLabelPreamble(el.textContent, separator);
       }
+      else if (el.getAttribute('fill')) {
+        cellData.fillElements.push(el);
+      }
     }
   }
   else {
