@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.3.5
+## 1.3.6
 Grafana 10.0.0 base.
 
 - rebases the required dependency to Grafana 10.0.0
