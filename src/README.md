@@ -9,10 +9,10 @@ SVG flowchart visualization
 The Flow plugin provides side-by-side metric visualization on SVG diagrams. You provide the SVG diagram along with configuration on how you want the diagram to behave. The panel then combines these with your time-series data to bring your diagram to life.
 
 ## Example 1
-![example1](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/src/img/example1.png)
+![example1](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/src/img/example1.png?raw=true)
 
 ## Example 2
-![example2](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/src/img/example2.png)
+![example2](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/src/img/example2.png?raw=true)
 
 ## Target Audience
 Dashboards detailing flow through distributed systems quickly get big and often benefit from some kind of lead in architecture diagram. This panel is aimed at supporting these diagrams. You create the SVG in a rich editor such as draw.io and then associate the data-series and thresholds via yaml config. As well as annotating the diagram with data, you can also add links allowing you to click on the different widgets and dive into an 'exploded' view of the selected component.

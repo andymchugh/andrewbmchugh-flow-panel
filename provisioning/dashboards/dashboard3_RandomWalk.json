@@ -43,7 +43,7 @@
           "content": "# Random Walk Data Feed\n\nThis dashboard shows our default SVG hooked into Grafanas Random Walk time series.\n\nThere's no way to seed this data to get a predictable range so it's not that useful for demonstrating the\nfeature set of colors and thresholds. But is useful for showing how the panel accepts normal Grafana time series.\n\nThe first panel hooks the A series into the two depth widgets and the B series into the two rate widgets.\n\nThe second panel only has one of the two time series present so you see a functional panel but with half\nthe widgets not being driven.\n\nThe third panel shows the behaviour where there's no relevant data. The panel renders correctly but there's\nnothing to drive.\n\nIn all three panels, move the time-slider back and forth to see the widgets respond. Click on the time-picker 'refresh'\nand see the time-slider time readout update and the new time-series values be rendered.\n\n",
           "mode": "markdown"
         },
-        "pluginVersion": "10.0.3",
+        "pluginVersion": "10.0.0",
         "type": "text"
       },
       {
