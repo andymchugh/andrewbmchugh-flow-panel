@@ -14,6 +14,9 @@ The Flow plugin provides side-by-side metric visualization on SVG diagrams. You 
 ## Example 2
 ![example2](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/src/img/example2.png?raw=true)
 
+## Example 3
+![example3](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/src/img/threadHighlighting.gif?raw=true)
+
 ## Target Audience
 Dashboards detailing flow through distributed systems quickly get big and often benefit from some kind of lead in architecture diagram. This panel is aimed at supporting these diagrams. You create the SVG in a rich editor such as draw.io and then associate the data-series and thresholds via yaml config. As well as annotating the diagram with data, you can also add links allowing you to click on the different widgets and dive into an 'exploded' view of the selected component.
 
@@ -56,6 +59,9 @@ Create a Flow Panel in your dashboard. The initial setup loads the first example
     - svg: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg2.svg
     - panelConfig: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig2.yaml
     - siteConfig: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/siteConfig.yaml
+  - Change the links over to the third example. This shows a selection of interacting queues. The cells have all been given threadHighlighting tags and the Highlighter legend is enabled allowing different sets of data to be highlighted to spot correlations:
+    - svg: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg3.svg
+    - panelConfig: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig3.yaml
 - Test Data Generation:
   - Deselect generation and see the SVG change to unannotated. Reselect and see the color and values come back.
 - Debugging: *Note these steps all need you to open your browser console.*

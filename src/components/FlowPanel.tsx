@@ -5,6 +5,7 @@ import { getTemplateSrv } from '@grafana/runtime';
 import { GrafanaTheme2, PanelProps, toDataFrame } from '@grafana/data';
 import { FlowOptions, DebuggingCtrs } from '../types';
 import { configInit, panelConfigFactory, PanelConfig, siteConfigFactory, SiteConfig } from 'components/Config';
+import { HighlighterFactory } from 'components/Highlighter';
 import { loadSvg, loadYaml } from 'components/Loader';
 import { svgInit, svgUpdate, SvgHolder, SvgElementAttribs } from 'components/SvgUpdater';
 import { seriesExtend, seriesInterpolate , seriesTransform } from 'components/TimeSeries';
@@ -53,7 +54,7 @@ function sanitizeSvgStr(svgStr: string) {
 const getStyles = () => {
   return {
     wrapper: css`
-      font-family: Open Sans;
+      font-family: Arial;
       position: relative;
     `,
     svg: css`
@@ -103,6 +104,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   const [panelConfig, setPanelConfig] = useState<PanelConfig | undefined>(undefined);
   const [siteConfig, setSiteConfig] = useState<SiteConfig | undefined>(undefined);
   const [initialized, setInitialized] = useState<boolean>(false);
+  const [highlighterSelection, setHighlighterSelection] = useState<string|undefined>(undefined);
   const [timeSliderLabel, setTimeSliderLabel] = useState<string>();
   const timeSliderScalarRef = useRef<number>(1);
   const debuggingCtrRef = useRef<DebuggingCtrs>({...options.debuggingCtr});
@@ -110,7 +112,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   const clickHandlerRef = useRef<any>(null);
   const svgDocBlankRef = useRef<Document>(new DOMParser().parseFromString('<svg/>', "text/xml"));
   const grafanaTheme = useRef<GrafanaTheme2>(useTheme2());
-  
+
   //---------------------------------------------------------------------------
   // Load config and svg
 
@@ -183,7 +185,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
     });
   
     // Update the svg with current time-series and variable settings
-    instrument('svgUpdate', svgUpdate)(svgHolder, tsData);
+    instrument('svgUpdate', svgUpdate)(svgHolder, tsData, highlighterSelection);
   }
   const svgElement = (svgHolder ? svgHolder.doc : svgDocBlankRef.current).childNodes[0] as HTMLElement;
 
@@ -230,9 +232,23 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   }, [options.debuggingCtr, data.series, tsData, svgElement.outerHTML, panelConfig]);
 
   //---------------------------------------------------------------------------
-  // TimeSlider
+  // Highlighter
 
   const styles = useStyles2(getStyles);
+  const highlighterEnabled = options.highlighterEnabled &&
+    (typeof panelConfig !== "undefined") &&
+    (panelConfig?.highlighter?.tagLegend?.length || 0) > 0;
+  const highlighter = HighlighterFactory({
+    styles: styles,
+    enabled: highlighterEnabled,
+    highlighterConfig: panelConfig?.highlighter,
+    setSelection: setHighlighterSelection,
+    selection: highlighterSelection,
+  });
+
+  //---------------------------------------------------------------------------
+  // TimeSlider
+
   const timeSliderEnabled = options.timeSliderEnabled;
   const timeSlider = TimeSliderFactory({
     styles: styles,
@@ -251,9 +267,10 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   const svgAttribs = svgHolder ? svgHolder.attribs : {width: 0, height: 0, scaleDrive: false};
   const svgWidth = svgAttribs.width;
   const svgHeight = svgAttribs.height;
+  const highlighterHeight = highlighterEnabled ? 60 : 0;
   const timeSliderHeight = timeSliderEnabled ? 60 : 0;
   const svgViewWidth = width;
-  const svgViewHeight = height - timeSliderHeight;
+  const svgViewHeight = height - highlighterHeight - timeSliderHeight;
   const svgPaddingLeft = Math.max(0, (width - svgWidth) * 0.5);
   const svgPaddingTop = Math.max(0, (svgViewHeight - svgHeight) * 0.5);
   const svgScaleX = Math.max(1.0, (svgViewWidth / svgWidth));
@@ -286,7 +303,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
         // dompurify. We don't re-sanitize it on each rendering as we are in control of the
         // modifications being made.
         dangerouslySetInnerHTML={{__html: svgElement.outerHTML}}/>
-        <hr/>
+      <div>{highlighterEnabled && highlighter}</div>
       <div>{timeSliderEnabled && timeSlider}</div>
     </div>
   ))();

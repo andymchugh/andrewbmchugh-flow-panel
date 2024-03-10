@@ -4,6 +4,7 @@ import { appendUrlParams, cellIdFactory, colorGradient,
     variableThresholdScalarsInit, variableThresholdScaleValue } from 'components/Utils';
 import {SvgCell } from 'components/SvgUpdater';
 import { VariableThresholdScalars } from 'components/Config';
+import { HighlightState } from 'components/Highlighter';
  
 //-----------------------------------------------------------------------------
 // Cell Ids
@@ -93,22 +94,44 @@ test('colorStringToRgb', () => {
 
 test('colorLookup', () => {
     const theme: GrafanaTheme2 = createTheme();
-
-    const hexRed = '#ff0000';
+    const highlightFactors = {
+        highlightRgbFactor: 2,
+        lowlightAlphaFactor: 0.1,
+    }
+    const hexRed = '#800000';
     colorStringToRgb(theme, hexRed);
-    expect(colorLookup(hexRed)).toEqual('rgb(255, 0, 0)');
+    expect(colorLookup(hexRed, HighlightState.Ambient, highlightFactors))
+        .toEqual('rgba(128, 0, 0, 1)');
+    expect(colorLookup(hexRed, HighlightState.Highlight, highlightFactors))
+        .toEqual('rgba(255, 0, 0, 1)');
+    expect(colorLookup(hexRed, HighlightState.Lowlight, highlightFactors))
+        .toEqual('rgba(128, 0, 0, 0.1)');
 
-    const hexGreen = '#00ff00';
+    const hexGreen = '#008000';
     colorStringToRgb(theme, hexGreen);
-    expect(colorLookup(hexGreen)).toEqual('rgb(0, 255, 0)');
+    expect(colorLookup(hexGreen, HighlightState.Ambient, highlightFactors))
+        .toEqual('rgba(0, 128, 0, 1)');
+    expect(colorLookup(hexGreen, HighlightState.Highlight, highlightFactors))
+        .toEqual('rgba(0, 255, 0, 1)');
+    expect(colorLookup(hexGreen, HighlightState.Lowlight, highlightFactors))
+        .toEqual('rgba(0, 128, 0, 0.1)');
 
-    const hexBlue = '#0000ff';
+    const hexBlue = '#000080';
     colorStringToRgb(theme, hexBlue);
-    expect(colorLookup(hexBlue)).toEqual('rgb(0, 0, 255)');
+    expect(colorLookup(hexBlue, HighlightState.Ambient, highlightFactors))
+        .toEqual('rgba(0, 0, 128, 1)');
+    expect(colorLookup(hexBlue, HighlightState.Highlight, highlightFactors))
+        .toEqual('rgba(0, 0, 255, 1)');
+    expect(colorLookup(hexBlue, HighlightState.Lowlight, highlightFactors))
+        .toEqual('rgba(0, 0, 128, 0.1)');
 });
 
 test('colorGradient', () => {
     const theme: GrafanaTheme2 = createTheme();
+    const highlightFactors = {
+        highlightRgbFactor: 2,
+        lowlightAlphaFactor: 0.1,
+    }
 
     const rgbRed = 'rgb(100, 0, 0)';
     colorStringToRgb(theme, rgbRed);
@@ -117,13 +140,24 @@ test('colorGradient', () => {
     const rgbGreen = 'rgb(0, 0, 100)';
     colorStringToRgb(theme, rgbGreen);
 
-    expect(colorGradient(rgbRed, rgbBlue, 0/0)).toEqual('rgb(0, 100, 0)');
-    expect(colorGradient(rgbRed, rgbBlue, 1/0)).toEqual('rgb(0, 100, 0)');
-    expect(colorGradient(rgbRed, rgbBlue, -999999999)).toEqual('rgb(100, 0, 0)');
-    expect(colorGradient(rgbRed, rgbBlue, 1)).toEqual('rgb(0, 100, 0)');
-    expect(colorGradient(rgbRed, rgbBlue, 0.4)).toEqual('rgb(60, 40, 0)');
-    expect(colorGradient(rgbRed, rgbGreen, 1)).toEqual('rgb(0, 0, 100)');
-    expect(colorGradient(rgbRed, rgbGreen, 0.4)).toEqual('rgb(60, 0, 40)');
+    expect(colorGradient(rgbRed, rgbBlue, 0/0, HighlightState.Ambient, highlightFactors))
+        .toEqual('rgba(0, 100, 0, 1)');
+    expect(colorGradient(rgbRed, rgbBlue, 1/0, HighlightState.Ambient, highlightFactors))
+        .toEqual('rgba(0, 100, 0, 1)');
+    expect(colorGradient(rgbRed, rgbBlue, -999999999, HighlightState.Ambient, highlightFactors))
+        .toEqual('rgba(100, 0, 0, 1)');
+    expect(colorGradient(rgbRed, rgbBlue, 1, HighlightState.Ambient, highlightFactors))
+        .toEqual('rgba(0, 100, 0, 1)');
+    expect(colorGradient(rgbRed, rgbBlue, 0.4, HighlightState.Ambient, highlightFactors))
+        .toEqual('rgba(60, 40, 0, 1)');
+    expect(colorGradient(rgbRed, rgbGreen, 1, HighlightState.Ambient, highlightFactors))
+        .toEqual('rgba(0, 0, 100, 1)');
+    expect(colorGradient(rgbRed, rgbGreen, 0.4, HighlightState.Ambient, highlightFactors))
+        .toEqual('rgba(60, 0, 40, 1)');
+    expect(colorGradient(rgbRed, rgbGreen, 0.4, HighlightState.Highlight, highlightFactors))
+        .toEqual('rgba(120, 0, 80, 1)');
+    expect(colorGradient(rgbRed, rgbGreen, 0.4, HighlightState.Lowlight, highlightFactors))
+        .toEqual('rgba(60, 0, 40, 0.1)');
 });
 
 //-----------------------------------------------------------------------------

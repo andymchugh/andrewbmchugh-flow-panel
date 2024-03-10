@@ -52,6 +52,19 @@ export type PanelConfigCell = {
   label: PanelConfigCellLabel | undefined;
   labelColor: PanelConfigCellColor | undefined;
   fillColor: PanelConfigCellColor | undefined;
+  tags: Set<string> | undefined;
+};
+
+export type HighlightFactors = {
+  highlightRgbFactor: number;
+  lowlightAlphaFactor: number;
+};
+
+export type PanelConfigHighlighter = {
+  tagDrivable: Set<string>;
+  tagLegend: string[];
+  color: string;
+  factors: HighlightFactors;
 };
 
 export type SiteConfig = {
@@ -71,10 +84,34 @@ export type PanelConfig = {
   cellIdExtender: string;
   cellLabelDecimalPoints: number | undefined;
   cells: Map<string, PanelConfigCell>;
+  highlighter: PanelConfigHighlighter;
 };
 
 export function panelConfigFactory(config: any) {
   config = config || {};
+
+  // Create the cell map
+  let cells = new Map<string, Object>(Object.entries(config.cells || {}))
+
+  // Extract tag highlighting information.
+  let tagDrivable = new Set<string>();
+  cells.forEach((cell: any) => {
+      if (Array.isArray(cell.tags)) {
+        cell.tags = new Set(cell.tags);
+        cell.tags.forEach((tag: string) => {tagDrivable.add(tag)});
+      }
+    });
+
+  const highlighter = {
+    tagDrivable: tagDrivable,
+    tagLegend: Array.isArray(config.tagConfig?.legend) ? config.tagConfig.legend : Array.from(tagDrivable),
+    color: config.tagConfig?.color ?? "yellow",
+    factors: {
+      highlightRgbFactor: config.tagConfig?.highlightRgbFactor ?? 5.0,
+      lowlightAlphaFactor: config.tagConfig?.lowlightAlphaFactor ?? 0.3,
+    },
+  };
+
   return {
     test: config.test || {},
     background: config.background || {},
@@ -84,7 +121,8 @@ export function panelConfigFactory(config: any) {
     cellIdPreamble: config.cellIdPreamble || '',
     cellIdExtender: config.cellIdExtender || '@flowrpt',
     cellLabelDecimalPoints: (typeof config.cellLabelDecimalPoints === 'undefined') ? 0 : config.cellLabelDecimalPoints,
-    cells: new Map<string, Object>(Object.entries(config.cells || {})),
+    cells: cells,
+    highlighter: highlighter,
   } as PanelConfig;
 }
 

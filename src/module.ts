@@ -40,6 +40,14 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
     },
   })
   .addBooleanSwitch({
+    path: 'highlighterEnabled',
+    name: 'Highlighter',
+    description: `When enabled a highlighting bar is added below the SVG. Widgets on the
+    SVG have optional tags defined in the yaml and the highlighter allows you to bring
+    a thread of information to the front.`,
+    defaultValue: true,
+  })
+  .addBooleanSwitch({
     path: 'timeSliderEnabled',
     name: 'Time Slider',
     description: `When enabled a time-slider is added to the bottom of

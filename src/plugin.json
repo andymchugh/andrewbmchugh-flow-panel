@@ -20,7 +20,8 @@
     ],
     "screenshots": [
       {"name": "Getting Started", "path": "img/example1.png"},
-      {"name": "Middleware Bus", "path": "img/example2.png"}
+      {"name": "Middleware Bus", "path": "img/example2.png"},
+      {"name": "Thread Highlighting", "path": "img/threadHighlighting.gif"}
     ],
     "version": "%VERSION%",
     "updated": "%TODAY%"

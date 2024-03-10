@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.x.x
+## 1.6.0
 Adds resource links for website, license and yaml defs to the plugin landing page.
 
 Fixes x-scaling ratio when the SVG x-dimension is smaller than the available
@@ -27,6 +27,12 @@ New panel config terms of:
 - cells.cell-name.labelColor.datapoint
 - cells.cell-name.fillColor.datapoint
 - test.testDataSparse
+
+Adds 'Thread highlighting'. Each driven SVG cell can now be given an associated tag set
+and these tags are selectable from an optional 'Highlighter' legend. This provides a way
+to bring related terms to the fore to help spot correlations in flow. New panel config terms of:
+- tagConfig
+- cells.tags
 
 ## 1.5.0
 Fixes the grafana variable threshold matching to break out on first rule
