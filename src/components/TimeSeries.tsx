@@ -1,3 +1,4 @@
+import { getFieldDisplayName } from '@grafana/data';
 import { sliderTime } from 'components/TimeSlider';
 
 export type TimeSeries = {
@@ -70,7 +71,7 @@ export function seriesTransform(series: any[], timeMin: number, timeMax: number)
             }
           }
           else {
-            const name = nameLwr === 'value' ? frame.name : ts.name;
+            const name = getFieldDisplayName(ts, frame);
             tsNamed[name] = {values: ts.values, time: null};
           }
         }

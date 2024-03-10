@@ -1,3 +1,4 @@
+import { getFieldDisplayName, toDataFrame } from '@grafana/data';
 import { seriesInterpolate, TimeSeries, TimeSeriesData } from 'components/TimeSeries'
 
 test('interpolate1', () => {
@@ -34,3 +35,49 @@ test('interpolate1', () => {
     check(0.1, 3);
 });
 
+test('displayNameFromTimeSeries', () => {
+    const series = [
+        {
+          target: "myExpectedName",
+          tags: {
+            name: "mytag1",
+            databaseName: "mydbnametag"
+          },
+          datapoints: [
+            [
+              72,
+              1708548630000
+            ],
+            [
+              24.5,
+              1708548660000
+            ],
+          ],
+          meta: [
+            {
+              [`schema-name`]: "default",
+              [`schema-retentions`]: "1s:30d",
+              [`archive-read`]: 0,
+              [`archive-interval`]: 30,
+              [`aggnum-norm`]: 1,
+              [`consolidator-normfetch`]: "AverageConsolidator",
+              [`aggnum-rc`]: 0,
+              [`consolidator-rc`]: "NoneConsolidator",
+              [`count`]: 2
+            }
+          ],
+          title: "myExpectedName" // ver 10.0.0: this is the term thats exported as the name
+        }
+    ];
+
+    const dataFrame = toDataFrame(series[0]);
+    let foundTime = false;
+    let foundData = false;
+    dataFrame.fields.forEach((field) => {
+        const name = getFieldDisplayName(field, dataFrame);
+        foundTime = foundTime || (name === "Time");
+        foundData = foundData || (name === "myExpectedName");
+    })
+    expect(foundTime).toEqual(true);
+    expect(foundData).toEqual(true);
+});
