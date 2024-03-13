@@ -185,11 +185,13 @@ export function variableThresholdScaleValue(variableValues: Map<string, string>,
   let scalar = 1.0;
   cellData.variableThresholdScalars.forEach((rules, variableName) => {
     const variableValue = variableValues.get(variableName);
-    rules.forEach((rule) => {
+    for (let i = 0; i < rules.length; i++) {
+      const rule = rules[i];
       if (regExpMatch(rule.variableValuePattern, variableValue)) {
         scalar *= rule.thresholdScalar || 1;
+        break;
       }
-    });
+    };
   });
   return value / scalar;
 }

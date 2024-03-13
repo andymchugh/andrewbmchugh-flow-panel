@@ -199,6 +199,32 @@ test('variableThresholdScalars_1match1not', () => {
     testThresholds(cellValues, variableThresholdScalars, variableValues);
 })
 
+test('variableThresholdScalars_1match1not_firstMatchBreak', () => {
+    // Config defined variable rules
+    const variableThresholdScalars = new Map<string, VariableThresholdScalars[]>();
+    variableThresholdScalars.set('varName_env',  [{
+        variableValuePattern: 'varVal_qwerty',
+        thresholdScalar: 0.5,
+        cellIdPatternScope: ['.*abc.*'],
+    },
+    {
+        variableValuePattern: 'varVal_qwerty',
+        thresholdScalar: 0.5,
+        cellIdPatternScope: ['.*abc.*'],
+    }]);
+
+    // Variable values
+    const variableValues = new Map<string, string>();
+    variableValues.set('varName_env', 'varVal_qwerty');
+
+    // Test expectations
+    const cellValues = new Map<string, any>();
+    cellValues.set('cell-abcd', {valBefore: 100, valAfter: 200});
+    cellValues.set('cell-cvbn', {valBefore: 100, valAfter: 100});
+
+    testThresholds(cellValues, variableThresholdScalars, variableValues);
+})
+
 test('variableThresholdScalars_2matchdiffPatterns', () => {
     // Config defined variable rules
     const variableThresholdScalars = new Map<string, VariableThresholdScalars[]>();

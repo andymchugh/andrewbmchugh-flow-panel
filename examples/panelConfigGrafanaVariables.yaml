@@ -19,6 +19,8 @@ variableThresholdScalars:
     - {variableValuePattern: ".*Cicely.*", thresholdScalar: 0.5, cellIdPatternScope: [".*box.*"]}
   environment:
     - {variableValuePattern: "prod", thresholdScalar: 0.5, cellIdPatternScope: [".*box.*"]}
+    # Dummy rule that would match prod but won't be hit because it breaks out on first match
+    - {variableValuePattern: "pr.*", thresholdScalar: 50.5, cellIdPatternScope: [".*box.*"]}
 
 #------------------------------------------------------------------------------
 # YAML Aliases to simplify maintenance
