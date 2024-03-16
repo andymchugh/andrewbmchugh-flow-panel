@@ -176,7 +176,7 @@ function getCellValue(tsName: string, tsData: TimeSeriesData) {
 
 function formatCellValue(cellLabelData: PanelConfigCellLabel, value: number) {
   const format = cellLabelData.units || 'none';
-  const decimalPoints = cellLabelData.decimalPoints || 0;
+  const decimalPoints = cellLabelData.decimalPoints;
   const formatter = getValueFormatterIndex()[format];
   if (formatter) {
     return formattedValueToString(formatter(value, decimalPoints));

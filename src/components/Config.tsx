@@ -22,7 +22,7 @@ export type PanelConfigCellLabel = {
   dataRef: string | undefined;
   separator: LabelSeparator;
   units: string;
-  decimalPoints: number;
+  decimalPoints: number | null | undefined;
 }
 
 export type PanelConfigCellColor = {
@@ -53,6 +53,7 @@ export type PanelConfig = {
   gradientMode: ColorGradientMode;
   cellIdPreamble: string;
   cellIdExtender: string;
+  cellLabelDecimalPoints: number | undefined;
   cells: Map<string, PanelConfigCell>;
 };
 
@@ -63,6 +64,7 @@ export function panelConfigFactory(config: any) {
     gradientMode: config.gradientMode || 'none',
     cellIdPreamble: config.cellIdPreamble || '',
     cellIdExtender: config.cellIdExtender || '@flowrpt',
+    cellLabelDecimalPoints: (typeof config.cellLabelDecimalPoints === 'undefined') ? 0 : config.cellLabelDecimalPoints,
     cells: new Map<string, Object>(Object.entries(config.cells || {})),
   } as PanelConfig;
 }
@@ -106,6 +108,9 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
 
     if (!cell.link && cell.linkRef) {
       cell.link = siteConfig.links.get(cell.linkRef);
+    }
+    if (cell.label && (typeof cell.label.decimalPoints === 'undefined')) {
+      cell.label.decimalPoints = panelConfig.cellLabelDecimalPoints;
     }
   });
 }

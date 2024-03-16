@@ -46,6 +46,12 @@ cellIdPreamble: "cell-"
 # clashes you can change the cellIdExtender value. But normally it's just left unset.
 cellIdExtender: "@flowrpt"
 
+# This is the default label decimalPoints setting that will be used if no override exists at the
+# cell level. 'null' represents grafana's 'auto' mode. It will default to 0 if left undefined.
+# This panel level override is added after version 1.4.0. In earlier versions the auto mode is not
+# achievable.
+cellLabelDecimalPoints: null
+
 # This defines the set of cells that are going to be driven
 cells: 
   # Each field name is the svg ID. i.e. within config this cell will be identifed as
@@ -71,7 +77,8 @@ cells:
       # would be none, ops, pps, litreh, forcekNm
       units: "none"
 
-      # The number of decimal points to display. Enter 0 for none.
+      # The number of decimal points to display. Enter null for auto, 0 for none, etc. If left
+      # undefined it will default to the value specified at the panel level in cellLabelDecimalPoints. 
       decimalPoints: 0
 
     # The label color field defines how the text in the cell should be colored based on the

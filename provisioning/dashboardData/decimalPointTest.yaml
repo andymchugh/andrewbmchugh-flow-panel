@@ -1,0 +1,38 @@
+---
+
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+cellLabelDecimalPoints: 4
+cells: 
+  dp0:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "cr"
+      units: "none"
+      decimalPoints: 0
+  dp1:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "cr"
+      units: "none"
+      decimalPoints: 1
+  dp2:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "cr"
+      units: "none"
+      decimalPoints: 2
+  dpnull:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "cr"
+      units: "none"
+      decimalPoints: null
+  dpundefined:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "cr"
+      units: "none"
