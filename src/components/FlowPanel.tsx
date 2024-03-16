@@ -20,14 +20,32 @@ interface Props extends PanelProps<FlowOptions> {}
 // foreignObject. In addition, the cursor changing to a pointer on mouse-over of
 // cells with links, relies on foreignObject defining 'pointer-events: none'. As
 // such sanitization is configured to retain these objects and put back the
-// pointer-events attribute.
+// pointer-events attribute. Note the parser-media-type matters in particular corners
+// such as use of line breaks (<br/> in text blocks, but has the side effect of removing
+// the viewBox that has to be put back for correct scaling.
+let viewBox: string | null = null;
+
+addHook('uponSanitizeAttribute', function(el) {
+  if (el.nodeName === 'svg') {
+    viewBox = el.getAttribute('viewBox');
+  }
+});
+
 addHook('afterSanitizeAttributes', function(el) {
   if (el.nodeName === 'foreignObject') {
     el.setAttribute('pointer-events', 'none');
   }
+  if (el.nodeName === 'svg' && viewBox) {
+    el.setAttribute('viewBox', viewBox);
+  }
 });
+
 function sanitizeSvgStr(svgStr: string) {
-  return sanitize(svgStr, {ADD_TAGS: ['foreignObject']});
+  return sanitize(svgStr, {
+    PARSER_MEDIA_TYPE: 'application/xhtml+xml',
+    ADD_TAGS: ['foreignObject'],
+    ADD_ATTR: ['viewBox'],
+  });
 }
 
 //-----------------------------------------------------------------------------

@@ -1,0 +1,31 @@
+---
+
+anchorLinks:
+  - link: &threshold_generic
+    - {color: "green", level: 0}
+    - {color: "orange", level: 500}
+    - {color: "red", level: 1000}
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+cells: 
+  box1:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "colon"
+      units: "none"
+      decimalPoints: 0
+    labelColor:
+      gradientMode: "hue"
+      thresholds: *threshold_generic
+  box2:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "cr"
+      units: "none"
+      decimalPoints: 0
+    labelColor:
+      gradientMode: "hue"
+      thresholds: *threshold_generic
