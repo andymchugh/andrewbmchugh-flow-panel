@@ -81,7 +81,10 @@ function clickHandlerFactory(elementLinks: Map<string, Link>) {
           const urlParams = new URLSearchParams(window.location.search);
           const from = urlParams.get('from');
           const to = urlParams.get('to');
-          url = appendUrlParams(url, `?from=${from}&to=${to}`);
+          const phrase = from && to ? `?from=${from}&to=${to}` :
+            from ? `?from=${from}` :
+            to ? `?to=${to}` : '';
+          url = appendUrlParams(url, phrase);
         }
         else if (link.params === 'all') {
           url = appendUrlParams(url, window.location.search);
