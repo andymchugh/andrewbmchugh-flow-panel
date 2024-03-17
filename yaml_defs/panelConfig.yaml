@@ -63,8 +63,9 @@ cells:
     dataRef: "test-data-large-sin"
 
     # The label field defines how the text in the cell will be adjusted based on the
-    # time-series value. The time series value is postpended with a seperator. If no
-    # adjustment is wanted the field should be omitted.
+    # time-series value. The time series value is postpended with a separator. If no
+    # adjustment is wanted the field should be omitted. Note that multiline label preambles
+    # are not supported.
     label:
       # Optional attribute level override for the associated time-series.
       dataRef: "test-data-large-cos"
