@@ -33,3 +33,7 @@ e2e-results/
 .idea
 
 .eslintcache
+
+# drawio backup files
+provisioning/dashboardData/**.bkp
+examples/**.bkp
