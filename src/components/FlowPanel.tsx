@@ -257,7 +257,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   const svgViewHeight = height - timeSliderHeight;
   const svgPaddingLeft = Math.max(0, (width - svgWidth) * 0.5);
   const svgPaddingTop = Math.max(0, (svgViewHeight - svgHeight) * 0.5);
-  const svgScaleX = (svgViewWidth / svgWidth);
+  const svgScaleX = Math.max(1.0, (svgViewWidth / svgWidth));
   const svgScaleY = (svgViewHeight / svgHeight);
   const svgScale = svgAttribs.scaleDrive ? Math.min(svgScaleX, svgScaleY) * 0.9 * 100 : 100;
 
