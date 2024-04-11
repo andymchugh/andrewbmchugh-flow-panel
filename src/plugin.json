@@ -13,7 +13,11 @@
       "small": "img/logo.png",
       "large": "img/logo.png"
     },
-    "links": [],
+    "links": [
+      {"name": "Website", "url": "https://github.com/andymchugh/andrewbmchugh-flow-panel"},
+      {"name": "License", "url": "https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/LICENSE"},
+      {"name": "YAML Definitions", "url": "https://github.com/andymchugh/andrewbmchugh-flow-panel/tree/main/yaml_defs"}
+    ],
     "screenshots": [
       {"name": "Getting Started", "path": "img/example1.png"},
       {"name": "Middleware Bus", "path": "img/example2.png"}

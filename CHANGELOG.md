@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.x.x
+Adds resource links for webiste, license and yaml defs to the plugin landing page.
+
+Fixes x-scaling ratio when the SVG x-dimension is smaller than the available
+window. Now it scales with the window whereas before it scaled at twice the rate
+resulting in it being much smaller than necessary.
+
 ## 1.5.0
 Fixes the grafana variable threshold matching to break out on first rule
 match for a given variable/cell tuple. Before it was continuing through
