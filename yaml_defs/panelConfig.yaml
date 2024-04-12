@@ -30,6 +30,12 @@ variableThresholdScalars:
 #------------------------------------------------------------------------------
 # Panel Config
 
+# 1.6.0 onwards: When undefined the background color is not driven. When defined the color for
+# the current theme is used. Colors can be entered in all the normal ways of name, hex, hsl, etc.
+background:
+  darkThemeColor: "yellow"
+  lightThemeColor: "green"
+
 # This defines the default color gradientMode. It defines the default value on cell labelColor.gradientMode
 # and fillColor.gradientMode for when the field is undefined. Values are "hue" and "none" with
 # "none" being the default when undefined.

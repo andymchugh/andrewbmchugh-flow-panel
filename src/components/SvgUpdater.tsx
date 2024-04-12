@@ -1,11 +1,12 @@
-import { getValueFormatterIndex, formattedValueToString } from '@grafana/data';
+import { getValueFormatterIndex, formattedValueToString, GrafanaTheme2 } from '@grafana/data';
 import { 
    LabelSeparator, Link,
    PanelConfig, PanelConfigCell, PanelConfigCellColor, PanelConfigCellLabel,
    SiteConfig, VariableThresholdScalars } from 'components/Config';
 import { TimeSeriesData } from 'components/TimeSeries';
 import {
-   cellIdFactory, CellIdMaker, getColor,
+   cellIdFactory, CellIdMaker, colorLookup, getColor,
+   primeColorCache,
    variableThresholdScalarsInit, variableThresholdScaleValue } from 'components/Utils';
 
 // Defines the metadata stored against each drivable svg cell
@@ -109,7 +110,7 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
   return false;
 }
 
-export function svgInit(doc: Document, panelConfig: PanelConfig, siteConfig: SiteConfig):  SvgAttribs {
+export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig: PanelConfig, siteConfig: SiteConfig):  SvgAttribs {
   let cells = new Map<string, SvgCell>();
   const cellIdPreamble = panelConfig.cellIdPreamble;
   panelConfig.cells.forEach((cellProps, cellIdShort) => {
@@ -155,7 +156,9 @@ export function svgInit(doc: Document, panelConfig: PanelConfig, siteConfig: Sit
   // image won't scale and center corrently
   let dimensions = dimensionCoherence(doc);
 
-  return {
+
+  
+  const svgAttribs = {
     width: dimensions.width,
     height: dimensions.height,
     scaleDrive: dimensions.scaleDrive,
@@ -163,6 +166,17 @@ export function svgInit(doc: Document, panelConfig: PanelConfig, siteConfig: Sit
     elementLinks: elementLinks,
     variableValues: variableValues,
   };
+
+  // Initialie the color cache and setup the background
+  primeColorCache(grafanaTheme, svgAttribs, panelConfig.background);
+
+  // Set background according to theme if defined in config
+  const bgColor = grafanaTheme.isDark ? panelConfig.background.darkThemeColor : panelConfig.background.lightThemeColor;
+  if (bgColor) {
+    doc.documentElement.style.backgroundColor = colorLookup(bgColor);
+  }
+
+  return svgAttribs;
 } 
 
 function getCellValue(tsName: string, tsData: TimeSeriesData) {

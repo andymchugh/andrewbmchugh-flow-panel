@@ -1,6 +1,6 @@
 import { GrafanaTheme2, colorManipulator } from '@grafana/data';
 import { SvgAttribs, SvgCell } from 'components/SvgUpdater'
-import { PanelConfigCellColor, Threshold ,VariableThresholdScalars } from 'components/Config';
+import { Background, PanelConfigCellColor, Threshold ,VariableThresholdScalars } from 'components/Config';
 
 
 
@@ -66,7 +66,7 @@ function rgbToString(rgb: number[]) {
   return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
 }
 
-export function primeColorCache(theme: GrafanaTheme2, svgAttribs: SvgAttribs) {
+export function primeColorCache(theme: GrafanaTheme2, svgAttribs: SvgAttribs, background: Background) {
   function initCache(thresholds: Threshold[] | undefined) {
     if (thresholds) {
       thresholds.forEach(function(threshold) {
@@ -79,6 +79,13 @@ export function primeColorCache(theme: GrafanaTheme2, svgAttribs: SvgAttribs) {
     initCache(cellData.cellProps.fillColor && cellData.cellProps.fillColor.thresholds);
     initCache(cellData.cellProps.labelColor && cellData.cellProps.labelColor.thresholds);
   });
+
+  if (background.darkThemeColor) {
+    colorStringToRgb(theme, background.darkThemeColor);
+  }
+  if (background.lightThemeColor) {
+    colorStringToRgb(theme, background.lightThemeColor);
+  }
 }
 
 export function colorStringToRgb(theme: GrafanaTheme2, colorStr: string) {
