@@ -1,5 +1,6 @@
 import { getValueFormatterIndex, formattedValueToString, GrafanaTheme2 } from '@grafana/data';
 import { 
+  DatapointMode,
    LabelSeparator, Link,
    PanelConfig, PanelConfigCell, PanelConfigCellColor, PanelConfigCellLabel,
    SiteConfig, VariableThresholdScalars } from 'components/Config';
@@ -179,11 +180,21 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
   return svgAttribs;
 } 
 
-function getCellValue(tsName: string, tsData: TimeSeriesData) {
+function getCellValue(datapoint: DatapointMode | undefined, tsName: string, tsData: TimeSeriesData) {
   let value = null;
   const ts = tsData.ts.get(tsName);
   if (ts && (typeof ts.time.valuesIndex === 'number')) {
     value = ts.values[ts.time.valuesIndex];
+
+    // lastNotNull results in a walkback till a non null value is found
+    if (datapoint === 'lastNotNull') {
+      for (let i = ts.time.valuesIndex; i >= 0; i--) {
+        value = ts.values[i];
+        if (typeof value === 'number') {
+          break;
+        }
+      }
+    }
   }
   return value;
 }
@@ -204,13 +215,12 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData) {
   const variableValues = svgHolder.attribs.variableValues;
   const cells = svgHolder.attribs.cells;
   cells.forEach((cellData) => {
-
     // This function sources the dataRef from the inner paramData and scales it using
     // the variables to a threshold seed. If it doesn't exist it returns the passed in
     // default.
-    function thresholdSeed(paramData: PanelConfigCellColor | undefined, defaultSeed: number | null) {
+    function thresholdSeed(datapoint: DatapointMode | undefined, paramData: PanelConfigCellColor | undefined, defaultSeed: number | null) {
       if (paramData?.dataRef) {
-        const cellValue = getCellValue(paramData.dataRef, tsData);
+        const cellValue = getCellValue(datapoint, paramData.dataRef, tsData);
         return variableThresholdScaleValue(variableValues, cellData, cellValue);
       }
       else {
@@ -218,19 +228,22 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData) {
       }
     }
     const cellDataRef = cellData.cellProps.dataRef;
-    const cellValue = cellDataRef ? getCellValue(cellDataRef, tsData) : null;
+    const cellValue = cellDataRef ? getCellValue(cellData.cellProps.datapoint, cellDataRef, tsData) : null;
     const cellValueSeed = variableThresholdScaleValue(variableValues, cellData, cellValue);
 
     const cellLabelData = cellData.cellProps.label;
-    const cellLabelValue = cellLabelData?.dataRef ? getCellValue(cellLabelData.dataRef, tsData) : cellValue;
+    const cellLabelDatapoint = cellData.cellProps.label?.datapoint;
+    const cellLabelValue = cellLabelData?.dataRef ? getCellValue(cellLabelDatapoint, cellLabelData.dataRef, tsData) : cellValue;
     const cellLabel = cellLabelData && (typeof cellLabelValue === 'number') ? formatCellValue(cellLabelData, cellLabelValue) : null;
 
     const cellFillColorData = cellData.cellProps.fillColor;
-    const cellFillColorSeed = thresholdSeed(cellFillColorData, cellValueSeed);
+    const cellFillColorDatapoint = cellData.cellProps.fillColor?.datapoint;
+    const cellFillColorSeed = thresholdSeed(cellFillColorDatapoint, cellFillColorData, cellValueSeed);
     const cellFillColor = cellFillColorData && (typeof cellFillColorSeed === 'number') ? getColor(cellFillColorData, cellFillColorSeed) : null;
 
     const cellLabelColorData = cellData.cellProps.labelColor;
-    const cellLabelColorSeed = thresholdSeed(cellLabelColorData, cellValueSeed);
+    const cellLabelColorDatapoint = cellData.cellProps.labelColor?.datapoint;
+    const cellLabelColorSeed = thresholdSeed(cellLabelColorDatapoint, cellLabelColorData, cellValueSeed);
     const cellLabelColor = cellLabelColorData && (typeof cellLabelColorSeed === 'number') ? getColor(cellLabelColorData, cellLabelColorSeed) : null;
 
     cellData.fillElements.forEach((el: HTMLElement) => {

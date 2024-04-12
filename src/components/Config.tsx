@@ -1,3 +1,4 @@
+export type DatapointMode = 'last' | 'lastNotNull';
 export type ColorGradientMode = 'none' | 'hue';
 export type LabelSeparator = 'cr' | 'colon' | 'space' | 'replace';
 export type LinkUrlParams = 'none' | 'time' | 'all';
@@ -21,24 +22,31 @@ export type Link = {
 export type Background = {
   darkThemeColor: string | undefined;
   lightThemeColor: string | undefined;
-}
+};
+
+export type TestConfig = {
+  testDataSparse: boolean | undefined;
+};
 
 export type PanelConfigCellLabel = {
   dataRef: string | undefined;
+  datapoint: DatapointMode | undefined;
   separator: LabelSeparator;
   units: string;
   decimalPoints: number | null | undefined;
-}
+};
 
 export type PanelConfigCellColor = {
   dataRef: string | undefined;
+  datapoint: DatapointMode | undefined;
   gradientMode: ColorGradientMode | undefined;
   thresholdsRef: string | undefined;
   thresholds: Threshold[] | undefined;
-}
+};
 
 export type PanelConfigCell = {
   dataRef: string | undefined;
+  datapoint: DatapointMode | undefined;
   linkRef: string | undefined;
   link: Link | undefined;
   label: PanelConfigCellLabel | undefined;
@@ -54,9 +62,11 @@ export type SiteConfig = {
 };
 
 export type PanelConfig = {
+  test: TestConfig;
   background: Background;
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
   gradientMode: ColorGradientMode;
+  datapoint: DatapointMode | undefined;
   cellIdPreamble: string;
   cellIdExtender: string;
   cellLabelDecimalPoints: number | undefined;
@@ -66,9 +76,11 @@ export type PanelConfig = {
 export function panelConfigFactory(config: any) {
   config = config || {};
   return {
+    test: config.test || {},
     background: config.background || {},
     variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(Object.entries(config.variableThresholdScalars || {})),
     gradientMode: config.gradientMode || 'none',
+    datapoint: config.datapoint || 'last',
     cellIdPreamble: config.cellIdPreamble || '',
     cellIdExtender: config.cellIdExtender || '@flowrpt',
     cellLabelDecimalPoints: (typeof config.cellLabelDecimalPoints === 'undefined') ? 0 : config.cellLabelDecimalPoints,
@@ -95,7 +107,7 @@ function siteConfigDereference(siteConfig: SiteConfig) {
 }
 
 function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig) {
-  function colorDeref(color: PanelConfigCellColor | undefined) {
+  function colorDeref(cell: PanelConfigCell, color: PanelConfigCellColor | undefined) {
     if (color) {
       color.gradientMode = color.gradientMode || panelConfig.gradientMode;
       if (color.thresholds) {
@@ -106,20 +118,30 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
       if (!color.thresholds && color.thresholdsRef) {
         color.thresholds = siteConfig.thresholds.get(color.thresholdsRef);
       }
+      if (typeof color.datapoint === 'undefined') {
+        color.datapoint = cell.datapoint || panelConfig.datapoint;
+      }
     }
   }
-
   panelConfig.cells.forEach((cell) => {
-    colorDeref(cell.labelColor);
-    colorDeref(cell.fillColor);
+    colorDeref(cell, cell.labelColor);
+    colorDeref(cell, cell.fillColor);
 
     if (!cell.link && cell.linkRef) {
       cell.link = siteConfig.links.get(cell.linkRef);
     }
-    if (cell.label && (typeof cell.label.decimalPoints === 'undefined')) {
-      cell.label.decimalPoints = panelConfig.cellLabelDecimalPoints;
+    if (cell.label) {
+      if (typeof cell.label.decimalPoints === 'undefined') {
+        cell.label.decimalPoints = panelConfig.cellLabelDecimalPoints;
+      }
+      if (typeof cell.label.datapoint === 'undefined') {
+        cell.label.datapoint = cell.datapoint || panelConfig.datapoint;
+      }
     }
-  });
+    if (typeof cell.datapoint === 'undefined') {
+      cell.datapoint = panelConfig.datapoint;
+    }
+});
 }
 
 export function configInit(siteConfig: SiteConfig, panelConfig: PanelConfig) {

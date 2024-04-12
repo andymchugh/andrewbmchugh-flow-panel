@@ -6,7 +6,7 @@ export type TimeSeries = {
     valuesIndex?: number | null;
     values: number[];
   }
-  values: number[];
+  values: Array<number | null>;
 };
 
 export type TimeSeriesData = {
@@ -16,7 +16,7 @@ export type TimeSeriesData = {
   ts: Map<string, TimeSeries>;
 };
 
-export function seriesExtend(tsData: TimeSeriesData, timeMin: number, timeMax: number) {
+export function seriesExtend(tsData: TimeSeriesData, timeMin: number, timeMax: number, dataSparse: boolean) {
   const create = function(datapoints: number, scalar: number, fn: (inp: number) => number) {
     const intervalTime = Math.ceil((timeMax - timeMin) / datapoints);
     const intervalValue = 2 * Math.PI / datapoints;
@@ -24,7 +24,7 @@ export function seriesExtend(tsData: TimeSeriesData, timeMin: number, timeMax: n
     let dataValues = [];
     for (let i = 0; i <  datapoints; i++) {
       timeValues.push(timeMin + (i * intervalTime));
-      dataValues.push(scalar * (1 + fn(i * intervalValue)));
+      dataValues.push(dataSparse && ((i % 10) > 5)? null : scalar * (1 + fn(i * intervalValue)));
     }
     return {
       time: {values: timeValues},

@@ -11,6 +11,16 @@ anchorLinks:
       params: "time"
 
 #------------------------------------------------------------------------------
+# Test Settings
+
+# 1.6.0 onwards: This section details test settings used in validating the functionality.
+# They provide a way to drive particular code pathways.
+test:
+  # This changes the test timeSeries to be sparse and is used as a way to demonstrate the
+  # difference between datapoint 'last' and 'lastNotNull'. Undefined defaults to false.
+  testDataSparse: false
+
+#------------------------------------------------------------------------------
 # Grafana Variable Scalars
 
 # These scalars allow the grafana variable selections to impact the threshold values
@@ -35,6 +45,19 @@ variableThresholdScalars:
 background:
   darkThemeColor: "yellow"
   lightThemeColor: "green"
+
+# From version 1.6.0: This defines which datapoint will be chosen from the time-series.
+# If your datasource supports graphite functions 'keepLastValue' and 'transformNull', using those
+# functions in combination with 'last' gives the most precise control. If you don't have them available,
+# 'lastNotNull' allows you to approximate it. With 'last' the closest datapoint based off the timeSlider
+# position is chosen. With 'lastNotNull', that datapoint is then walked back in time until a non-null value
+# is found.
+#
+# This is the panel level default which when undefined defaults to 'last'. It can be overriden at the cell
+# level and the cell-attribute level.
+#
+# Valid values are undefined, "last", "lastNotNull"
+datapoint: "last"
 
 # This defines the default color gradientMode. It defines the default value on cell labelColor.gradientMode
 # and fillColor.gradientMode for when the field is undefined. Values are "hue" and "none" with
@@ -68,6 +91,9 @@ cells:
     # by attribute basis.
     dataRef: "test-data-large-sin"
 
+    # From version 1.6.0: Optional cell level override. Full write up in the panel-level term definition.
+    datapoint: "last"
+
     # The label field defines how the text in the cell will be adjusted based on the
     # time-series value. The time series value is postpended with a separator. If no
     # adjustment is wanted the field should be omitted. Note that multiline label preambles
@@ -76,6 +102,9 @@ cells:
       # Optional attribute level override for the associated time-series.
       dataRef: "test-data-large-cos"
   
+      # From version 1.6.0: Optional attribute level override. Requires corresponding attribute level dataRef override.
+      datapoint: "last"
+
       # Valid values are cr, space, colon, replace
       separator: "cr"
 
@@ -93,6 +122,9 @@ cells:
     labelColor:
       # Optional attribute level override for the associated time-series.
       dataRef: "test-data-large-cos"
+
+      # From version 1.6.0: Optional attribute level override. Requires corresponding attribute level dataRef override.
+      datapoint: "last"
 
       # This defines the coloring gradientMode. When set to "hue", color values will be interpolated between
       # the threshold levels. When set to "none" the colors are absolute and change when a threshold is
@@ -128,6 +160,9 @@ cells:
     fillColor:
       # See labelColor
       dataRef: "test-data-large-cos"
+
+      # See labelColor
+      datapoint: "last"
 
       # See labelColor
       gradientMode: "hue"
