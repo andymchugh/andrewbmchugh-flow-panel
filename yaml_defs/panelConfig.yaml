@@ -30,7 +30,7 @@ variableThresholdScalars:
 #------------------------------------------------------------------------------
 # Panel Config
 
-# 1.6.0 onwards: When undefined the backgrond color is not driven. When defined the color for
+# 1.6.0 onwards: When undefined the background color is not driven. When defined the color for
 # the current theme is used. Colors can be entered in all the normal ways of name, hex, hsl, etc.
 background:
   darkThemeColor: "yellow"

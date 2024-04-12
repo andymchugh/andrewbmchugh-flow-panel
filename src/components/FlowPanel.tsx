@@ -10,7 +10,7 @@ import { svgInit, svgUpdate, SvgHolder } from 'components/SvgUpdater';
 import { seriesExtend, seriesInterpolate , seriesTransform } from 'components/TimeSeries';
 import { TimeSliderFactory } from 'components/TimeSlider';
 import { displayColorsInner, displayDataInner, displayMappingsInner, displaySvgInner } from 'components/DebuggingEditor';
-import { primeColorCache, appendUrlParams, getInstrumenter } from 'components/Utils';
+import { appendUrlParams, getInstrumenter } from 'components/Utils';
 import { addHook, sanitize } from 'dompurify';
 
 interface Props extends PanelProps<FlowOptions> {}
@@ -132,10 +132,8 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
     if (svgStr && panelConfig && siteConfig) {
       configInit(siteConfig, panelConfig);
 
-      const gt = grafanaTheme.current;
       const svgDoc = new DOMParser().parseFromString(sanitizeSvgStr(svgStr), "text/xml");
-      const svgAttribs = svgInit(svgDoc, gt.isDark, panelConfig, siteConfig);
-      primeColorCache(gt, svgAttribs, panelConfig.background);
+      const svgAttribs = svgInit(svgDoc, grafanaTheme.current, panelConfig, siteConfig);
       svgHolderRef.current = {
         doc: svgDoc,
         attribs: svgAttribs,
