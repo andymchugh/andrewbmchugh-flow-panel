@@ -18,6 +18,11 @@ export type Link = {
   params: LinkUrlParams;
 };
 
+export type Background = {
+  darkThemeColor: string | undefined;
+  lightThemeColor: string | undefined;
+}
+
 export type PanelConfigCellLabel = {
   dataRef: string | undefined;
   separator: LabelSeparator;
@@ -49,6 +54,7 @@ export type SiteConfig = {
 };
 
 export type PanelConfig = {
+  background: Background;
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
   gradientMode: ColorGradientMode;
   cellIdPreamble: string;
@@ -60,6 +66,7 @@ export type PanelConfig = {
 export function panelConfigFactory(config: any) {
   config = config || {};
   return {
+    background: config.background || {},
     variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(Object.entries(config.variableThresholdScalars || {})),
     gradientMode: config.gradientMode || 'none',
     cellIdPreamble: config.cellIdPreamble || '',

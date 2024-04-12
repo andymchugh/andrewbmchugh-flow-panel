@@ -7,6 +7,12 @@ Fixes x-scaling ratio when the SVG x-dimension is smaller than the available
 window. Now it scales with the window whereas before it scaled at twice the rate
 resulting in it being much smaller than necessary.
 
+Adds the ability to drive the SVG background. New panelConfig terms:
+- background.darkThemeColor
+- background.lightThemeColor
+Can be used with the normal color-names, rbg, hex values. When the relevant term is
+undefined the background color is not driven.
+
 ## 1.5.0
 Fixes the grafana variable threshold matching to break out on first rule
 match for a given variable/cell tuple. Before it was continuing through

@@ -5,7 +5,7 @@ import {
    SiteConfig, VariableThresholdScalars } from 'components/Config';
 import { TimeSeriesData } from 'components/TimeSeries';
 import {
-   cellIdFactory, CellIdMaker, getColor,
+   cellIdFactory, CellIdMaker, colorLookup, getColor,
    variableThresholdScalarsInit, variableThresholdScaleValue } from 'components/Utils';
 
 // Defines the metadata stored against each drivable svg cell
@@ -109,7 +109,7 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
   return false;
 }
 
-export function svgInit(doc: Document, panelConfig: PanelConfig, siteConfig: SiteConfig):  SvgAttribs {
+export function svgInit(doc: Document, isDark: boolean, panelConfig: PanelConfig, siteConfig: SiteConfig):  SvgAttribs {
   let cells = new Map<string, SvgCell>();
   const cellIdPreamble = panelConfig.cellIdPreamble;
   panelConfig.cells.forEach((cellProps, cellIdShort) => {
@@ -155,6 +155,12 @@ export function svgInit(doc: Document, panelConfig: PanelConfig, siteConfig: Sit
   // image won't scale and center corrently
   let dimensions = dimensionCoherence(doc);
 
+  // Set background according to theme if defined in config
+  const bgColor = isDark ? panelConfig.background.darkThemeColor : panelConfig.background.lightThemeColor;
+  if (bgColor) {
+    doc.documentElement.style.backgroundColor = colorLookup(bgColor);
+  }
+  
   return {
     width: dimensions.width,
     height: dimensions.height,
