@@ -20,12 +20,18 @@ export type SvgCell = {
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
 };
 
+export type SvgElementAttribs = {
+  link: Link | null;
+  fillColor: string | null;
+  styleColor: string | null;
+};
+
 export type SvgAttribs = {
   width: number;
   height: number;
   scaleDrive: boolean;
   cells: Map<string, SvgCell>;
-  elementLinks: Map<string, Link>;
+  elementAttribs: Map<string, SvgElementAttribs>;
   variableValues: Map<string, string>;
 }
 
@@ -132,19 +138,22 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
     }
   });
   
-  // Create the overall call->link map
-  let elementLinks = new Map<string, Link>();
+  // Store original cell attribs for restoration when data is null, alongside
+  // other required data such as links
+  let elementAttribs = new Map<string, SvgElementAttribs>();
+
   cells.forEach((cell, cellIdShort) => {
     const panelConfigCell = panelConfig.cells.get(cellIdShort);
     const link = panelConfigCell ? panelConfigCell.link : null;
-    if (link) {
-      cell.textElements.forEach((el) => {
-        elementLinks.set(el.id, link);
+    [cell.textElements, cell.fillElements].forEach((arr) => {
+      arr.forEach((el) => {
+        elementAttribs.set(el.id, {
+          link: link || null,
+          fillColor: el.getAttribute('fill'),
+          styleColor: el.style?.color,
+        });
       });
-      cell.fillElements.forEach((el) => {
-        elementLinks.set(el.id, link);
-      });
-    }
+    });
   });
 
   // Create the variable-scalar override set. Both Panel and Site declare the data the same way
@@ -157,14 +166,12 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
   // image won't scale and center corrently
   let dimensions = dimensionCoherence(doc);
 
-
-  
   const svgAttribs = {
     width: dimensions.width,
     height: dimensions.height,
     scaleDrive: dimensions.scaleDrive,
     cells: cells,
-    elementLinks: elementLinks,
+    elementAttribs: elementAttribs,
     variableValues: variableValues,
   };
 
@@ -211,8 +218,17 @@ function formatCellValue(cellLabelData: PanelConfigCellLabel, value: number) {
   }
 }
 
+function setFillAttribute(el: Element, color: string | null | undefined) {
+  if (color) {
+    el.setAttribute('fill', color);
+  } else {
+    el.removeAttribute('fill');
+  }
+}
+
 export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData) {
   const variableValues = svgHolder.attribs.variableValues;
+  const elementAttribs = svgHolder.attribs.elementAttribs;
   const cells = svgHolder.attribs.cells;
   cells.forEach((cellData) => {
     // This function sources the dataRef from the inner paramData and scales it using
@@ -248,10 +264,10 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData) {
 
     cellData.fillElements.forEach((el: HTMLElement) => {
       if (cellFillColorData) {
-        el.setAttribute('fill', cellFillColor || '');
+        setFillAttribute(el, cellFillColor || elementAttribs.get(el.id)?.fillColor);
       }
       if (cellLabelColorData) {
-        el.style.color = cellLabelColor || '';
+        el.style.color = cellLabelColor || elementAttribs.get(el.id)?.styleColor || '';
       }
       if (cellLabelData) {
         el.replaceChildren(cellData.text + (cellLabel || ''));
@@ -259,7 +275,7 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData) {
     });
     if (cellFillColorData) {
       cellData.textElements.forEach((el: HTMLElement) => {
-        el.setAttribute('fill', cellFillColor || '');
+        setFillAttribute(el, cellFillColor || elementAttribs.get(el.id)?.fillColor);
       });
     }
   });

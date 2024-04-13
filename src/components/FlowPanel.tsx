@@ -4,9 +4,9 @@ import { useStyles2, useTheme2 } from '@grafana/ui';
 import { getTemplateSrv } from '@grafana/runtime';
 import { GrafanaTheme2, PanelProps, toDataFrame } from '@grafana/data';
 import { FlowOptions, DebuggingCtrs } from '../types';
-import { configInit, Link, panelConfigFactory, PanelConfig, siteConfigFactory, SiteConfig } from 'components/Config';
+import { configInit, panelConfigFactory, PanelConfig, siteConfigFactory, SiteConfig } from 'components/Config';
 import { loadSvg, loadYaml } from 'components/Loader';
-import { svgInit, svgUpdate, SvgHolder } from 'components/SvgUpdater';
+import { svgInit, svgUpdate, SvgHolder, SvgElementAttribs } from 'components/SvgUpdater';
 import { seriesExtend, seriesInterpolate , seriesTransform } from 'components/TimeSeries';
 import { TimeSliderFactory } from 'components/TimeSlider';
 import { displayColorsInner, displayDataInner, displayMappingsInner, displaySvgInner } from 'components/DebuggingEditor';
@@ -70,11 +70,11 @@ const getStyles = () => {
   };
 };
 
-function clickHandlerFactory(elementLinks: Map<string, Link>) {
+function clickHandlerFactory(elementAttribs: Map<string, SvgElementAttribs>) {
   return (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     if (event.target) {
       const element = event.target as HTMLElement;
-      const link = elementLinks.get(element.id);
+      const link = elementAttribs.get(element.id)?.link;
       if (link) {
         let url = link.url;
         if (link.params === 'time') {
@@ -138,7 +138,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
         doc: svgDoc,
         attribs: svgAttribs,
       };
-      clickHandlerRef.current = clickHandlerFactory(svgAttribs.elementLinks);
+      clickHandlerRef.current = clickHandlerFactory(svgAttribs.elementAttribs);
 
       setInitialized(true);
     }
