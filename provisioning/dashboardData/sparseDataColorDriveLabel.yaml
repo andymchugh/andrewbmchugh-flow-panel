@@ -1,0 +1,45 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - link: &threshold_db
+    - {color: "semi-dark-green", level: 0}
+    - {color: "orange", level: 400}
+    - {color: "red", level: 800}
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+
+test:
+  testDataSparse: true
+
+background:
+  darkThemeColor: blue
+
+cells: 
+  db_brown:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "ops"
+    labelColor:
+      thresholds: *threshold_db
+  db_black:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "ops"
+    labelColor:
+      thresholds: *threshold_db
+  db_transparent:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "ops"
+    labelColor:
+      thresholds: *threshold_db
