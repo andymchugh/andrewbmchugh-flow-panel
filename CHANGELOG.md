@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.x.x
-Adds resource links for webiste, license and yaml defs to the plugin landing page.
+Adds resource links for website, license and yaml defs to the plugin landing page.
 
 Fixes x-scaling ratio when the SVG x-dimension is smaller than the available
 window. Now it scales with the window whereas before it scaled at twice the rate
@@ -12,6 +12,21 @@ Adds the ability to drive the SVG background. New panelConfig terms:
 - background.lightThemeColor
 Can be used with the normal color-names, rbg, hex values. When the relevant term is
 undefined the background color is not driven.
+
+Extends the datapoint choice from 'last' to 'last' or 'lastNotNull'. 'last' remains
+the default. When coupled with graphite functions 'keepLastValue' and 'transformNull', 'last'
+offers the best control over the display. Where those graphite functions are not available
+'lastNotNull' offers a consistent display when dealing with sparse data. 'lastNotNull' starts
+with the same datapoint as 'last' and then walks back in time till a non-null value is found.
+It's configurable in the panel yaml at the panel level and overridable at the cell level and cell-attribute level. To make this testable a 'test' table has been added to the yaml to allow
+the testData to be generated in sparse mode.
+New panel config terms of:
+- datapoint
+- cells.cell-name.datapoint
+- cells.cell-name.label.datapoint
+- cells.cell-name.labelColor.datapoint
+- cells.cell-name.fillColor.datapoint
+- test.testDataSparse
 
 ## 1.5.0
 Fixes the grafana variable threshold matching to break out on first rule

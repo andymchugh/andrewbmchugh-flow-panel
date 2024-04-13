@@ -1,0 +1,324 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 10,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 123127,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# Datapoint lastNotNull\n\nThis dashboard demonstrates the difference between last and lastNotNull.\n\nWhen possible people should use **last** combined with graphite functions\nkeepLastValue and transformNull. That combination gives the best control\nover what gets displayed at each timeSlider point.\n\nAs not all datasources support those functions, lastNotNull is also\nsupported. These panels show the same data with the setting changed\nin the panelConfig.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "10.0.0",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 6
+      },
+      "id": 123131,
+      "options": {
+        "debuggingCtr": {
+          "colorsCtr": 0,
+          "dataCtr": 0,
+          "displaySvgCtr": 0,
+          "mappingsCtr": 0,
+          "timingsCtr": 0
+        },
+        "panelConfig": "---\n\ntest:\n  testDataSparse: true\n\n#------------------------------------------------------------------------------\n# Panel Config\n\ngradientMode: \"hue\"\ncellIdPreamble: \"cell-\"\n\ncells: \n  inbox_depth:\n    dataRef: \"test-data-large-sin\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 500}\n        - {color: \"red\", level: 1000}\n  db_transactions:\n    dataRef: \"test-data-large-cos\"\n    label:\n      separator: \"cr\"\n      units: \"ops\"\n      decimalPoints: 0\n    fillColor:\n      thresholds:\n        - {color: \"semi-dark-green\", level: 0}\n        - {color: \"orange\", level: 400}\n        - {color: \"red\", level: 800}\n  start_rate:\n    dataRef: \"test-data-small-sin\"\n    label:\n      separator: \"colon\"\n      units: \"pps\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 100}\n  active_workers:\n    dataRef: \"test-data-small-cos\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      thresholds:\n        - {color: \"#888888\", level: 0}\n        - {color: \"light-blue\", level: 100}",
+        "siteConfig": "",
+        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
+        "testDataEnabled": true,
+        "timeSliderEnabled": true
+      },
+      "title": "Sparse = true --- datapoint = last",
+      "type": "andrewbmchugh-flow-panel"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 6,
+        "y": 6
+      },
+      "id": 123129,
+      "options": {
+        "debuggingCtr": {
+          "colorsCtr": 0,
+          "dataCtr": 0,
+          "displaySvgCtr": 0,
+          "mappingsCtr": 0,
+          "timingsCtr": 0
+        },
+        "panelConfig": "---\n\ntest:\n  testDataSparse: true\n\n#------------------------------------------------------------------------------\n# Panel Config\n\ngradientMode: \"hue\"\ncellIdPreamble: \"cell-\"\ndatapoint: \"lastNotNull\"\n\ncells: \n  inbox_depth:\n    dataRef: \"test-data-large-sin\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 500}\n        - {color: \"red\", level: 1000}\n  db_transactions:\n    dataRef: \"test-data-large-cos\"\n    label:\n      separator: \"cr\"\n      units: \"ops\"\n      decimalPoints: 0\n    fillColor:\n      thresholds:\n        - {color: \"semi-dark-green\", level: 0}\n        - {color: \"orange\", level: 400}\n        - {color: \"red\", level: 800}\n  start_rate:\n    dataRef: \"test-data-small-sin\"\n    label:\n      separator: \"colon\"\n      units: \"pps\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 100}\n  active_workers:\n    dataRef: \"test-data-small-cos\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      thresholds:\n        - {color: \"#888888\", level: 0}\n        - {color: \"light-blue\", level: 100}",
+        "siteConfig": "",
+        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
+        "testDataEnabled": true,
+        "timeSliderEnabled": true
+      },
+      "title": "Sparse = true --- panel level datapoint = lastNotNull",
+      "type": "andrewbmchugh-flow-panel"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 6
+      },
+      "id": 123130,
+      "options": {
+        "debuggingCtr": {
+          "colorsCtr": 0,
+          "dataCtr": 0,
+          "displaySvgCtr": 0,
+          "mappingsCtr": 0,
+          "timingsCtr": 0
+        },
+        "panelConfig": "---\n\ntest:\n  testDataSparse: true\n\n#------------------------------------------------------------------------------\n# Panel Config\n\ngradientMode: \"hue\"\ncellIdPreamble: \"cell-\"\n\ncells: \n  inbox_depth:\n    dataRef: \"test-data-large-sin\"\n    datapoint: \"lastNotNull\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 500}\n        - {color: \"red\", level: 1000}\n  db_transactions:\n    dataRef: \"test-data-large-cos\"\n    datapoint: \"lastNotNull\"\n    label:\n      separator: \"cr\"\n      units: \"ops\"\n      decimalPoints: 0\n    fillColor:\n      thresholds:\n        - {color: \"semi-dark-green\", level: 0}\n        - {color: \"orange\", level: 400}\n        - {color: \"red\", level: 800}\n  start_rate:\n    dataRef: \"test-data-small-sin\"\n    datapoint: \"lastNotNull\"\n    label:\n      separator: \"colon\"\n      units: \"pps\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 100}\n  active_workers:\n    dataRef: \"test-data-small-cos\"\n    datapoint: \"lastNotNull\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      thresholds:\n        - {color: \"#888888\", level: 0}\n        - {color: \"light-blue\", level: 100}",
+        "siteConfig": "",
+        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
+        "testDataEnabled": true,
+        "timeSliderEnabled": true
+      },
+      "title": "Sparse = true --- cell level datapoint = lastNotNull",
+      "type": "andrewbmchugh-flow-panel"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 6
+      },
+      "id": 123134,
+      "options": {
+        "debuggingCtr": {
+          "colorsCtr": 0,
+          "dataCtr": 0,
+          "displaySvgCtr": 0,
+          "mappingsCtr": 0,
+          "timingsCtr": 0
+        },
+        "panelConfig": "---\n\ntest:\n  testDataSparse: true\n\n#------------------------------------------------------------------------------\n# Panel Config\n\ngradientMode: \"hue\"\ncellIdPreamble: \"cell-\"\n\ncells: \n  inbox_depth:\n    label:\n      dataRef: \"test-data-large-sin\"\n      datapoint: \"lastNotNull\"\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      dataRef: \"test-data-large-sin\"\n      datapoint: \"lastNotNull\"\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 500}\n        - {color: \"red\", level: 1000}\n  db_transactions:\n    label:\n      dataRef: \"test-data-large-cos\"\n      datapoint: \"lastNotNull\"\n      separator: \"cr\"\n      units: \"ops\"\n      decimalPoints: 0\n    fillColor:\n      dataRef: \"test-data-large-cos\"\n      datapoint: \"lastNotNull\"\n      thresholds:\n        - {color: \"semi-dark-green\", level: 0}\n        - {color: \"orange\", level: 400}\n        - {color: \"red\", level: 800}\n  start_rate:\n    label:\n      dataRef: \"test-data-small-sin\"\n      datapoint: \"lastNotNull\"\n      separator: \"colon\"\n      units: \"pps\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 100}\n  active_workers:\n    label:\n      dataRef: \"test-data-small-cos\"\n      datapoint: \"lastNotNull\"\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      dataRef: \"test-data-small-cos\"\n      datapoint: \"lastNotNull\"\n      thresholds:\n        - {color: \"#888888\", level: 0}\n        - {color: \"light-blue\", level: 100}",
+        "siteConfig": "",
+        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
+        "testDataEnabled": true,
+        "timeSliderEnabled": true
+      },
+      "title": "Sparse = true --- attribute level datapoint = lastNotNull",
+      "type": "andrewbmchugh-flow-panel"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 13
+      },
+      "id": 123128,
+      "options": {
+        "debuggingCtr": {
+          "colorsCtr": 0,
+          "dataCtr": 0,
+          "displaySvgCtr": 0,
+          "mappingsCtr": 0,
+          "timingsCtr": 0
+        },
+        "panelConfig": "---\n\n#------------------------------------------------------------------------------\n# Panel Config\n\ngradientMode: \"hue\"\ncellIdPreamble: \"cell-\"\n\ncells: \n  inbox_depth:\n    dataRef: \"test-data-large-sin\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 500}\n        - {color: \"red\", level: 1000}\n  db_transactions:\n    dataRef: \"test-data-large-cos\"\n    label:\n      separator: \"cr\"\n      units: \"ops\"\n      decimalPoints: 0\n    fillColor:\n      thresholds:\n        - {color: \"semi-dark-green\", level: 0}\n        - {color: \"orange\", level: 400}\n        - {color: \"red\", level: 800}\n  start_rate:\n    dataRef: \"test-data-small-sin\"\n    label:\n      separator: \"colon\"\n      units: \"pps\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 100}\n  active_workers:\n    dataRef: \"test-data-small-cos\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      thresholds:\n        - {color: \"#888888\", level: 0}\n        - {color: \"light-blue\", level: 100}",
+        "siteConfig": "",
+        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
+        "testDataEnabled": true,
+        "timeSliderEnabled": true
+      },
+      "title": "Sparse = false --- datapoint = last",
+      "type": "andrewbmchugh-flow-panel"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 6,
+        "y": 13
+      },
+      "id": 123132,
+      "options": {
+        "debuggingCtr": {
+          "colorsCtr": 0,
+          "dataCtr": 0,
+          "displaySvgCtr": 0,
+          "mappingsCtr": 0,
+          "timingsCtr": 0
+        },
+        "panelConfig": "---\n\n#------------------------------------------------------------------------------\n# Panel Config\n\ngradientMode: \"hue\"\ncellIdPreamble: \"cell-\"\ndatapoint: \"lastNotNull\"\n\ncells: \n  inbox_depth:\n    dataRef: \"test-data-large-sin\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 500}\n        - {color: \"red\", level: 1000}\n  db_transactions:\n    dataRef: \"test-data-large-cos\"\n    label:\n      separator: \"cr\"\n      units: \"ops\"\n      decimalPoints: 0\n    fillColor:\n      thresholds:\n        - {color: \"semi-dark-green\", level: 0}\n        - {color: \"orange\", level: 400}\n        - {color: \"red\", level: 800}\n  start_rate:\n    dataRef: \"test-data-small-sin\"\n    label:\n      separator: \"colon\"\n      units: \"pps\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 100}\n  active_workers:\n    dataRef: \"test-data-small-cos\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      thresholds:\n        - {color: \"#888888\", level: 0}\n        - {color: \"light-blue\", level: 100}",
+        "siteConfig": "",
+        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
+        "testDataEnabled": true,
+        "timeSliderEnabled": true
+      },
+      "title": "Sparse = false --- panel level datapoint = lastNotNull",
+      "type": "andrewbmchugh-flow-panel"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 13
+      },
+      "id": 123133,
+      "options": {
+        "debuggingCtr": {
+          "colorsCtr": 0,
+          "dataCtr": 0,
+          "displaySvgCtr": 0,
+          "mappingsCtr": 0,
+          "timingsCtr": 0
+        },
+        "panelConfig": "---\n\n#------------------------------------------------------------------------------\n# Panel Config\n\ngradientMode: \"hue\"\ncellIdPreamble: \"cell-\"\n\ncells: \n  inbox_depth:\n    dataRef: \"test-data-large-sin\"\n    datapoint: \"lastNotNull\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 500}\n        - {color: \"red\", level: 1000}\n  db_transactions:\n    dataRef: \"test-data-large-cos\"\n    datapoint: \"lastNotNull\"\n    label:\n      separator: \"cr\"\n      units: \"ops\"\n      decimalPoints: 0\n    fillColor:\n      thresholds:\n        - {color: \"semi-dark-green\", level: 0}\n        - {color: \"orange\", level: 400}\n        - {color: \"red\", level: 800}\n  start_rate:\n    dataRef: \"test-data-small-sin\"\n    datapoint: \"lastNotNull\"\n    label:\n      separator: \"colon\"\n      units: \"pps\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 100}\n  active_workers:\n    dataRef: \"test-data-small-cos\"\n    datapoint: \"lastNotNull\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      thresholds:\n        - {color: \"#888888\", level: 0}\n        - {color: \"light-blue\", level: 100}",
+        "siteConfig": "",
+        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
+        "testDataEnabled": true,
+        "timeSliderEnabled": true
+      },
+      "title": "Sparse = false --- cell level datapoint = lastNotNull",
+      "type": "andrewbmchugh-flow-panel"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 13
+      },
+      "id": 123135,
+      "options": {
+        "debuggingCtr": {
+          "colorsCtr": 0,
+          "dataCtr": 0,
+          "displaySvgCtr": 0,
+          "mappingsCtr": 0,
+          "timingsCtr": 0
+        },
+        "panelConfig": "---\n\n#------------------------------------------------------------------------------\n# Panel Config\n\ngradientMode: \"hue\"\ncellIdPreamble: \"cell-\"\n\ncells: \n  inbox_depth:\n    dataRef: \"test-data-large-sin\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 500}\n        - {color: \"red\", level: 1000}\n  db_transactions:\n    dataRef: \"test-data-large-cos\"\n    label:\n      separator: \"cr\"\n      units: \"ops\"\n      decimalPoints: 0\n    fillColor:\n      thresholds:\n        - {color: \"semi-dark-green\", level: 0}\n        - {color: \"orange\", level: 400}\n        - {color: \"red\", level: 800}\n  start_rate:\n    dataRef: \"test-data-small-sin\"\n    label:\n      separator: \"colon\"\n      units: \"pps\"\n    labelColor:\n      thresholds:\n        - {color: \"green\", level: 0}\n        - {color: \"orange\", level: 100}\n  active_workers:\n    dataRef: \"test-data-small-cos\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n    labelColor:\n      thresholds:\n        - {color: \"#888888\", level: 0}\n        - {color: \"light-blue\", level: 100}",
+        "siteConfig": "",
+        "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
+        "testDataEnabled": true,
+        "timeSliderEnabled": true
+      },
+      "title": "Sparse = false --- attribute level datapoint = lastNotNull",
+      "type": "andrewbmchugh-flow-panel"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "timepicker": {
+    "hidden": false,
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ],
+    "type": "timepicker"
+  },
+  "timezone": "browser",
+  "title": "Datapoint lastNotNull",
+  "version": 3,
+  "weekStart": ""
+}

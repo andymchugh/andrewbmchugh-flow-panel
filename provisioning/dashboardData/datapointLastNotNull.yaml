@@ -1,0 +1,48 @@
+---
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+gradientMode: "hue"
+cellIdPreamble: "cell-"
+
+cells: 
+  inbox_depth:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "cr"
+      units: "none"
+    labelColor:
+      thresholds:
+        - {color: "green", level: 0}
+        - {color: "orange", level: 500}
+        - {color: "red", level: 1000}
+  db_transactions:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "ops"
+      decimalPoints: 0
+    fillColor:
+      thresholds:
+        - {color: "semi-dark-green", level: 0}
+        - {color: "orange", level: 400}
+        - {color: "red", level: 800}
+  start_rate:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "colon"
+      units: "pps"
+    labelColor:
+      thresholds:
+        - {color: "green", level: 0}
+        - {color: "orange", level: 100}
+  active_workers:
+    dataRef: "test-data-small-cos"
+    label:
+      separator: "cr"
+      units: "none"
+    labelColor:
+      thresholds:
+        - {color: "#888888", level: 0}
+        - {color: "light-blue", level: 100}
