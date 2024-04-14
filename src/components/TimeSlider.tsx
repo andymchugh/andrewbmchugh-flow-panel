@@ -46,24 +46,27 @@ export const TimeSliderFactory = (props: TimeSliderProps) => {
   }
 
   return (
-    <div className={cx(
-      props.styles.wrapper,
-      css`
-      text-align: left;
-      display: flex;
-      gap: 5px;
-      `
-      )}>
-      <input
-        type="range"
-        style={{width: sliderWidth}}
-        min="0"
-        max={range}
-        defaultValue={range}
-        id="timeSlider"
-        onChange={handleOnChange}
-      />
-      <label>{props.label}</label>
+    <div>
+      <hr/>
+      <div className={cx(
+        props.styles.wrapper,
+        css`
+        text-align: left;
+        display: flex;
+        gap: 5px;
+        `
+        )}>
+          <input
+          type="range"
+          style={{width: sliderWidth}}
+          min="0"
+          max={range}
+          defaultValue={range}
+          id="timeSlider"
+          onChange={handleOnChange}
+        />
+        <label>{props.label}</label>
+      </div>
     </div>
   );
 }

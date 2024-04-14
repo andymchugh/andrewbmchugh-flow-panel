@@ -1,14 +1,15 @@
 import { getValueFormatterIndex, formattedValueToString, GrafanaTheme2 } from '@grafana/data';
 import { 
-  DatapointMode,
-   LabelSeparator, Link,
-   PanelConfig, PanelConfigCell, PanelConfigCellColor, PanelConfigCellLabel,
-   SiteConfig, VariableThresholdScalars } from 'components/Config';
+  DatapointMode, HighlightFactors,
+  LabelSeparator, Link,
+  PanelConfig, PanelConfigCell, PanelConfigCellColor, PanelConfigCellLabel,
+  SiteConfig, VariableThresholdScalars } from 'components/Config';
 import { TimeSeriesData } from 'components/TimeSeries';
 import {
-   cellIdFactory, CellIdMaker, colorLookup, getColor,
-   primeColorCache,
-   variableThresholdScalarsInit, variableThresholdScaleValue } from 'components/Utils';
+  cellIdFactory, CellIdMaker, colorLookup, getColor,
+  primeColorCache,
+  variableThresholdScalarsInit, variableThresholdScaleValue } from 'components/Utils';
+import { HighlightState } from './Highlighter';
 
 // Defines the metadata stored against each drivable svg cell
 export type SvgCell = {
@@ -26,6 +27,7 @@ export type SvgElementAttribs = {
   styleColor: string | null;
 };
 
+
 export type SvgAttribs = {
   width: number;
   height: number;
@@ -33,7 +35,8 @@ export type SvgAttribs = {
   cells: Map<string, SvgCell>;
   elementAttribs: Map<string, SvgElementAttribs>;
   variableValues: Map<string, string>;
-}
+  highlightFactors: HighlightFactors;
+};
 
 export type SvgHolder = {
   doc: Document;
@@ -164,7 +167,7 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
   
   // Ensure the viewBox and dimension attributes are coherent. Without this the resulting
   // image won't scale and center corrently
-  let dimensions = dimensionCoherence(doc);
+  const dimensions = dimensionCoherence(doc);
 
   const svgAttribs = {
     width: dimensions.width,
@@ -173,6 +176,7 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
     cells: cells,
     elementAttribs: elementAttribs,
     variableValues: variableValues,
+    highlightFactors: panelConfig.highlighter.factors,
   };
 
   // Initialie the color cache and setup the background
@@ -181,7 +185,7 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
   // Set background according to theme if defined in config
   const bgColor = grafanaTheme.isDark ? panelConfig.background.darkThemeColor : panelConfig.background.lightThemeColor;
   if (bgColor) {
-    doc.documentElement.style.backgroundColor = colorLookup(bgColor);
+    doc.documentElement.style.backgroundColor = colorLookup(bgColor, HighlightState.Ambient, svgAttribs.highlightFactors);
   }
 
   return svgAttribs;
@@ -226,9 +230,10 @@ function setFillAttribute(el: Element, color: string | null | undefined) {
   }
 }
 
-export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData) {
+export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highlighterSelection: string | undefined) {
   const variableValues = svgHolder.attribs.variableValues;
   const elementAttribs = svgHolder.attribs.elementAttribs;
+  const highlightFactors = svgHolder.attribs.highlightFactors;
   const cells = svgHolder.attribs.cells;
   cells.forEach((cellData) => {
     // This function sources the dataRef from the inner paramData and scales it using
@@ -243,6 +248,7 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData) {
         return paramData ? defaultSeed : null;
       }
     }
+    const highlight = highlighterSelection && cellData.cellProps.tags?.has(highlighterSelection) ? HighlightState.Highlight : highlighterSelection ? HighlightState.Lowlight : HighlightState.Ambient;
     const cellDataRef = cellData.cellProps.dataRef;
     const cellValue = cellDataRef ? getCellValue(cellData.cellProps.datapoint, cellDataRef, tsData) : null;
     const cellValueSeed = variableThresholdScaleValue(variableValues, cellData, cellValue);
@@ -255,12 +261,12 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData) {
     const cellFillColorData = cellData.cellProps.fillColor;
     const cellFillColorDatapoint = cellData.cellProps.fillColor?.datapoint;
     const cellFillColorSeed = thresholdSeed(cellFillColorDatapoint, cellFillColorData, cellValueSeed);
-    const cellFillColor = cellFillColorData && (typeof cellFillColorSeed === 'number') ? getColor(cellFillColorData, cellFillColorSeed) : null;
+    const cellFillColor = cellFillColorData && (typeof cellFillColorSeed === 'number') ? getColor(cellFillColorData, cellFillColorSeed, highlight, highlightFactors) : null;
 
     const cellLabelColorData = cellData.cellProps.labelColor;
     const cellLabelColorDatapoint = cellData.cellProps.labelColor?.datapoint;
     const cellLabelColorSeed = thresholdSeed(cellLabelColorDatapoint, cellLabelColorData, cellValueSeed);
-    const cellLabelColor = cellLabelColorData && (typeof cellLabelColorSeed === 'number') ? getColor(cellLabelColorData, cellLabelColorSeed) : null;
+    const cellLabelColor = cellLabelColorData && (typeof cellLabelColorSeed === 'number') ? getColor(cellLabelColorData, cellLabelColorSeed, highlight, highlightFactors) : null;
 
     cellData.fillElements.forEach((el: HTMLElement) => {
       if (cellFillColorData) {

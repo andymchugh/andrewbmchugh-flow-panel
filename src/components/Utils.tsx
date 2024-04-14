@@ -1,7 +1,7 @@
 import { GrafanaTheme2, colorManipulator } from '@grafana/data';
 import { SvgAttribs, SvgCell } from 'components/SvgUpdater'
-import { Background, PanelConfigCellColor, Threshold ,VariableThresholdScalars } from 'components/Config';
-
+import { Background, HighlightFactors, PanelConfigCellColor, Threshold, VariableThresholdScalars } from 'components/Config';
+import { HighlightState } from './Highlighter';
 
 
 export type CellIdMaker = () => string;
@@ -62,8 +62,16 @@ export function regExpMatch(pattern: string, text: string | undefined): boolean 
 // Color
 //------
 
-function rgbToString(rgb: number[]) {
-  return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+function rgbToString(rgb: number[], highlight: HighlightState, highlightFactors: HighlightFactors) {
+  let brightFactor = highlight === HighlightState.Highlight ? highlightFactors.highlightRgbFactor : 1.0;
+  brightFactor = Math.min(brightFactor, (255 / Math.max(1, rgb[0], rgb[1], rgb[2])));
+
+  const alpha = (highlight === HighlightState.Lowlight) ? highlightFactors.lowlightAlphaFactor : 1.0;
+
+  const red = Math.floor(rgb[0] * brightFactor);
+  const green = Math.floor(rgb[1] * brightFactor);
+  const blue = Math.floor(rgb[2] * brightFactor);
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 }
 
 export function primeColorCache(theme: GrafanaTheme2, svgAttribs: SvgAttribs, background: Background) {
@@ -122,16 +130,16 @@ export function colorStringToRgb(theme: GrafanaTheme2, colorStr: string) {
   return rgb || colorStr;
 }
 
-export function colorLookup(color: string) {
+export function colorLookup(color: string, highlight: HighlightState, highlightFactors: HighlightFactors) {
   // We want the cached version as that's been through the grafana
   // transformations so will be correctly translated as per the theme.
   // If it's not in the cache we return the raw color and it will fallback
   // on html interpretation.
   const rgb = gColorCache.get(color);
-  return rgb ? rgbToString(rgb) : color;
+  return rgb ? rgbToString(rgb, highlight, highlightFactors) : color;
 }
 
-export function colorGradient(color1: string, color2: string, scalar: number) {
+export function colorGradient(color1: string, color2: string, scalar: number, highlight: HighlightState, highlightFactors: HighlightFactors) {
   const scalarBounded = isFinite(scalar) ? Math.min(1, Math.max(0, scalar)) : 1;
   const color1Vals = gColorCache.get(color1);
   const color2Vals = gColorCache.get(color2);
@@ -141,7 +149,7 @@ export function colorGradient(color1: string, color2: string, scalar: number) {
     for (let i = 0; i < 3; i++) {
       blend[i] += ((color2Vals[i] - blend[i]) * scalarBounded);
     }
-    return rgbToString(blend);
+    return rgbToString(blend, highlight, highlightFactors);
   }
   else {
     // If the colors aren't in the cache they weren't translatable to rgb
@@ -203,7 +211,7 @@ export function variableThresholdScaleValue(variableValues: Map<string, string>,
   return value / scalar;
 }
 
-export function getColor(cellColorData: PanelConfigCellColor, value: number) {
+export function getColor(cellColorData: PanelConfigCellColor, value: number, highlight: HighlightState, highlightFactors: HighlightFactors) {
   if (cellColorData.thresholds && cellColorData.thresholds.length > 0) {
     const thresholds = cellColorData.thresholds;
     let threshold = thresholds[0];
@@ -213,16 +221,15 @@ export function getColor(cellColorData: PanelConfigCellColor, value: number) {
         const thresholdLwr = thresholds[i - 1];
         if (cellColorData.gradientMode === 'hue') {
           const scalar = (value - thresholdLwr.level) / (threshold.level - thresholdLwr.level);
-          const color = colorGradient(thresholdLwr.color, threshold.color, scalar);
-          return color;
+          return colorGradient(thresholdLwr.color, threshold.color, scalar, highlight, highlightFactors);
         }
         else {
           // The only other mode is 'none'
-          return colorLookup(thresholdLwr.color);
+          return colorLookup(thresholdLwr.color, highlight, highlightFactors);
         }
       }
     }
-    return colorLookup(threshold.color);
+    return colorLookup(threshold.color, highlight, highlightFactors);
   }
   return null;
 }

@@ -10,6 +10,7 @@ export interface FlowOptions {
   svg: string;
   panelConfig: string;
   siteConfig: string;
+  highlighterEnabled: boolean;
   timeSliderEnabled: boolean;
   debuggingCtr: DebuggingCtrs;
   testDataEnabled: boolean;

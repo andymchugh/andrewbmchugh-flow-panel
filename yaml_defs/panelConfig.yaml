@@ -13,7 +13,7 @@ anchorLinks:
 #------------------------------------------------------------------------------
 # Test Settings
 
-# 1.6.0 onwards: This section details test settings used in validating the functionality.
+# Version 1.6.0 onwards: This section details test settings used in validating the functionality.
 # They provide a way to drive particular code pathways.
 test:
   # This changes the test timeSeries to be sparse and is used as a way to demonstrate the
@@ -38,15 +38,45 @@ variableThresholdScalars:
     - {variableValuePattern: "dev", thresholdScalar: 0.2, cellIdPatternScope: ["inbox_depth"]}
 
 #------------------------------------------------------------------------------
+# Highlighting
+
+# Version 1.6.0 onwards: The Highlighter legend, when enabled in the panel options, uses this
+# configuration to display the legend and highlight/lowlight the readouts based off of selection.
+# Only legend tags that also exist on cell definitions will be selectable. As such you can add
+# legend entries that are purely descriptive to make the tags understandable by a wider audience.
+#
+# This configuration works in tandem with cell level configuration. On each cell a tag array can
+# be defined allowing a cell to be highlighted in multiple dimensions.
+
+tagConfig:
+  # The legend will be displayed when the Highlighter is enabled in the panel options. The array entries
+  # should be either 'tags' defined on cells or descriptive text or separators. If not defined a legend
+  # will be deduced from the cells tags arrays.
+  legend: ["Queue Technology:", "rabbitMQ", "kafka", "|", "Flow Attribs:", "inflow", "depth", "|"]
+
+  # This defines the legend color to apply to the tag when the tag is selected. If not defined
+  # it defaults to yellow.
+  color: "yellow"
+  
+  # This defines the rgb factor to apply to a readouts color when the readout is highlighted. Note the
+  # rgb ratios are always maintained so this will result in this factor being capped. If not defined
+  # it defaults to 5.0.
+  highlightRgbFactor: 5.0
+
+  # This defines the alpha factor to apply to a readout when other readouts are highlighted.
+  # i.e. selections get highlighted. non-selections get lowlighted. If not defined it defaults to 0.3.
+  lowlightAlphaFactor: 0.3
+
+#------------------------------------------------------------------------------
 # Panel Config
 
-# 1.6.0 onwards: When undefined the background color is not driven. When defined the color for
+# Version 1.6.0 onwards: When undefined the background color is not driven. When defined the color for
 # the current theme is used. Colors can be entered in all the normal ways of name, hex, hsl, etc.
 background:
   darkThemeColor: "yellow"
   lightThemeColor: "green"
 
-# From version 1.6.0: This defines which datapoint will be chosen from the time-series.
+# Version 1.6.0 onwards: This defines which datapoint will be chosen from the time-series.
 # If your datasource supports graphite functions 'keepLastValue' and 'transformNull', using those
 # functions in combination with 'last' gives the most precise control. If you don't have them available,
 # 'lastNotNull' allows you to approximate it. With 'last' the closest datapoint based off the timeSlider
@@ -94,6 +124,10 @@ cells:
     # From version 1.6.0: Optional cell level override. Full write up in the panel-level term definition.
     datapoint: "last"
 
+    # Version 1.6.0 onwards: Cell level tags work in tandem with the tagConfig above and the Highlighter
+    # legend in the panel. Add your cell to tag sets by defining the relavent tags here.
+    tags: ["depth", "rabbitMQ"]
+
     # The label field defines how the text in the cell will be adjusted based on the
     # time-series value. The time series value is postpended with a separator. If no
     # adjustment is wanted the field should be omitted. Note that multiline label preambles
@@ -102,7 +136,7 @@ cells:
       # Optional attribute level override for the associated time-series.
       dataRef: "test-data-large-cos"
   
-      # From version 1.6.0: Optional attribute level override. Requires corresponding attribute level dataRef override.
+      # Version 1.6.0 onwards: Optional attribute level override. Requires corresponding attribute level dataRef override.
       datapoint: "last"
 
       # Valid values are cr, space, colon, replace
@@ -123,7 +157,7 @@ cells:
       # Optional attribute level override for the associated time-series.
       dataRef: "test-data-large-cos"
 
-      # From version 1.6.0: Optional attribute level override. Requires corresponding attribute level dataRef override.
+      # Version 1.6.0 onwards: Optional attribute level override. Requires corresponding attribute level dataRef override.
       datapoint: "last"
 
       # This defines the coloring gradientMode. When set to "hue", color values will be interpolated between
