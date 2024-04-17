@@ -264,45 +264,48 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   //---------------------------------------------------------------------------
   // Define the canvas
 
-  const svgAttribs = svgHolder ? svgHolder.attribs : {width: 0, height: 0, scaleDrive: false};
+  const svgAttribs = svgHolder ? svgHolder.attribs : {width: width, height: height, scaleDrive: false};
   const svgWidth = svgAttribs.width;
   const svgHeight = svgAttribs.height;
   const highlighterHeight = highlighterEnabled ? 60 : 0;
   const timeSliderHeight = timeSliderEnabled ? 60 : 0;
   const svgViewWidth = width;
   const svgViewHeight = height - highlighterHeight - timeSliderHeight;
-  const svgPaddingLeft = Math.max(0, (width - svgWidth) * 0.5);
-  const svgPaddingTop = Math.max(0, (svgViewHeight - svgHeight) * 0.5);
-  const svgScaleX = Math.max(1.0, (svgViewWidth / svgWidth));
-  const svgScaleY = (svgViewHeight / svgHeight);
-  const svgScale = svgAttribs.scaleDrive ? Math.min(svgScaleX, svgScaleY) * 0.9 * 100 : 100;
+  const svgScaleX = svgViewWidth / svgWidth;
+  const svgScaleY = svgViewHeight / svgHeight;
+  const svgScale = Math.min(svgScaleX, svgScaleY);
+  const svgPaddingLeft = Math.max(0, (width - (svgWidth * svgScale)) * 0.5);
+  const svgPaddingTop = Math.max(0, (svgViewHeight - (svgHeight * svgScale)) * 0.5);
 
   //---------------------------------------------------------------------------
   // Create the JSX
+
   const jsx = instrument('createJsx', () => (
-    <div className={cx(
-      styles.wrapper,
-      css`
-      height: ${height}px;
-      width: ${width}px;
-      `
-      )}>
+    <div>
       <div className={cx(
         styles.wrapper,
         css`
         height: ${svgViewHeight}px;
         width: ${svgViewWidth}px;
-        scale: ${svgScale}%;
         display: flex;
-        padding-top: ${svgPaddingTop}px;
         padding-left: ${svgPaddingLeft}px;
+        padding-top: ${svgAttribs.scaleDrive ? svgPaddingTop : 0}px;
         `
-        )}
-        onClick={clickHandlerRef.current}
-        // The externally received svg is sanitized when read in via sanitizeSvgStr which uses
-        // dompurify. We don't re-sanitize it on each rendering as we are in control of the
-        // modifications being made.
-        dangerouslySetInnerHTML={{__html: svgElement.outerHTML}}/>
+        )}>
+        <div className={cx(
+          styles.wrapper,
+          css`
+          scale: ${svgAttribs.scaleDrive ? svgScale * 100 : 100}%;
+          display: flex;
+          transform-origin: top left;
+          `
+          )}
+          onClick={clickHandlerRef.current}
+          // The externally received svg is sanitized when read in via sanitizeSvgStr which uses
+          // dompurify. We don't re-sanitize it on each rendering as we are in control of the
+          // modifications being made.
+          dangerouslySetInnerHTML={{__html: svgElement.outerHTML}}/>
+      </div>
       <div>{highlighterEnabled && highlighter}</div>
       <div>{timeSliderEnabled && timeSlider}</div>
     </div>
