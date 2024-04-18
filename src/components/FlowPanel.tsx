@@ -5,13 +5,13 @@ import { getTemplateSrv } from '@grafana/runtime';
 import { GrafanaTheme2, PanelProps, toDataFrame } from '@grafana/data';
 import { FlowOptions, DebuggingCtrs } from '../types';
 import { configInit, panelConfigFactory, PanelConfig, siteConfigFactory, SiteConfig } from 'components/Config';
-import { HighlighterFactory } from 'components/Highlighter';
+import { HighlightState, HighlighterFactory } from 'components/Highlighter';
 import { loadSvg, loadYaml } from 'components/Loader';
 import { svgInit, svgUpdate, SvgHolder, SvgElementAttribs } from 'components/SvgUpdater';
 import { seriesExtend, seriesInterpolate , seriesTransform } from 'components/TimeSeries';
 import { TimeSliderFactory } from 'components/TimeSlider';
 import { displayColorsInner, displayDataInner, displayMappingsInner, displaySvgInner } from 'components/DebuggingEditor';
-import { appendUrlParams, getInstrumenter } from 'components/Utils';
+import { appendUrlParams, colorLookup, getInstrumenter } from 'components/Utils';
 import { addHook, sanitize } from 'dompurify';
 
 interface Props extends PanelProps<FlowOptions> {}
@@ -262,9 +262,25 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   });
 
   //---------------------------------------------------------------------------
+  // Define the background
+
+  const svgAttribs = svgHolder ? svgHolder.attribs : {
+    width: width,
+    height: height,
+    scaleDrive: false,
+    highlightFactors: {
+      highlightRgbFactor: 1.0,
+      lowlightAlphaFactor: 1.0,
+    }
+  };
+  let bgColor = useTheme2().isDark ? panelConfig?.background.darkThemeColor : panelConfig?.background.lightThemeColor;
+  if (bgColor) {
+    bgColor = colorLookup(bgColor, HighlightState.Ambient, svgAttribs.highlightFactors);
+  }
+
+  //---------------------------------------------------------------------------
   // Define the canvas
 
-  const svgAttribs = svgHolder ? svgHolder.attribs : {width: width, height: height, scaleDrive: false};
   const svgWidth = svgAttribs.width;
   const svgHeight = svgAttribs.height;
   const highlighterHeight = highlighterEnabled ? 60 : 0;
@@ -290,6 +306,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
         display: flex;
         padding-left: ${svgPaddingLeft}px;
         padding-top: ${svgAttribs.scaleDrive ? svgPaddingTop : 0}px;
+        ${bgColor ? "background-color: " + bgColor : ""};
         `
         )}>
         <div className={cx(
