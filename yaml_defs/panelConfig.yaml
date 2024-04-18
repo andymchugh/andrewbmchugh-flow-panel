@@ -147,6 +147,10 @@ cells:
       # would be none, ops, pps, litreh, forcekNm
       units: "none"
 
+      # From ver 1.7.0: This postfix term, when defined, will be space-concatenated to the value
+      # following unit conversion. This can be used for defining custom units.
+      unitsPostfix: "MyUnits"
+
       # The number of decimal points to display. Enter null for auto, 0 for none, etc. If left
       # undefined it will default to the value specified at the panel level in cellLabelDecimalPoints. 
       decimalPoints: 0

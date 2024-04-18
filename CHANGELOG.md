@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.x.x
+Improves sub 100% scaling so that it now should correctly fill the panel maintaining
+aspect ratio.
+
+Changes the background color definition to be applied to the available svg panel area
+rather that the actual svg background.
+
+Adds new cell-label yaml 'unitsPostfix'. This is an optional string that will be postfixed
+to the label value. It can be used for specifying custom units. In yaml, unicode characters
+are specified with a \u. i.e. "\u03bc" = Mu.
+
 ## 1.6.0
 Adds resource links for website, license and yaml defs to the plugin landing page.
 

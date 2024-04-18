@@ -1,0 +1,53 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+cells: 
+  inbox_depth:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "cr"
+      units: "none"
+      unitsPostfix: "\u03bcs"
+    labelColor:
+      gradientMode: "hue"
+      thresholds:
+        - {color: "green", level: 0}
+        - {color: "orange", level: 500}
+        - {color: "red", level: 1000}
+  db_transactions:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "ops"
+    fillColor:
+      gradientMode: "hue"
+      thresholds:
+        - {color: "semi-dark-green", level: 0}
+        - {color: "orange", level: 400}
+        - {color: "red", level: 800}
+  start_rate:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "colon"
+      unitsPostfix: "abc"
+    labelColor:
+      gradientMode: "hue"
+      thresholds:
+        - {color: "green", level: 0}
+        - {color: "orange", level: 100}
+  active_workers:
+    dataRef: "test-data-small-cos"
+    label:
+      separator: "cr"
+      units: "pps"
+    labelColor:
+      gradientMode: "hue"
+      thresholds:
+        - {color: "#888888", level: 0}
+        - {color: "light-blue", level: 100}
