@@ -281,10 +281,15 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   //---------------------------------------------------------------------------
   // Define the canvas
 
+  const condensed = panelConfig?.highlighter?.condensed;
+  const firstSeparator = highlighterEnabled || timeSliderEnabled;
+  const secondSeparator = highlighterEnabled && timeSliderEnabled && !condensed;
+  
   const svgWidth = svgAttribs.width;
   const svgHeight = svgAttribs.height;
-  const highlighterHeight = highlighterEnabled ? 60 : 0;
-  const timeSliderHeight = timeSliderEnabled ? 60 : 0;
+  const controlHeight = highlighterEnabled && timeSliderEnabled && condensed ? 40 : 60;
+  const highlighterHeight = highlighterEnabled ? controlHeight : 0;
+  const timeSliderHeight = timeSliderEnabled ? controlHeight : 0;
   const svgViewWidth = width;
   const svgViewHeight = height - highlighterHeight - timeSliderHeight;
   const svgScaleX = svgViewWidth / svgWidth;
@@ -323,7 +328,9 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
           // modifications being made.
           dangerouslySetInnerHTML={{__html: svgElement.outerHTML}}/>
       </div>
+      {firstSeparator ? <hr/> : undefined}
       <div>{highlighterEnabled && highlighter}</div>
+      {secondSeparator ? <hr/> : undefined}
       <div>{timeSliderEnabled && timeSlider}</div>
     </div>
   ))();

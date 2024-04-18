@@ -47,7 +47,6 @@ export const TimeSliderFactory = (props: TimeSliderProps) => {
 
   return (
     <div>
-      <hr/>
       <div className={cx(
         props.styles.wrapper,
         css`
