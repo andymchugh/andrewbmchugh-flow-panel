@@ -66,6 +66,7 @@ export type PanelConfigHighlighter = {
   tagLegend: string[];
   color: string;
   factors: HighlightFactors;
+  condensed: boolean;
 };
 
 export type SiteConfig = {
@@ -111,6 +112,7 @@ export function panelConfigFactory(config: any) {
       highlightRgbFactor: config.tagConfig?.highlightRgbFactor ?? 5.0,
       lowlightAlphaFactor: config.tagConfig?.lowlightAlphaFactor ?? 0.3,
     },
+    condensed: config.tagConfig?.condensed ?? false,
   };
 
   return {

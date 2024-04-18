@@ -43,7 +43,6 @@ export const HighlighterFactory = (props: HighlighterProps) => {
 
   return (
     <div className={cx(props.styles.wrapper)}>
-      <hr/>
       {VizLegend({
         placement: 'bottom',
         displayMode: LegendDisplayMode.List,

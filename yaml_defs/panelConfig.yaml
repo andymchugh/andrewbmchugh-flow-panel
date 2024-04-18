@@ -67,6 +67,10 @@ tagConfig:
   # i.e. selections get highlighted. non-selections get lowlighted. If not defined it defaults to 0.3.
   lowlightAlphaFactor: 0.3
 
+  # Version 1.7.0 onwards: When set this flag uses a thinner footprint for the combined highlighter
+  # and timeSlider. Enable when vertical space is at a premium. Default when undefined is false.
+  condensed: false
+
 #------------------------------------------------------------------------------
 # Panel Config
 

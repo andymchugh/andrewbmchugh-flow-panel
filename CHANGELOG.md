@@ -1,15 +1,19 @@
 # Changelog
 
-## 1.x.x
-Improves sub 100% scaling so that it now should correctly fill the panel maintaining
-aspect ratio.
+## 1.7.0
+Improves scaling in all ways but especially the sub 100% scaling so that it now correctly
+fills the panel maintaining aspect ratio.
 
-Changes the background color definition to be applied to the available svg panel area
+Changes the background color definition so that it applies to the available svg panel area
 rather that the actual svg background.
 
-Adds new cell-label yaml 'unitsPostfix'. This is an optional string that will be postfixed
+Adds a new panelConfig field 'unitsPostfix'. This is an optional string that will be postfixed
 to the label value. It can be used for specifying custom units. In yaml, unicode characters
-are specified with a \u. i.e. "\u03bc" = Mu.
+are specified with a \u. i.e. "\u03bc" = Mu. New panel config terms:
+- cells.cell-name.label.unitsPostfix
+
+Adds a new panelConfig field 'condensed'. This mode which uses less vertical space for the controls when both the timeSlider and highlighter are enabled. New panelConfig terms:
+- tagConfig.condensed
 
 ## 1.6.0
 Adds resource links for website, license and yaml defs to the plugin landing page.
