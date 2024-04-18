@@ -208,12 +208,12 @@ function formatCellValue(cellLabelData: PanelConfigCellLabel, value: number) {
   const format = cellLabelData.units || 'none';
   const decimalPoints = cellLabelData.decimalPoints;
   const formatter = getValueFormatterIndex()[format];
-  if (formatter) {
-    return formattedValueToString(formatter(value, decimalPoints));
+  let res = formatter ? formattedValueToString(formatter(value, decimalPoints)) : value.toString();
+
+  if (cellLabelData.unitsPostfix) {
+    res = res.concat(" ", cellLabelData.unitsPostfix);
   }
-  else {
-    return value.toString();
-  }
+  return res;
 }
 
 function setFillAttribute(el: Element, color: string | null | undefined) {

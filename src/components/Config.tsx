@@ -32,7 +32,8 @@ export type PanelConfigCellLabel = {
   dataRef: string | undefined;
   datapoint: DatapointMode | undefined;
   separator: LabelSeparator;
-  units: string;
+  units: string | undefined;
+  unitsPostfix: string | undefined;
   decimalPoints: number | null | undefined;
 };
 
