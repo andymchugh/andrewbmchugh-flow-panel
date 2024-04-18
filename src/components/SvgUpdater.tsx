@@ -6,7 +6,7 @@ import {
   SiteConfig, VariableThresholdScalars } from 'components/Config';
 import { TimeSeriesData } from 'components/TimeSeries';
 import {
-  cellIdFactory, CellIdMaker, colorLookup, getColor,
+  cellIdFactory, CellIdMaker, getColor,
   primeColorCache,
   variableThresholdScalarsInit, variableThresholdScaleValue } from 'components/Utils';
 import { HighlightState } from './Highlighter';
@@ -181,12 +181,6 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
 
   // Initialie the color cache and setup the background
   primeColorCache(grafanaTheme, svgAttribs, panelConfig.background);
-
-  // Set background according to theme if defined in config
-  const bgColor = grafanaTheme.isDark ? panelConfig.background.darkThemeColor : panelConfig.background.lightThemeColor;
-  if (bgColor) {
-    doc.documentElement.style.backgroundColor = colorLookup(bgColor, HighlightState.Ambient, svgAttribs.highlightFactors);
-  }
 
   return svgAttribs;
 } 
