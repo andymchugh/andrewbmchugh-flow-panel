@@ -1,4 +1,4 @@
-import { getFieldDisplayName } from '@grafana/data';
+import { FieldType, getFieldDisplayName } from '@grafana/data';
 import { sliderTime } from 'components/TimeSlider';
 
 export type TimeSeries = {
@@ -54,26 +54,23 @@ export function seriesTransform(series: any[], timeMin: number, timeMax: number)
 
   series.forEach((frame: any) => {
     if (('fields' in frame) && Array.isArray(frame.fields)) {
-      let tsTime = null;
+      let tsTime: null | {valuesIndex: null | number, values: any} = null;
       let tsNamed: Record<string, any> = {};
   
       frame.fields.forEach(function(ts: any) {
-        if (typeof ts.name === 'string') {
-          const nameLwr = ts.name.toLowerCase();
-          if (nameLwr === 'time') {
-            // The index is stored alongside the ts because it has potential to be shared
-            // and if so, only has to be calculated once.
-            tsTime = {valuesIndex: null, values: ts.values};
-            if (tsTime.values.length > 0) {
-              const maxInd = tsTime.values.length - 1;
-              timeMin = Math.min(timeMin ?? tsTime.values[0], tsTime.values[0]);
-              timeMax = Math.max(timeMax ?? tsTime.values[maxInd], tsTime.values[maxInd]);
-            }
+        if ((tsTime === null) && (ts.type === FieldType.time)) {
+          // The index is stored alongside the ts because it has potential to be shared
+          // and if so, only has to be calculated once.
+          tsTime = {valuesIndex: null, values: ts.values};
+          if (tsTime.values.length > 0) {
+            const maxInd = tsTime.values.length - 1;
+            timeMin = Math.min(timeMin ?? tsTime.values[0], tsTime.values[0]);
+            timeMax = Math.max(timeMax ?? tsTime.values[maxInd], tsTime.values[maxInd]);
           }
-          else {
-            const name = getFieldDisplayName(ts, frame);
-            tsNamed[name] = {values: ts.values, time: null};
-          }
+        }
+        else {
+          const name = getFieldDisplayName(ts, frame);
+          tsNamed[name] = {values: ts.values, time: null};
         }
       });
       // Embed a time shallow copy against each ts in the frame and export to holder
