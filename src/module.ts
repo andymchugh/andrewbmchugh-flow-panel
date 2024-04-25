@@ -40,6 +40,13 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
     },
   })
   .addBooleanSwitch({
+    path: 'panZoomEnabled',
+    name: 'Pan / Zoom Enabled',
+    description: `When enabled the scroll wheel allows you to zoom and click-drag allows
+    you to pan. Double-Click to reset zoom to normal.`,
+    defaultValue: true,
+  })
+  .addBooleanSwitch({
     path: 'highlighterEnabled',
     name: 'Highlighter',
     description: `When enabled a highlighting bar is added below the SVG. Widgets on the

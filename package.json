@@ -68,6 +68,7 @@
     "js-yaml-loader": "^1.2.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-zoom-pan-pinch": "^3.4.4",
     "tslib": "2.5.3",
     "underscore": "^1.13.6"
   },

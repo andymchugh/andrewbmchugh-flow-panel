@@ -13,6 +13,7 @@ import { TimeSliderFactory } from 'components/TimeSlider';
 import { displayColorsInner, displayDataInner, displayMappingsInner, displaySvgInner } from 'components/DebuggingEditor';
 import { appendUrlParams, colorLookup, getInstrumenter } from 'components/Utils';
 import { addHook, sanitize } from 'dompurify';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 interface Props extends PanelProps<FlowOptions> {}
 
@@ -303,31 +304,37 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
 
   const jsx = instrument('createJsx', () => (
     <div>
-      <div className={cx(
-        styles.wrapper,
-        css`
-        height: ${svgViewHeight}px;
-        width: ${svgViewWidth}px;
-        display: flex;
-        padding-left: ${svgPaddingLeft}px;
-        padding-top: ${svgAttribs.scaleDrive ? svgPaddingTop : 0}px;
-        ${bgColor ? "background-color: " + bgColor : ""};
-        `
-        )}>
-        <div className={cx(
-          styles.wrapper,
-          css`
-          scale: ${svgAttribs.scaleDrive ? svgScale * 100 : 100}%;
-          display: flex;
-          transform-origin: top left;
-          `
-          )}
-          onClick={clickHandlerRef.current}
-          // The externally received svg is sanitized when read in via sanitizeSvgStr which uses
-          // dompurify. We don't re-sanitize it on each rendering as we are in control of the
-          // modifications being made.
-          dangerouslySetInnerHTML={{__html: svgElement.outerHTML}}/>
-      </div>
+      <TransformWrapper
+        disabled={!options.panZoomEnabled}
+        doubleClick={{mode: "reset"}}>
+        <TransformComponent>
+          <div className={cx(
+            styles.wrapper,
+            css`
+            height: ${svgViewHeight}px;
+            width: ${svgViewWidth}px;
+            display: flex;
+            padding-left: ${svgPaddingLeft}px;
+            padding-top: ${svgAttribs.scaleDrive ? svgPaddingTop : 0}px;
+            ${bgColor ? "background-color: " + bgColor : ""};
+            `
+            )}>
+            <div className={cx(
+              styles.wrapper,
+              css`
+              scale: ${svgAttribs.scaleDrive ? svgScale * 100 : 100}%;
+              display: flex;
+              transform-origin: top left;
+              `
+              )}
+              onClick={clickHandlerRef.current}
+              // The externally received svg is sanitized when read in via sanitizeSvgStr which uses
+              // dompurify. We don't re-sanitize it on each rendering as we are in control of the
+              // modifications being made.
+              dangerouslySetInnerHTML={{__html: svgElement.outerHTML}}/>
+          </div>
+        </TransformComponent>
+      </TransformWrapper>
       {firstSeparator ? <hr/> : undefined}
       <div>{highlighterEnabled && highlighter}</div>
       {secondSeparator ? <hr/> : undefined}
