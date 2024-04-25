@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.0
+Corrects the source of the time-field from the incoming dataFrame. Before it relied
+on the name being toLower('time'). Now it correctly looks up the type and breaks
+out on first match with type time. This fixes use with datasources like ElasticSearch
+where the field name defaults to '@timestamp'.
+
 ## 1.7.0
 Improves scaling in all ways but especially the sub 100% scaling so that it now correctly
 fills the panel maintaining aspect ratio.
