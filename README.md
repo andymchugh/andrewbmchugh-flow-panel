@@ -7,6 +7,9 @@ The Flow plugin provides side-by-side metric visualization on SVG diagrams. You 
 ## Example 2
 ![example2](src/img/example2.png)
 
+## Example 3
+![example3](src/img/threadHighlighting.gif?raw=true)
+
 ## Getting Started
 Follow the plugin [Getting Started](./src/README.md) guide to understand the target audience, feature set and how to use.
 
