@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.0
+Adds Accessibility in the form of Pan / Zoom to ensure the SVG is readable for the
+greatest range of people.
+
 ## 1.8.0
 Corrects the source of the time-field from the incoming dataFrame. Before it relied
 on the name being toLower('time'). Now it correctly looks up the type and breaks
