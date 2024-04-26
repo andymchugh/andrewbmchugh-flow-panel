@@ -1,0 +1,20 @@
+---
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+
+cells:
+  Rectangle:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "replace"
+      units: "celsius"
+      decimalPoints: 1
+    labelColor:
+      thresholds:
+        - { color: "blue", level: 0 }
+        - { color: "orange", level: 400 }
+        - { color: "red", level: 800 }

@@ -115,7 +115,8 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
       cellData.textElements.push(el);
       setAttributes(el);
     }
-    return true;
+    // return true for leaf node text elements
+    return (el.nodeType === 3);
   }
   return false;
 }
