@@ -29,3 +29,12 @@ cells:
     labelColor:
       gradientMode: "hue"
       thresholds: *threshold_generic
+  outer:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "none"
+      decimalPoints: 0
+    fillColor:
+      gradientMode: "hue"
+      thresholds: *threshold_generic

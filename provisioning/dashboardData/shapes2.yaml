@@ -1,0 +1,124 @@
+---
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - link: &grafana-home
+      url: "https://grafana.com/"
+      params: "time"
+  - link: &threshold_label
+    - {color: "semi-dark-green", level: 0}
+    - {color: "orange", level: 400}
+    - {color: "red", level: 800}
+  - link: &threshold_fill
+    - {color: "orange", level: 0}
+    - {color: "red", level: 400}
+    - {color: "semi-dark-green", level: 800}
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+
+cells:
+  Rectangle:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "celsius"
+      decimalPoints: 1
+    labelColor:
+      thresholds: *threshold_label
+    fillColor:
+      thresholds: *threshold_fill
+  Double Rectangle:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "celsius"
+      decimalPoints: 1
+    labelColor:
+      thresholds: *threshold_label
+    fillColor:
+      thresholds: *threshold_fill
+  Rounded Rectangle:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "celsius"
+      decimalPoints: 1
+    labelColor:
+      thresholds: *threshold_label
+    fillColor:
+      thresholds: *threshold_fill
+  Double Rounded Rectangle:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "celsius"
+      decimalPoints: 1
+    labelColor:
+      thresholds: *threshold_label
+    fillColor:
+      thresholds: *threshold_fill
+  Elipse:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "celsius"
+      decimalPoints: 1
+    labelColor:
+      thresholds: *threshold_label
+    fillColor:
+      thresholds: *threshold_fill
+  Double Elipse:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "celsius"
+      decimalPoints: 1
+    labelColor:
+      thresholds: *threshold_label
+    fillColor:
+      thresholds: *threshold_fill
+  Square:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "celsius"
+      decimalPoints: 1
+    labelColor:
+      thresholds: *threshold_label
+    fillColor:
+      thresholds: *threshold_fill
+  Double Square:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "celsius"
+      decimalPoints: 1
+    labelColor:
+      thresholds: *threshold_label
+    fillColor:
+      thresholds: *threshold_fill
+  Circle:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "celsius"
+      decimalPoints: 1
+    labelColor:
+      thresholds: *threshold_label
+    fillColor:
+      thresholds: *threshold_fill
+  Double Circle:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "celsius"
+      decimalPoints: 1
+    labelColor:
+      thresholds: *threshold_label
+    fillColor:
+      thresholds: *threshold_fill
