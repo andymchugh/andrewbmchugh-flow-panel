@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.0
+Increases the range of SVG shape support by relaxing the expected DOM element
+hierachy.
+
 ## 1.9.0
 Adds Accessibility in the form of Pan / Zoom to ensure the SVG is readable for the
 greatest range of people.
