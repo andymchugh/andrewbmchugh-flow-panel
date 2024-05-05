@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { css, cx } from '@emotion/css';
-import { useStyles2, useTheme2 } from '@grafana/ui';
+import { Button, useStyles2, useTheme2 } from '@grafana/ui';
 import { getTemplateSrv } from '@grafana/runtime';
 import { GrafanaTheme2, PanelProps, toDataFrame } from '@grafana/data';
 import { FlowOptions, DebuggingCtrs } from '../types';
@@ -16,6 +16,8 @@ import { addHook, sanitize } from 'dompurify';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 interface Props extends PanelProps<FlowOptions> {}
+
+enum AnimationControlPosition { timeSlider, highlighter, own, none };
 
 //-----------------------------------------------------------------------------
 // Sanitize externally defined SVG using DOMPurify. DrawIO svg's rely on
@@ -107,6 +109,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   const [initialized, setInitialized] = useState<boolean>(false);
   const [highlighterSelection, setHighlighterSelection] = useState<string|undefined>(undefined);
   const [timeSliderLabel, setTimeSliderLabel] = useState<string>();
+  const [animationsEnabled, setAnimationsEnabled] = useState<boolean>(options.animationsEnabled);
   const timeSliderScalarRef = useRef<number>(1);
   const debuggingCtrRef = useRef<DebuggingCtrs>({...options.debuggingCtr});
   const svgHolderRef = useRef<SvgHolder>();
@@ -162,7 +165,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   let tsData = instrument('transform', seriesTransform)(dataFrames, timeMin, timeMax);
 
   if (options.testDataEnabled) {
-    instrument('seriesExtend', seriesExtend)(tsData, timeMin, timeMax, panelConfig?.test.testDataSparse);
+    instrument('seriesExtend', seriesExtend)(tsData, timeMin, timeMax, panelConfig?.test);
   }
   
   instrument('seriesInterpolate', seriesInterpolate)(tsData, timeSliderScalarRef.current);
@@ -186,7 +189,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
     });
   
     // Update the svg with current time-series and variable settings
-    instrument('svgUpdate', svgUpdate)(svgHolder, tsData, highlighterSelection);
+    instrument('svgUpdate', svgUpdate)(svgHolder, tsData, highlighterSelection, animationsEnabled);
   }
   const svgElement = (svgHolder ? svgHolder.doc : svgDocBlankRef.current).childNodes[0] as HTMLElement;
 
@@ -233,13 +236,34 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   }, [options.debuggingCtr, data.series, tsData, svgElement.outerHTML, panelConfig]);
 
   //---------------------------------------------------------------------------
+  // Controls
+
+  const timeSliderEnabled = options.timeSliderEnabled;
+
+  const highlighterEnabled = options.highlighterEnabled &&
+    (panelConfig?.highlighter?.tagLegend?.length || 0) > 0;
+
+  const animationControlPosition = panelConfig?.animationsPresent ?
+    timeSliderEnabled ? AnimationControlPosition.timeSlider :
+    highlighterEnabled ? AnimationControlPosition.highlighter : AnimationControlPosition.own : AnimationControlPosition.none;
+
+  //---------------------------------------------------------------------------
+  // Animation control
+
+  const animationControl = panelConfig?.animationsPresent ? (<Button
+    tooltip="Toggle animation state"
+    fill="text"
+    size="md"
+    icon={animationsEnabled ? "pause" : "play"}
+    onClick={() => setAnimationsEnabled(!animationsEnabled)}>
+  </Button>) : null;
+  
+  //---------------------------------------------------------------------------
   // Highlighter
 
   const styles = useStyles2(getStyles);
-  const highlighterEnabled = options.highlighterEnabled &&
-    (typeof panelConfig !== "undefined") &&
-    (panelConfig?.highlighter?.tagLegend?.length || 0) > 0;
   const highlighter = HighlighterFactory({
+    animControl: animationControlPosition === AnimationControlPosition.highlighter ? animationControl : null,
     styles: styles,
     enabled: highlighterEnabled,
     highlighterConfig: panelConfig?.highlighter,
@@ -250,8 +274,8 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   //---------------------------------------------------------------------------
   // TimeSlider
 
-  const timeSliderEnabled = options.timeSliderEnabled;
   const timeSlider = TimeSliderFactory({
+    animControl: animationControlPosition === AnimationControlPosition.timeSlider ? animationControl : null,
     styles: styles,
     enabled: options.timeSliderEnabled,
     label: timeSliderLabel,
@@ -282,17 +306,19 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   //---------------------------------------------------------------------------
   // Define the canvas
 
+  const animationControlOwn = animationControlPosition === AnimationControlPosition.own;
   const condensed = panelConfig?.highlighter?.condensed;
-  const firstSeparator = highlighterEnabled || timeSliderEnabled;
+  const firstSeparator = highlighterEnabled || timeSliderEnabled || animationControlOwn;
   const secondSeparator = highlighterEnabled && timeSliderEnabled && !condensed;
   
   const svgWidth = svgAttribs.width;
   const svgHeight = svgAttribs.height;
   const controlHeight = highlighterEnabled && timeSliderEnabled && condensed ? 40 : 60;
   const highlighterHeight = highlighterEnabled ? controlHeight : 0;
+  const animControlHeight = animationControlOwn ? 60 : 0;
   const timeSliderHeight = timeSliderEnabled ? controlHeight : 0;
   const svgViewWidth = width;
-  const svgViewHeight = height - highlighterHeight - timeSliderHeight;
+  const svgViewHeight = height - highlighterHeight - timeSliderHeight - animControlHeight;
   const svgScaleX = svgViewWidth / svgWidth;
   const svgScaleY = svgViewHeight / svgHeight;
   const svgScale = Math.min(svgScaleX, svgScaleY);
@@ -339,6 +365,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
       <div>{highlighterEnabled && highlighter}</div>
       {secondSeparator ? <hr/> : undefined}
       <div>{timeSliderEnabled && timeSlider}</div>
+      {animationControlOwn ? animationControl : undefined}
     </div>
   ))();
   return jsx;

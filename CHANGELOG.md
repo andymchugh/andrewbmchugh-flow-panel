@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.x.0
+Flow Animations
+---------------
+Adds support for draw.io line flow animations. In draw.io lines with 'Flow Animation'
+selected and the resulting SVG 'exported-as-svg' (not just saved as SVG) results in
+animated lines that are controllable via 'direction' and 'duration' attributes. This
+change adds yaml config to drive these animations off of data. When such config is
+present a play/pause button is always added to the panel to ensure the panel is usable
+by all. New config terms:
+- cells.cell-name.flowAnimation.dataRef
+- cells.cell-name.flowAnimation.datapoint
+- cells.cell-name.flowAnimation.thresholdOffValue
+- cells.cell-name.flowAnimation.thresholdLwrValue
+- cells.cell-name.flowAnimation.thresholdLwrDurationSecs
+- cells.cell-name.flowAnimation.thresholdUprValue
+- cells.cell-name.flowAnimation.thresholdUprDurationSecs
+- cells.cell-name.flowAnimation.unidirectional
+
+As well as provisioning dashboards, the above functionality is demonstrated in example 4:
+- svg: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg4.svg
+- panelConfig: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig4.yaml
+
+New test data added to facilitate testing of the flow-animations:
+- test.testDataBaseOffset
+- test.testDataExtendedZero
+
 ## 1.10.0
 Increases the range of SVG shape support by relaxing the expected DOM element
 hierachy.

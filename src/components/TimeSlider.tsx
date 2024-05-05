@@ -4,6 +4,7 @@ import { getValueFormatterIndex, ValueFormatter } from '@grafana/data';
 import { TimeSeriesData } from 'components/TimeSeries';
 
 export interface TimeSliderProps {
+  animControl: any,
   styles: any;
   tsData: TimeSeriesData;
   setLabel: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -25,7 +26,8 @@ export const TimeSliderFactory = (props: TimeSliderProps) => {
   const range = 1000;
   const setLabel = props.setLabel;
   const labelWidth = 170;
-  const sliderWidth = props.windowWidth - labelWidth;
+  const animControlWidth = props.animControl ? 20 : 0;
+  const sliderWidth = props.windowWidth - labelWidth - animControlWidth;
 
   // Resync value export when disabled
   if (!props.enabled) {
@@ -55,7 +57,8 @@ export const TimeSliderFactory = (props: TimeSliderProps) => {
         gap: 5px;
         `
         )}>
-          <input
+        {props.animControl}
+        <input
           type="range"
           style={{width: sliderWidth}}
           min="0"

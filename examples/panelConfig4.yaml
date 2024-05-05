@@ -1,0 +1,94 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - link: &grafana-home
+      url: "https://grafana.com/"
+      params: "time"
+  - flowAnimation: &flow-slow
+      thresholdOffValue: 2
+      thresholdLwrValue: 10
+      thresholdLwrDurationSecs: 1
+      thresholdUprValue: 100
+      thresholdUprDurationSecs: 0.1
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+test:
+  testDataBaseOffset: 1
+  
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+cells: 
+  drawio:
+    link:
+      url: "https://app.diagrams.net/?p=svgdata"
+  docs:
+    link:
+      url: "https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/src/README.md"
+  inbox_depth:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "cr"
+      units: "none"
+    labelColor:
+      gradientMode: "hue"
+      thresholds:
+        - {color: "green", level: 0}
+        - {color: "orange", level: 500}
+        - {color: "red", level: 1000}
+    link: *grafana-home
+  db_transactions:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "ops"
+    fillColor:
+      thresholds:
+        - {color: "semi-dark-green", level: 0}
+        - {color: "orange", level: 400}
+        - {color: "red", level: 800}
+    link: *grafana-home
+  inbox_transactions:
+    dataRef: "test-data-large-cos"
+    flowAnimation:
+      thresholdOffValue: 10
+      thresholdLwrValue: 100
+      thresholdLwrDurationSecs: 1
+      thresholdUprValue: 600
+      thresholdUprDurationSecs: 0.1
+  inbox_workers:
+    dataRef: "test-data-small-sin"
+    flowAnimation: *flow-slow
+  workers_reads:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "colon"
+      units: "ops"
+    labelColor:
+      thresholds:
+        - {color: "green", level: 0}
+        - {color: "orange", level: 100}
+    flowAnimation: *flow-slow
+  start_rate:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "colon"
+      units: "pps"
+    labelColor:
+      thresholds:
+        - {color: "green", level: 0}
+        - {color: "orange", level: 100}
+    link: *grafana-home
+  active_workers:
+    dataRef: "test-data-small-cos"
+    label:
+      separator: "cr"
+      units: "none"
+    labelColor:
+      thresholds:
+        - {color: "#888888", level: 0}
+        - {color: "light-blue", level: 100}

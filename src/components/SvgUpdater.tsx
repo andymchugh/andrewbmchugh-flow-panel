@@ -2,7 +2,7 @@ import { getValueFormatterIndex, formattedValueToString, GrafanaTheme2 } from '@
 import { 
   DatapointMode, HighlightFactors,
   LabelSeparator, Link,
-  PanelConfig, PanelConfigCell, PanelConfigCellColor, PanelConfigCellLabel,
+  PanelConfig, PanelConfigCell, PanelConfigCellColor, PanelConfigCellFlowAnimation, PanelConfigCellLabel,
   SiteConfig, VariableThresholdScalars } from 'components/Config';
 import { TimeSeriesData } from 'components/TimeSeries';
 import {
@@ -42,6 +42,11 @@ export type SvgHolder = {
   doc: Document;
   attribs: SvgAttribs;
 }
+
+type FlowAnimationState = {
+  durationSecs: number;
+  direction: string;
+};
 
 function generateLabelPreamble(label: string | null, separator: LabelSeparator | null) {
   label = (label || '').trim();
@@ -217,6 +222,36 @@ function formatCellValue(cellLabelData: PanelConfigCellLabel, value: number) {
   return res;
 }
 
+export function getFlowAnimationState(config: PanelConfigCellFlowAnimation, cellValue: number | null) {
+  if (typeof cellValue === 'number' && config.dataCoherent) {
+    const absValue = Math.abs(cellValue);
+    let durationSecs = 0;
+
+    if ((typeof config.thresholdOffValue === 'number') && (absValue <= config.thresholdOffValue)) {
+      durationSecs = 0;
+    }
+    else if (absValue <= config.thresholdLwrValue) {
+      durationSecs = config.thresholdLwrDurationSecs;
+    }
+    else if (absValue >= config.thresholdUprValue) {
+      durationSecs = config.thresholdUprDurationSecs;
+    }
+    else {
+      const factor = (absValue - config.thresholdLwrValue) / (config.thresholdUprValue - config.thresholdLwrValue);
+      const periodDelta = (config.thresholdLwrDurationSecs - config.thresholdUprDurationSecs);
+      durationSecs = config.thresholdUprDurationSecs + ((1 - factor) * periodDelta);
+    }
+    return {
+      durationSecs: durationSecs,
+      direction: (cellValue >= 0) || config.unidirectional ? 'normal' : 'reverse',
+    }
+  }
+  return {
+    durationSecs: 0,
+    direction: 'normal',
+  }
+}
+
 function setFillAttribute(el: Element, color: string | null | undefined) {
   if (color) {
     el.setAttribute('fill', color);
@@ -225,7 +260,12 @@ function setFillAttribute(el: Element, color: string | null | undefined) {
   }
 }
 
-export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highlighterSelection: string | undefined) {
+function setFlowAnimationAttributes(el: HTMLElement, state: FlowAnimationState) {
+  el.style.animationDuration = state.durationSecs.toString() + 's';
+  el.style.animationDirection = state.direction;
+}
+
+export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highlighterSelection: string | undefined, animationsEnabled: boolean) {
   const variableValues = svgHolder.attribs.variableValues;
   const elementAttribs = svgHolder.attribs.elementAttribs;
   const highlightFactors = svgHolder.attribs.highlightFactors;
@@ -234,7 +274,7 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     // This function sources the dataRef from the inner paramData and scales it using
     // the variables to a threshold seed. If it doesn't exist it returns the passed in
     // default.
-    function thresholdSeed(datapoint: DatapointMode | undefined, paramData: PanelConfigCellColor | undefined, defaultSeed: number | null) {
+    function thresholdSeed(datapoint: DatapointMode | undefined, paramData: PanelConfigCellColor | PanelConfigCellFlowAnimation | undefined, defaultSeed: number | null) {
       if (paramData?.dataRef) {
         const cellValue = getCellValue(datapoint, paramData.dataRef, tsData);
         return variableThresholdScaleValue(variableValues, cellData, cellValue);
@@ -249,19 +289,24 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     const cellValueSeed = variableThresholdScaleValue(variableValues, cellData, cellValue);
 
     const cellLabelData = cellData.cellProps.label;
-    const cellLabelDatapoint = cellData.cellProps.label?.datapoint;
+    const cellLabelDatapoint = cellLabelData?.datapoint;
     const cellLabelValue = cellLabelData?.dataRef ? getCellValue(cellLabelDatapoint, cellLabelData.dataRef, tsData) : cellValue;
     const cellLabel = cellLabelData && (typeof cellLabelValue === 'number') ? formatCellValue(cellLabelData, cellLabelValue) : null;
 
     const cellFillColorData = cellData.cellProps.fillColor;
-    const cellFillColorDatapoint = cellData.cellProps.fillColor?.datapoint;
+    const cellFillColorDatapoint = cellFillColorData?.datapoint;
     const cellFillColorSeed = thresholdSeed(cellFillColorDatapoint, cellFillColorData, cellValueSeed);
     const cellFillColor = cellFillColorData && (typeof cellFillColorSeed === 'number') ? getColor(cellFillColorData, cellFillColorSeed, highlight, highlightFactors) : null;
 
     const cellLabelColorData = cellData.cellProps.labelColor;
-    const cellLabelColorDatapoint = cellData.cellProps.labelColor?.datapoint;
+    const cellLabelColorDatapoint = cellLabelColorData?.datapoint;
     const cellLabelColorSeed = thresholdSeed(cellLabelColorDatapoint, cellLabelColorData, cellValueSeed);
     const cellLabelColor = cellLabelColorData && (typeof cellLabelColorSeed === 'number') ? getColor(cellLabelColorData, cellLabelColorSeed, highlight, highlightFactors) : null;
+
+    const cellFlowAnimData = cellData.cellProps.flowAnimation;
+    const cellFlowAnimDatapoint = cellFlowAnimData?.datapoint;
+    const cellFlowAnimSeed = thresholdSeed(cellFlowAnimDatapoint, cellFlowAnimData, cellValueSeed);
+    const cellFlowAnimState = cellFlowAnimData ? getFlowAnimationState(cellFlowAnimData, animationsEnabled ? cellFlowAnimSeed : null ) : null;
 
     cellData.fillElements.forEach((el: HTMLElement) => {
       if (cellFillColorData) {
@@ -277,6 +322,11 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     if (cellFillColorData) {
       cellData.textElements.forEach((el: HTMLElement) => {
         setFillAttribute(el, cellFillColor || elementAttribs.get(el.id)?.fillColor);
+      });
+    }
+    if (cellFlowAnimState) {
+      cellData.textElements.forEach((el: HTMLElement) => {
+        setFlowAnimationAttributes(el, cellFlowAnimState);
       });
     }
   });

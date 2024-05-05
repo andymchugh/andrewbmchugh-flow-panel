@@ -47,6 +47,14 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
     defaultValue: true,
   })
   .addBooleanSwitch({
+    path: 'animationsEnabled',
+    name: 'Animations Enabled',
+    description: `This defines the initial state of animations controlled via yaml data. The actual
+    state is dynamically settable from the play/pause button in the bottom left corner of the
+    panel. The button is only visible if animations have been defined in the yaml data.`,
+    defaultValue: true,
+  })
+  .addBooleanSwitch({
     path: 'highlighterEnabled',
     name: 'Highlighter',
     description: `When enabled a highlighting bar is added below the SVG. Widgets on the

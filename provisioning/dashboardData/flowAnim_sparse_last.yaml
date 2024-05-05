@@ -1,0 +1,66 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - link: &grafana-home
+      url: "https://grafana.com/"
+      params: "time"
+  - thresholds: &thresholds-slow
+      - {color: "green", level: 0}
+      - {color: "orange", level: 80}
+      - {color: "red", level: 150}
+  - thresholds: &thresholds-fast
+      - {color: "green", level: 0}
+      - {color: "orange", level: 200}
+      - {color: "red", level: 600}
+  - flowAnimation: &flowanim-slow
+      thresholdOffValue: 2
+      thresholdLwrValue: 10
+      thresholdLwrDurationSecs: 1
+      thresholdUprValue: 100
+      thresholdUprDurationSecs: 0.1
+  - flowAnimation: &flowanim-fast
+      thresholdOffValue: 10
+      thresholdLwrValue: 100
+      thresholdLwrDurationSecs: 1
+      thresholdUprValue: 600
+      thresholdUprDurationSecs: 0.1
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+test:
+  testDataSparse: true
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+tagConfig:
+  condensed: false
+cells: 
+
+  inbox_transactions:
+    tags: ['worker', 'db']
+    dataRef: "test-data-small-cos"
+    label:
+      separator: "colon"
+      units: "ops"
+    labelColor:
+      thresholds: *thresholds-slow
+    flowAnimation: *flowanim-slow
+    link: *grafana-home
+
+  inbox_workers:
+    tags: ['worker', 'rate']
+    dataRef: "test-data-small-sin"
+    flowAnimation: *flowanim-slow
+
+  start_rate:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "colon"
+      units: "pps"
+    labelColor:
+      thresholds: *thresholds-slow
+    link: *grafana-home

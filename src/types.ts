@@ -11,6 +11,7 @@ export interface FlowOptions {
   panelConfig: string;
   siteConfig: string;
   panZoomEnabled: boolean;
+  animationsEnabled: boolean;
   highlighterEnabled: boolean;
   timeSliderEnabled: boolean;
   debuggingCtr: DebuggingCtrs;
