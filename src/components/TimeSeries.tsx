@@ -1,5 +1,6 @@
 import { FieldType, getFieldDisplayName } from '@grafana/data';
 import { sliderTime } from 'components/TimeSlider';
+import { TestConfig } from './Config';
 
 export type TimeSeries = {
   time: {
@@ -16,7 +17,10 @@ export type TimeSeriesData = {
   ts: Map<string, TimeSeries>;
 };
 
-export function seriesExtend(tsData: TimeSeriesData, timeMin: number, timeMax: number, dataSparse: boolean) {
+export function seriesExtend(tsData: TimeSeriesData, timeMin: number, timeMax: number, testConfig: TestConfig | undefined) {
+  const dataSparse = testConfig?.testDataSparse;
+  const dataExtendedZero = testConfig?.testDataExtendedZero;
+  const baseOffset = typeof testConfig?.testDataBaseOffset === 'number' ? testConfig.testDataBaseOffset : 1;
   const create = function(datapoints: number, scalar: number, fn: (inp: number) => number) {
     const intervalTime = Math.ceil((timeMax - timeMin) / datapoints);
     const intervalValue = 2 * Math.PI / datapoints;
@@ -24,7 +28,9 @@ export function seriesExtend(tsData: TimeSeriesData, timeMin: number, timeMax: n
     let dataValues = [];
     for (let i = 0; i <  datapoints; i++) {
       timeValues.push(timeMin + (i * intervalTime));
-      dataValues.push(dataSparse && ((i % 10) > 5)? null : scalar * (1 + fn(i * intervalValue)));
+
+      const dv = scalar * (baseOffset + fn(i * intervalValue));
+      dataValues.push(dataSparse && ((i % 10) > 5) ? null : dataExtendedZero && Math.abs(dv) < 20 ? 0 : dv);
     }
     return {
       time: {values: timeValues},

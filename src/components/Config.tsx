@@ -26,6 +26,8 @@ export type Background = {
 
 export type TestConfig = {
   testDataSparse: boolean | undefined;
+  testDataBaseOffset: number | undefined;
+  testDataExtendedZero: boolean | undefined;
 };
 
 export type PanelConfigCellLabel = {
@@ -45,6 +47,18 @@ export type PanelConfigCellColor = {
   thresholds: Threshold[] | undefined;
 };
 
+export type PanelConfigCellFlowAnimation = {
+  dataRef: string | undefined;
+  datapoint: DatapointMode | undefined;
+  thresholdOffValue: number | undefined;
+  thresholdLwrValue: number;
+  thresholdLwrDurationSecs: number;
+  thresholdUprValue: number;
+  thresholdUprDurationSecs: number;
+  unidirectional: boolean;
+  dataCoherent: boolean;
+};
+
 export type PanelConfigCell = {
   dataRef: string | undefined;
   datapoint: DatapointMode | undefined;
@@ -53,6 +67,7 @@ export type PanelConfigCell = {
   label: PanelConfigCellLabel | undefined;
   labelColor: PanelConfigCellColor | undefined;
   fillColor: PanelConfigCellColor | undefined;
+  flowAnimation: PanelConfigCellFlowAnimation | undefined;
   tags: Set<string> | undefined;
 };
 
@@ -79,6 +94,7 @@ export type SiteConfig = {
 export type PanelConfig = {
   test: TestConfig;
   background: Background;
+  animationsPresent: boolean;
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
   gradientMode: ColorGradientMode;
   datapoint: DatapointMode | undefined;
@@ -182,7 +198,22 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
     if (typeof cell.datapoint === 'undefined') {
       cell.datapoint = panelConfig.datapoint;
     }
-});
+
+    // Flow animation drives are valid only when all terms are defined
+    // coherently
+    if (cell.flowAnimation) {
+      cell.flowAnimation.dataCoherent = ((typeof cell.flowAnimation.thresholdOffValue === 'undefined') ||
+        (typeof cell.flowAnimation.thresholdOffValue === 'number')) &&
+        (typeof cell.flowAnimation.thresholdLwrValue === 'number') &&
+        (typeof cell.flowAnimation.thresholdUprValue === 'number') &&
+        (typeof cell.flowAnimation.thresholdLwrDurationSecs === 'number') &&
+        (typeof cell.flowAnimation.thresholdUprDurationSecs === 'number') &&
+        (cell.flowAnimation.thresholdUprValue >= cell.flowAnimation.thresholdLwrValue);
+
+      cell.flowAnimation.unidirectional = !!cell.flowAnimation.unidirectional;
+      panelConfig.animationsPresent = true;
+    }
+  });
 }
 
 export function configInit(siteConfig: SiteConfig, panelConfig: PanelConfig) {

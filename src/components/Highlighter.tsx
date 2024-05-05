@@ -1,5 +1,5 @@
 import React from 'react';
-import { cx } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { LegendDisplayMode, VizLegend, VizLegendItem } from '@grafana/ui';
 import { PanelConfigHighlighter } from 'components/Config';
 
@@ -10,6 +10,7 @@ export enum HighlightState {
 };
 
 export interface HighlighterProps {
+  animControl: any,
   styles: any;
   enabled: boolean;
   highlighterConfig: PanelConfigHighlighter | undefined;
@@ -42,7 +43,15 @@ export const HighlighterFactory = (props: HighlighterProps) => {
   const items = props.enabled && props.highlighterConfig ? legendItems(props.highlighterConfig, props.selection) : [];
 
   return (
-    <div className={cx(props.styles.wrapper)}>
+    <div className={cx(
+      props.styles.wrapper,
+      css`
+      text-align: left;
+      display: flex;
+      gap: 5px;
+      `
+      )}>
+      {props.animControl}
       {VizLegend({
         placement: 'bottom',
         displayMode: LegendDisplayMode.List,
