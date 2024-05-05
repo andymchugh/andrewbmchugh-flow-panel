@@ -26,6 +26,10 @@ New test data added to facilitate testing of the flow-animations:
 - test.testDataBaseOffset
 - test.testDataExtendedZero
 
+One Datapoint Interpolation fix
+-------------------------------
+Fixes a bug with timeSeries interpolation which resulted in no data when the timeSeries only had a single datapoint.
+
 ## 1.10.0
 Increases the range of SVG shape support by relaxing the expected DOM element
 hierachy.

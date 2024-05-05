@@ -113,25 +113,27 @@ export function seriesInterpolate(tsData: TimeSeriesData, timeSliderScalar: numb
 
       // Guess first position based on a ts with linear time progression
       const maxInd = ts.time.values.length - 1;
-      const minTime = ts.time.values[0];
-      const maxTime = ts.time.values[maxInd];
-      let targetInd = maxInd * (targetTime - minTime) / (maxTime - minTime);
-      targetInd = Math.max(0, Math.min(maxInd, Math.ceil(targetInd)));
-      const nudge = ts.time.values[targetInd] < targetTime ? 1 : -1;
+      if (maxInd >= 0) {
+        const minTime = ts.time.values[0];
+        const maxTime = ts.time.values[maxInd];
+        let targetInd = (maxInd * (targetTime - minTime) / (maxTime - minTime)) || 0;
+        targetInd = Math.max(0, Math.min(maxInd, Math.ceil(targetInd)));
+        const nudge = ts.time.values[targetInd] < targetTime ? 1 : -1;
 
-      while ((targetInd >= 0) && (targetInd  <= maxInd)) {
-        const time = ts.time.values[targetInd];
-        const deltaTime = targetTime - time;
-        const deltaTimeAbs = Math.abs(deltaTime);
-        if ((closestDeltaTime == null) || (deltaTimeAbs < closestDeltaTime)) {
-          closestDeltaTime = deltaTimeAbs;
-          closestIndex = targetInd;
+        while ((targetInd >= 0) && (targetInd  <= maxInd)) {
+          const time = ts.time.values[targetInd];
+          const deltaTime = targetTime - time;
+          const deltaTimeAbs = Math.abs(deltaTime);
+          if ((closestDeltaTime == null) || (deltaTimeAbs < closestDeltaTime)) {
+            closestDeltaTime = deltaTimeAbs;
+            closestIndex = targetInd;
+          }
+          // Break out once we start getting worse
+          if (deltaTimeAbs > closestDeltaTime) {
+            break;
+          }
+          targetInd += nudge;
         }
-        // Break out once we start getting worse
-        if (deltaTimeAbs > closestDeltaTime) {
-          break;
-        }
-        targetInd += nudge;
       }
       ts.time.valuesIndex = closestIndex;
     }
