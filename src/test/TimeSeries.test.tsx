@@ -1,38 +1,89 @@
 import { getFieldDisplayName, toDataFrame } from '@grafana/data';
 import { seriesInterpolate, TimeSeries, TimeSeriesData } from 'components/TimeSeries'
 
-test('interpolate1', () => {
+// When we interpolate we lock in a timeValues index, so we need to clear this
+// between interpolations, as happens naturally when we receive new data. The
+// expected index is going to be the index of the closest time value to the
+// slider position where the slider is a linear (0-1) position on the time range.
+function checkTimeIndex(tsd: TimeSeriesData, ts: TimeSeries, timeSliderVal: number, expectedTimeIndex: number | null) {
+    seriesInterpolate(tsd, timeSliderVal);
+    expect(ts.time.valuesIndex).toEqual(expectedTimeIndex);
+    ts.time.valuesIndex = null;
+}
+
+test('interpolate', () => {
     const tsd: TimeSeriesData = {
         timeMin: 1000,
         timeMax: 3000,
         timeRange: 2000,
         ts: new Map<string, TimeSeries>(),
     };
-    
+
     const timeVals = [1000, 1010, 1020, 1030, 1540, 1942, 2006, 2572, 2798, 3000];
 
-    const timeSeries1: TimeSeries = {
+    const ts: TimeSeries = {
         time: {values: timeVals},
         values: Array(1000).fill(0),
     };
-    
-    tsd.ts.set('data1', timeSeries1);
-     
-    // When we interpolate we lock in a timeValues index, so we need to clear this
-    // between interpolations, as happens naturally when we receive new data. The
-    // expected index is going to be the index of the closest time value to the
-    // slider position where the slider is a linear (0-1) position on the time range.
-    const check = (timeSliderVal: number, expectedTimeIndex:  number) => {
-        seriesInterpolate(tsd, timeSliderVal);
-        expect(timeSeries1.time.valuesIndex).toEqual(expectedTimeIndex);
-        timeSeries1.time.valuesIndex = null;
-    }
-    check(-0.1, 0);
-    check(0, 0);
-    check(1, 9);
-    check(1.1, 9);
-    check(0.5, 6);
-    check(0.1, 3);
+
+    tsd.ts.set('data1', ts);
+
+    checkTimeIndex(tsd, ts, -0.1, 0);
+    checkTimeIndex(tsd, ts, 0, 0);
+    checkTimeIndex(tsd, ts, 1, 9);
+    checkTimeIndex(tsd, ts, 1.1, 9);
+    checkTimeIndex(tsd, ts, 0.5, 6);
+    checkTimeIndex(tsd, ts, 0.1, 3);
+});
+
+test('interpolate_1_datapoint', () => {
+  const tsd: TimeSeriesData = {
+      timeMin: 1000,
+      timeMax: 3000,
+      timeRange: 2000,
+      ts: new Map<string, TimeSeries>(),
+  };
+
+  const timeVals = [1020];
+
+  const ts: TimeSeries = {
+      time: {values: timeVals},
+      values: Array(1).fill(25),
+  };
+
+  tsd.ts.set('data1', ts);
+
+  checkTimeIndex(tsd, ts, -0.1, 0);
+  checkTimeIndex(tsd, ts, 0, 0);
+  checkTimeIndex(tsd, ts, 1, 0);
+  checkTimeIndex(tsd, ts, 1.1, 0);
+  checkTimeIndex(tsd, ts, 0.5, 0);
+  checkTimeIndex(tsd, ts, 0.1, 0);
+});
+
+test('interpolate_0_datapoint', () => {
+  const tsd: TimeSeriesData = {
+      timeMin: 1000,
+      timeMax: 3000,
+      timeRange: 2000,
+      ts: new Map<string, TimeSeries>(),
+  };
+
+  const timeVals: number[] = [];
+
+  const ts: TimeSeries = {
+      time: {values: timeVals},
+      values: [],
+  };
+
+  tsd.ts.set('data1', ts);
+
+  checkTimeIndex(tsd, ts, -0.1, null);
+  checkTimeIndex(tsd, ts, 0, null);
+  checkTimeIndex(tsd, ts, 1, null);
+  checkTimeIndex(tsd, ts, 1.1, null);
+  checkTimeIndex(tsd, ts, 0.5, null);
+  checkTimeIndex(tsd, ts, 0.1, null);
 });
 
 test('displayNameFromTimeSeries', () => {
