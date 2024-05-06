@@ -167,6 +167,28 @@ cells:
       # undefined it will default to the value specified at the panel level in cellLabelDecimalPoints. 
       decimalPoints: 0
 
+      # Version 1.11.0 onwards: valueMappings is an array of 'match-criteria -> text' that allows you to
+      # display custom values. The array is iterated in order and breaks out on first match. If no match
+      # is found value formatting (with units) continues as normal.
+      #
+      # value: [optional] value must match this term.
+      # valueMin: [optional] value must match or exceed this term.
+      # valueMax: [optional] value must match or be under this term.
+      # text: text to substitute for the value when a match is made.
+      #
+      # Criteria can be specified as an exact match, a range or just a min or just a max. The min/max
+      # terms will be ignored if an exact match is also specified.
+      valueMappings:
+        - {value: null, text: "value is null"}
+        - {value: 3, text: "value is 3"}
+        - {valueMax: 300, text: "value is low"}
+        - {valueMin: 300, valueMax: 600, text: "value in range"}
+        - {valueMin: 600, text: "value is high"}
+
+      # Version 1.11.0 onwards: valueMappings (see above) can also be specified in site config. Use
+      # this term to reference that set.
+      valueMappingsRef: "dbTrans"
+
     # The label color field defines how the text in the cell should be colored based on the
     # time-series value. If no adjustment is wanted the field should be omitted.
     labelColor:

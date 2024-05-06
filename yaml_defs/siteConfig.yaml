@@ -34,7 +34,7 @@ colors:
 
 # These are refenced from panelConfig via the 'thresholdsRef' field.
 # i.e. in panelConfig you see: thresholdsRef: "queueCount".
-# The fields inside a link are explained in the panelConfig documentation.
+# The fields inside are explained in the panelConfig documentation.
 thresholds:
   queuecount:
     - {color: "green", level: 10}
@@ -44,3 +44,16 @@ thresholds:
     - {color: "green", level: 200}
     - {color: "amber", level: 300}
     - {color: "red", level: 1500}
+
+# Version 1.11.0 onwards: These are refenced from panelConfig via the 'valueMappingsRef' field.
+# i.e. in panelConfig you see: valueMappingsRef: "dbTrans".
+# The fields inside are explained in the panelConfig documentation.
+valueMappings:
+  dbTrans:
+    - {valueMax: 300, text: "low"}
+    - {valueMin: 300, valueMax: 600, text: "medium"}
+    - {valueMin: 600, text: "high"}
+  bypassValve:
+    - {value: 0, text: "auto"}
+    - {value: 1, text: "open"}
+    - {value: 2, text: "closed"}

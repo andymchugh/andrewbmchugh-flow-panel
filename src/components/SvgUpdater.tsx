@@ -1,6 +1,6 @@
 import { getValueFormatterIndex, formattedValueToString, GrafanaTheme2 } from '@grafana/data';
 import { 
-  DatapointMode, HighlightFactors,
+  DatapointMode, FlowValueMapping, HighlightFactors,
   LabelSeparator, Link,
   PanelConfig, PanelConfigCell, PanelConfigCellColor, PanelConfigCellFlowAnimation, PanelConfigCellLabel,
   SiteConfig, VariableThresholdScalars } from 'components/Config';
@@ -210,6 +210,26 @@ function getCellValue(datapoint: DatapointMode | undefined, tsName: string, tsDa
   return value;
 }
 
+export function valueMapping(valueMappings: FlowValueMapping[], value: number | null) {
+  for (const mapping of valueMappings) {
+    if (mapping.valid) {
+      let match = false;
+      if (typeof mapping.value !== 'undefined') {
+        match = (value === mapping.value);
+      }
+      else if (typeof value === 'number') {
+        match =
+          ((typeof mapping.valueMin === 'undefined') || (value >= mapping.valueMin)) &&
+          ((typeof mapping.valueMax === 'undefined') || (value <= mapping.valueMax));
+      }
+      if (match) {
+        return mapping.text;
+      }
+    }
+  }
+  return null;
+}
+
 function formatCellValue(cellLabelData: PanelConfigCellLabel, value: number) {
   const format = cellLabelData.units || 'none';
   const decimalPoints = cellLabelData.decimalPoints;
@@ -291,7 +311,8 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     const cellLabelData = cellData.cellProps.label;
     const cellLabelDatapoint = cellLabelData?.datapoint;
     const cellLabelValue = cellLabelData?.dataRef ? getCellValue(cellLabelDatapoint, cellLabelData.dataRef, tsData) : cellValue;
-    const cellLabel = cellLabelData && (typeof cellLabelValue === 'number') ? formatCellValue(cellLabelData, cellLabelValue) : null;
+    const cellLabelMappedValue = cellLabelData?.valueMappings ? valueMapping(cellLabelData.valueMappings, cellLabelValue) : null;
+    const cellLabel = cellLabelMappedValue || (cellLabelData && (typeof cellLabelValue === 'number') ? formatCellValue(cellLabelData, cellLabelValue) : null);
 
     const cellFillColorData = cellData.cellProps.fillColor;
     const cellFillColorDatapoint = cellFillColorData?.datapoint;

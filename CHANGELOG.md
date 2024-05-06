@@ -9,14 +9,7 @@ animated lines that are controllable via 'direction' and 'duration' attributes. 
 change adds yaml config to drive these animations off of data. When such config is
 present a play/pause button is always added to the panel to ensure the panel is usable
 by all. New config terms:
-- cells.cell-name.flowAnimation.dataRef
-- cells.cell-name.flowAnimation.datapoint
-- cells.cell-name.flowAnimation.thresholdOffValue
-- cells.cell-name.flowAnimation.thresholdLwrValue
-- cells.cell-name.flowAnimation.thresholdLwrDurationSecs
-- cells.cell-name.flowAnimation.thresholdUprValue
-- cells.cell-name.flowAnimation.thresholdUprDurationSecs
-- cells.cell-name.flowAnimation.unidirectional
+- cells.cell-name.flowAnimation
 
 As well as provisioning dashboards, the above functionality is demonstrated in example 4:
 - svg: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg4.svg
@@ -29,6 +22,18 @@ New test data added to facilitate testing of the flow-animations:
 One Datapoint Interpolation fix
 -------------------------------
 Fixes a bug with timeSeries interpolation which resulted in no data when the timeSeries only had a single datapoint.
+
+Value Mappings Support
+----------------------
+This allows you to configure a custom value based on data-match criteria. i.e. if your data is 0, 1, 2 you can use
+this configuration to replace the 'label' text with 'auto', open', 'closed'. The criteria you can use to match are:
+- exact value match
+- range match
+- partial range match.
+
+New panelConfig terms:
+- cells.cell-name.label.valueMappings
+- cells.cell-name.label.valueMappingsRef
 
 ## 1.10.0
 Increases the range of SVG shape support by relaxing the expected DOM element

@@ -1,0 +1,56 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+test:
+  testDataExtendedZero: true
+
+anchorLinks:
+  - valueMappings: &valuemap1
+    - {value: null, text: "panel null"}
+    - {value: 0, text: "panel off"}
+    - {valueMax: 300, text: "panel low"}
+    - {valueMin: 300, valueMax: 600, text: "panel medium"}
+    - {valueMin: 600, text: "panel high"}
+  - thresholds: &thresholds
+    - {color: "green", level: 0}
+    - {color: "orange", level: 500}
+    - {color: "red", level: 1000}
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+cells: 
+  dbtrans1:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "replace"
+      units: "ops"
+      valueMappings: *valuemap1
+    labelColor:
+      thresholds: *thresholds
+  dbtrans2:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "ops"
+    fillColor:
+      thresholds: *thresholds
+  dbtrans3:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "replace"
+      units: "ops"
+      valueMappingsRef: "dbTrans"
+    labelColor:
+      thresholds: *thresholds
+  dbtrans4:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "ops"
+    fillColor:
+      thresholds: *thresholds
