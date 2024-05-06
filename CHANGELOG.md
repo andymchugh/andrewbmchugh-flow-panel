@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.x.0
+## 1.11.0
 Flow Animations
 ---------------
 Adds support for draw.io line flow animations. In draw.io lines with 'Flow Animation'

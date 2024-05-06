@@ -16,7 +16,9 @@
     "links": [
       {"name": "Website", "url": "https://github.com/andymchugh/andrewbmchugh-flow-panel"},
       {"name": "License", "url": "https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/LICENSE"},
-      {"name": "YAML Definitions", "url": "https://github.com/andymchugh/andrewbmchugh-flow-panel/tree/main/yaml_defs"}
+      {"name": "YAML Definitions", "url": "https://github.com/andymchugh/andrewbmchugh-flow-panel/tree/main/yaml_defs"},
+      {"name": "Example SVGs and YAML", "url": "https://github.com/andymchugh/andrewbmchugh-flow-panel/tree/main/examples"},
+      {"name": "Provisioned Dashboards and Data", "url": "https://github.com/andymchugh/andrewbmchugh-flow-panel/tree/main/provisioning"}
     ],
     "screenshots": [
       {"name": "Getting Started", "path": "img/example1.png"},
