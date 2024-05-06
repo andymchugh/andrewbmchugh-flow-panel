@@ -1,5 +1,5 @@
-import { PanelConfigCellFlowAnimation } from 'components/Config';
-import { getFlowAnimationState } from 'components/SvgUpdater'
+import { FlowValueMapping, PanelConfigCellFlowAnimation } from 'components/Config';
+import { getFlowAnimationState, valueMapping } from 'components/SvgUpdater'
 
 test('coherent_min_max', () => {
   let fad: PanelConfigCellFlowAnimation = {
@@ -140,4 +140,32 @@ test('zero', () => {
   expect(animState.durationSecs).toEqual(0);
   animState = getFlowAnimationState(fad, 5);
   expect(animState.durationSecs).toEqual(0);
+});
+
+test('valuemapping', () => {
+  let fvm: FlowValueMapping[] = [
+    {valid: true, value: -3, valueMin: undefined, valueMax: undefined, text: 'val_-3'},
+    {valid: true, value: 0, valueMin: undefined, valueMax: undefined, text: 'val_0'},
+    {valid: true, value: 3, valueMin: undefined, valueMax: undefined, text: 'val_3'},
+    {valid: true, value: undefined, valueMin: 10, valueMax: 20, text: 'hello1'},
+    {valid: true, value: undefined, valueMin: 21, valueMax: 30, text: 'hello2'},
+    {valid: true, value: undefined, valueMin: 1000, valueMax: undefined, text: 'high'},
+    {valid: true, value: undefined, valueMin: undefined, valueMax: -1000, text: 'low'},
+  ];
+  expect(valueMapping(fvm, -4)).toEqual(null);
+  expect(valueMapping(fvm, -3)).toEqual('val_-3');
+  expect(valueMapping(fvm, 0)).toEqual('val_0');
+  expect(valueMapping(fvm, 3)).toEqual('val_3');
+  expect(valueMapping(fvm, null)).toEqual(null);
+  expect(valueMapping(fvm, -1100)).toEqual('low');
+  expect(valueMapping(fvm, 1100)).toEqual('high');
+});
+
+test('valuemappingnocriteria', () => {
+  let fvm: FlowValueMapping[] = [
+    {valid: true, value:  undefined, valueMin: undefined, valueMax: undefined, text: 'custom'},
+  ];
+  expect(valueMapping(fvm, -4)).toEqual('custom');
+  expect(valueMapping(fvm, 0)).toEqual('custom');
+  expect(valueMapping(fvm, 4)).toEqual('custom');
 });

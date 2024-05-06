@@ -30,6 +30,14 @@ export type TestConfig = {
   testDataExtendedZero: boolean | undefined;
 };
 
+export type FlowValueMapping = {
+  value: number | null | undefined;
+  valueMin: number | undefined;
+  valueMax: number | undefined;
+  text: string;
+  valid: boolean;
+};
+
 export type PanelConfigCellLabel = {
   dataRef: string | undefined;
   datapoint: DatapointMode | undefined;
@@ -37,6 +45,8 @@ export type PanelConfigCellLabel = {
   units: string | undefined;
   unitsPostfix: string | undefined;
   decimalPoints: number | null | undefined;
+  valueMappingsRef: string | undefined;
+  valueMappings: FlowValueMapping[] | undefined;
 };
 
 export type PanelConfigCellColor = {
@@ -89,6 +99,7 @@ export type SiteConfig = {
   links: Map<string, Link>;
   colors: Map<string, string>;
   thresholds: Map<string, Threshold[]>;
+  valueMappings: Map<string, FlowValueMapping[]>;
 };
 
 export type PanelConfig = {
@@ -152,6 +163,7 @@ export function siteConfigFactory(config: any) {
     colors: new Map<string, string>(Object.entries(config.colors || {})),
     variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(Object.entries(config.variableThresholdScalars || {})),
     thresholds: new Map<string, Threshold[]>(Object.entries(config.thresholds || {})),
+    valueMappings: new Map<string, FlowValueMapping[]>(Object.entries(config.valueMappings || {})),
   } as SiteConfig;
 }
 
@@ -193,6 +205,17 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
       }
       if (typeof cell.label.datapoint === 'undefined') {
         cell.label.datapoint = cell.datapoint || panelConfig.datapoint;
+      }
+      if (!cell.label.valueMappings && cell.label.valueMappingsRef) {
+        cell.label.valueMappings = siteConfig.valueMappings.get(cell.label.valueMappingsRef);
+      }
+      if (cell.label.valueMappings) {
+        for (let mapping of cell.label.valueMappings) {
+          mapping.valid = mapping.valid || (
+            (typeof mapping.text === 'string') &&
+            ((typeof mapping.valueMin === 'number') || (typeof mapping.valueMin === 'undefined')) &&
+            ((typeof mapping.valueMax === 'number') || (typeof mapping.valueMax === 'undefined')));
+        }
       }
     }
     if (typeof cell.datapoint === 'undefined') {
