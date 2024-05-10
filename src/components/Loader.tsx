@@ -1,20 +1,31 @@
 import YAML from 'yaml';
-import { getTemplateSrv } from '@grafana/runtime';
+import { VariableInterpolation, getTemplateSrv } from '@grafana/runtime';
 import { isUrl } from 'components/Utils';
 
 //-----------------------------------------------------------------------------
+
+function extractInterpolations(interpolations: VariableInterpolation[]) {
+  let ids = '';
+  for (const interp of interpolations) {
+    ids += interp.match + '|';
+  }
+  return ids;
+}
 
 // Receives an svg source and calls the callback with the associated svg string.
 // The source can be:
 // - Serialised svg string
 // - A url to the serialised svg
-export async function loadSvg(source: string, fn: (svgStr: string) => void) {
+export async function loadSvg(source: string, fn: (svgStr: string) => void, fnVars: (svgStr: string) => void) {
   try {
     if (!isUrl(source)) {
       fn(source.substring(source.search('<svg')));
     }
     else {
-      const response = await fetch(source);
+      let interpolations: VariableInterpolation[] = [];
+      const source2 = getTemplateSrv().replace(source, undefined, undefined, interpolations);
+      fnVars(extractInterpolations(interpolations));
+      const response = await fetch(source2);
       if (!response.ok) {
         throw(response);
       }
@@ -32,7 +43,7 @@ export async function loadSvg(source: string, fn: (svgStr: string) => void) {
 // - The actual object
 // - Serialised yaml
 // - A url to the serialised yaml
-export async function loadYaml(source: (Object | string), fn: (yaml: Object) => void) {
+export async function loadYaml(source: (Object | string), fn: (yaml: Object) => void, fnVars: (svgStr: string) => void) {
   try {
     if (typeof source === 'object') {
       fn(source);
@@ -41,7 +52,9 @@ export async function loadYaml(source: (Object | string), fn: (yaml: Object) => 
       fn(YAML.parse(source));
     }
     else {
-      const source2 = getTemplateSrv().replace(source);
+      let interpolations: VariableInterpolation[] = [];
+      const source2 = getTemplateSrv().replace(source, undefined, undefined, interpolations);
+      fnVars(extractInterpolations(interpolations));
       const response = await fetch(source2);
       if (!response.ok) {
         throw(response);

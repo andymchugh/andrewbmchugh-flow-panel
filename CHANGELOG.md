@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.x.0
+URL Grafana Variables
+---------------------
+Adds support for grafana variables in the SVG URL. Before this was only available in the YAML
+URLs. It also corrects the variable change detection logic for all url variables to ensure we
+get a fresh fetch when relevant variables change.
+
 ## 1.11.0
 Flow Animations
 ---------------

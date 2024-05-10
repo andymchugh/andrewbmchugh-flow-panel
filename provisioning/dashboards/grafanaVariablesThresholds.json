@@ -235,7 +235,7 @@
     "type": "timepicker"
   },
   "timezone": "browser",
-  "title": "Grafana Variables",
+  "title": "Grafana Variables - Thresholds",
   "version": 1,
   "weekStart": ""
 }
