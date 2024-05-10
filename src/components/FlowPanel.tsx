@@ -118,6 +118,16 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   const grafanaTheme = useRef<GrafanaTheme2>(useTheme2());
 
   //---------------------------------------------------------------------------
+  // Dynamic URL Terms: If we load from url we record any variable substitutions
+  // that occured so we can force a re-initialize if any of those variables change
+  // value.
+
+  const [variableIdsSvg, setVariableIdsSvg] = useState<string>('');
+  const [variableIdsPanel, setVariableIdsPanel] = useState<string>('');
+  const [variableIdsSite, setVariableIdsSite] = useState<string>('');
+  const [actDynamicUrlCtr, setActDynamicUrlCtr] = useState<number>(0);
+
+  //---------------------------------------------------------------------------
   // Load config and svg
 
   useEffect(() => {
@@ -126,10 +136,27 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
     setSvgStr(undefined);
     setPanelConfig(undefined);
     setSiteConfig(undefined);
-    loadSvg(options.svg, setSvgStr);
-    loadYaml(options.siteConfig, (config) => {setSiteConfig(siteConfigFactory(config))});
-    loadYaml(options.panelConfig, (config) => {setPanelConfig(panelConfigFactory(config))});
-  }, [options.svg, options.panelConfig, options.siteConfig]);
+    loadSvg(options.svg, setSvgStr, setVariableIdsSvg);
+    loadYaml(options.siteConfig, (config) => {setSiteConfig(siteConfigFactory(config))}, setVariableIdsSite);
+    loadYaml(options.panelConfig, (config) => {setPanelConfig(panelConfigFactory(config))}, setVariableIdsPanel);
+  }, [options.svg, options.panelConfig, options.siteConfig, actDynamicUrlCtr]);
+
+  //---------------------------------------------------------------------------
+  // Monitor for url changes
+
+  // We need to not trigger a reload for the initial settings, just for subsequent
+  // change. This logic achieves that by ensuring pass 1, 2, n do not go into the
+  // incrementer.
+  // pass 1: last='', current=''
+  // pass 2: last='', current=<stuff>
+  // pass n: last=<stuff>, current=<stuff>
+  const dynamicUrlTerms = useRef<string>('');
+
+  const dynamicUrlTermsLast = dynamicUrlTerms.current;
+  dynamicUrlTerms.current = getTemplateSrv().replace(variableIdsSvg + variableIdsPanel + variableIdsSite);
+  if ((dynamicUrlTermsLast.length !== 0) && (dynamicUrlTermsLast !== dynamicUrlTerms.current)) {
+    setActDynamicUrlCtr(actDynamicUrlCtr + 1);
+  }
 
   //---------------------------------------------------------------------------
   // Initialise DOM and config
