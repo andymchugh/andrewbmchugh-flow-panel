@@ -210,7 +210,7 @@ function getCellValue(datapoint: DatapointMode | undefined, tsName: string, tsDa
   return value;
 }
 
-export function valueMapping(valueMappings: FlowValueMapping[], value: number | null) {
+export function valueMapping(valueMappings: FlowValueMapping[], value: number | string | null) {
   for (const mapping of valueMappings) {
     if (mapping.valid) {
       let match = false;
@@ -242,7 +242,7 @@ function formatCellValue(cellLabelData: PanelConfigCellLabel, value: number) {
   return res;
 }
 
-export function getFlowAnimationState(config: PanelConfigCellFlowAnimation, cellValue: number | null) {
+export function getFlowAnimationState(config: PanelConfigCellFlowAnimation, cellValue: number | string | null) {
   if (typeof cellValue === 'number' && config.dataCoherent) {
     const absValue = Math.abs(cellValue);
     let durationSecs = 0;
@@ -294,7 +294,7 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     // This function sources the dataRef from the inner paramData and scales it using
     // the variables to a threshold seed. If it doesn't exist it returns the passed in
     // default.
-    function thresholdSeed(datapoint: DatapointMode | undefined, paramData: PanelConfigCellColor | PanelConfigCellFlowAnimation | undefined, defaultSeed: number | null) {
+    function thresholdSeed(datapoint: DatapointMode | undefined, paramData: PanelConfigCellColor | PanelConfigCellFlowAnimation | undefined, defaultSeed: number | string | null) {
       if (paramData?.dataRef) {
         const cellValue = getCellValue(datapoint, paramData.dataRef, tsData);
         return variableThresholdScaleValue(variableValues, cellData, cellValue);
@@ -312,7 +312,7 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     const cellLabelDatapoint = cellLabelData?.datapoint;
     const cellLabelValue = cellLabelData?.dataRef ? getCellValue(cellLabelDatapoint, cellLabelData.dataRef, tsData) : cellValue;
     const cellLabelMappedValue = cellLabelData?.valueMappings ? valueMapping(cellLabelData.valueMappings, cellLabelValue) : null;
-    const cellLabel = cellLabelMappedValue || (cellLabelData && (typeof cellLabelValue === 'number') ? formatCellValue(cellLabelData, cellLabelValue) : null);
+    const cellLabel = cellLabelMappedValue || (cellLabelData && (typeof cellLabelValue === 'number') ? formatCellValue(cellLabelData, cellLabelValue) : cellLabelValue);
 
     const cellFillColorData = cellData.cellProps.fillColor;
     const cellFillColorDatapoint = cellFillColorData?.datapoint;

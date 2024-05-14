@@ -7,6 +7,12 @@ Adds support for grafana variables in the SVG URL. Before this was only availabl
 URLs. It also corrects the variable change detection logic for all url variables to ensure we
 get a fresh fetch when relevant variables change.
 
+String Data
+-----------
+This adds support for string timeseries for label drives. Color can still be driven by having
+number timeseries for colors and string timeseries for the label text. This is also compatible
+with value mappings.
+
 ## 1.11.0
 Flow Animations
 ---------------

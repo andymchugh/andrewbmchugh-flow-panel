@@ -7,7 +7,7 @@ export type TimeSeries = {
     valuesIndex?: number | null;
     values: number[];
   }
-  values: Array<number | null>;
+  values: Array<number | string | null>;
 };
 
 export type TimeSeriesData = {
@@ -21,7 +21,7 @@ export function seriesExtend(tsData: TimeSeriesData, timeMin: number, timeMax: n
   const dataSparse = testConfig?.testDataSparse;
   const dataExtendedZero = testConfig?.testDataExtendedZero;
   const baseOffset = typeof testConfig?.testDataBaseOffset === 'number' ? testConfig.testDataBaseOffset : 1;
-  const create = function(datapoints: number, scalar: number, fn: (inp: number) => number) {
+  const create = function(datapoints: number, scalar: number, fn: (inp: number) => number, asString: boolean) {
     const intervalTime = Math.ceil((timeMax - timeMin) / datapoints);
     const intervalValue = 2 * Math.PI / datapoints;
     let timeValues = [];
@@ -30,7 +30,9 @@ export function seriesExtend(tsData: TimeSeriesData, timeMin: number, timeMax: n
       timeValues.push(timeMin + (i * intervalTime));
 
       const dv = scalar * (baseOffset + fn(i * intervalValue));
-      dataValues.push(dataSparse && ((i % 10) > 5) ? null : dataExtendedZero && Math.abs(dv) < 20 ? 0 : dv);
+      const val1 = dataSparse && ((i % 10) > 5) ? null : dataExtendedZero && Math.abs(dv) < 20 ? 0 : dv;
+      const val2 = asString && (typeof val1 === 'number') ? '*' + Math.ceil(val1).toString() + '*' : val1;
+      dataValues.push(val2);
     }
     return {
       time: {values: timeValues},
@@ -38,16 +40,20 @@ export function seriesExtend(tsData: TimeSeriesData, timeMin: number, timeMax: n
     };
   }
 
-  const dataSets = [
-    {name: 'test-data-small-sin', datapoints: 75, scalar: 100, fn: Math.sin},
-    {name: 'test-data-large-sin', datapoints: 50, scalar: 500, fn: Math.sin},
-    {name: 'test-data-small-cos', datapoints: 60, scalar: 100, fn: Math.cos},
-    {name: 'test-data-large-cos', datapoints: 88, scalar: 500, fn: Math.cos},
+  let dataSets = [
+    {name: 'test-data-small-sin', datapoints: 75, scalar: 100, fn: Math.sin, asString: false},
+    {name: 'test-data-large-sin', datapoints: 50, scalar: 500, fn: Math.sin, asString: false},
+    {name: 'test-data-small-cos', datapoints: 60, scalar: 100, fn: Math.cos, asString: false},
+    {name: 'test-data-large-cos', datapoints: 88, scalar: 500, fn: Math.cos, asString: false},
   ];
+
+  if (testConfig?.testDataStringData) {
+    dataSets.push({name: 'test-data-string', datapoints: 65, scalar: 500, fn: Math.cos, asString: true});
+  }
 
   dataSets.forEach((ds) => {
     if (!tsData.ts.get(ds.name)) {
-      tsData.ts.set(ds.name, create(ds.datapoints, ds.scalar, ds.fn));
+      tsData.ts.set(ds.name, create(ds.datapoints, ds.scalar, ds.fn, ds.asString));
     }
   });
 }
