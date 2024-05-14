@@ -28,10 +28,11 @@ export type TestConfig = {
   testDataSparse: boolean | undefined;
   testDataBaseOffset: number | undefined;
   testDataExtendedZero: boolean | undefined;
+  testDataStringData: boolean | undefined;
 };
 
 export type FlowValueMapping = {
-  value: number | null | undefined;
+  value: string | number | null | undefined;
   valueMin: number | undefined;
   valueMax: number | undefined;
   text: string;

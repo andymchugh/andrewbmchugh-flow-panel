@@ -28,6 +28,9 @@ test:
   # testing in this region.
   testDataExtendedZero: false
 
+  # Version 1.12.0 onwards: When set test data values are extended with a string-data timeseries.
+  testDataStringData: false
+
 #------------------------------------------------------------------------------
 # Grafana Variable Scalars
 

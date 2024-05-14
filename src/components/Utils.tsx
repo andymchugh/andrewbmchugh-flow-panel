@@ -193,9 +193,9 @@ export function variableThresholdScalarsInit(
   }
 }
 
-export function variableThresholdScaleValue(variableValues: Map<string, string>, cellData: SvgCell, value: number | null) {
+export function variableThresholdScaleValue(variableValues: Map<string, string>, cellData: SvgCell, value: number | string | null) {
   if (typeof value !== 'number') {
-    return null;
+    return value;
   }
   let scalar = 1.0;
   cellData.variableThresholdScalars.forEach((rules, variableName) => {

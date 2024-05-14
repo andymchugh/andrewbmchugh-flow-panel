@@ -1,0 +1,84 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - link: &grafana-home
+      url: "https://grafana.com/"
+      params: "time"
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+test:
+  testDataExtendedZero: true
+  testDataStringData: true
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+tagConfig:
+  condensed: false
+cells: 
+  drawio:
+    link:
+      url: "https://app.diagrams.net/?p=svgdata"
+  docs:
+    link:
+      url: "https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/src/README.md"
+  inbox_depth:
+    tags: ['depth']
+    dataRef: "test-data-large-sin"
+    label:
+      dataRef: "test-data-string"
+      valueMappings:
+        - {value: "*0*", text: "*mapped to 0*"}
+        - {value: "*29*", text: "*mapped to 29*"}
+        - {valueMin: 300, valueMax: 600, text: "will never get here as data not a number"}
+      separator: "cr"
+      units: "none"
+    labelColor:
+      gradientMode: "hue"
+      thresholds:
+        - {color: "green", level: 0}
+        - {color: "orange", level: 500}
+        - {color: "red", level: 1000}
+    link: *grafana-home
+  db_transactions:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "ops"
+    fillColor:
+      thresholds:
+        - {color: "semi-dark-green", level: 0}
+        - {color: "orange", level: 400}
+        - {color: "red", level: 800}
+    link: *grafana-home
+  inbox_transactions:
+    tags: ['db']
+    dataRef: "test-data-large-cos"
+  inbox_workers:
+    tags: ['worker']
+    dataRef: "test-data-small-sin"
+  workers_reads:
+    dataRef: "test-data-small-sin"
+  start_rate:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "colon"
+      units: "pps"
+    labelColor:
+      thresholds:
+        - {color: "green", level: 0}
+        - {color: "orange", level: 100}
+    link: *grafana-home
+  active_workers:
+    dataRef: "test-data-string"
+    label:
+      separator: "cr"
+      units: "none"
+    labelColor:
+      thresholds:
+        - {color: "#888888", level: 0}
+        - {color: "light-blue", level: 100}
