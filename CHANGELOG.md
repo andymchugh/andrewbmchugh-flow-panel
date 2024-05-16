@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.x.0
+## 1.12.0
 URL Grafana Variables
 ---------------------
 Adds support for grafana variables in the SVG URL. Before this was only available in the YAML
