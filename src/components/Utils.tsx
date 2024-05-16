@@ -1,6 +1,6 @@
 import { GrafanaTheme2, colorManipulator } from '@grafana/data';
 import { SvgAttribs, SvgCell } from 'components/SvgUpdater'
-import { Background, HighlightFactors, PanelConfigCellColor, Threshold, VariableThresholdScalars } from 'components/Config';
+import { Background, HighlightFactors, Link, PanelConfigCellColor, Threshold, VariableThresholdScalars } from 'components/Config';
 import { HighlightState } from './Highlighter';
 
 
@@ -38,6 +38,17 @@ export function isUrl(str: string) {
   }
   catch(err) {
     return false;
+  }
+}
+
+export function createUrl(link: Link) {
+  try {
+    link.url = new URL(link.url, document.baseURI).href;
+    return link;
+  }
+  catch(err) {
+    console.log('invalid url link', link.url, 'error:', err);
+    return undefined;
   }
 }
 

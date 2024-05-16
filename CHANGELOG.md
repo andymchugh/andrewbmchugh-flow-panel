@@ -13,6 +13,10 @@ This adds support for string timeseries for label drives. Color can still be dri
 number timeseries for colors and string timeseries for the label text. This is also compatible
 with value mappings.
 
+Relative Links
+--------------
+Adds support for relative links. Before only absolute links were available.
+
 ## 1.11.0
 Flow Animations
 ---------------
