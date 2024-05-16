@@ -1,0 +1,72 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - link: &grafana-home
+      url: "https://grafana.com/"
+      params: "time"
+  - thresholds: &thresholds-slow
+      - {color: "green", level: 0}
+      - {color: "orange", level: 80}
+      - {color: "red", level: 150}
+  - thresholds: &thresholds-fast
+      - {color: "green", level: 0}
+      - {color: "orange", level: 200}
+      - {color: "red", level: 600}
+  - flowAnimation: &flowanim-slow
+      thresholdOffValue: 2
+      thresholdLwrValue: 10
+      thresholdLwrDurationSecs: 1
+      thresholdUprValue: 100
+      thresholdUprDurationSecs: 0.1
+  - flowAnimation: &flowanim-fast
+      thresholdOffValue: 10
+      thresholdLwrValue: 100
+      thresholdLwrDurationSecs: 1
+      thresholdUprValue: 600
+      thresholdUprDurationSecs: 0.1
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+tagConfig:
+  condensed: false
+cells: 
+
+  grafana:
+    link:
+      url: "https://grafana.com/"
+      params: "time"
+  website:
+    link:
+      url: "https://github.com/andymchugh/andrewbmchugh-flow-panel"
+      params: null
+  absFlowAnimWithTime:
+    link:
+      url: "http://localhost:3000/d/c3c52b34-4c6f-4f25-b2b9-b4c8cb31bbe1/flow-animation?orgId=1"
+      params: "time"
+  absFlowAnimNoTime:
+    link:
+      url: "http://localhost:3000/d/c3c52b34-4c6f-4f25-b2b9-b4c8cb31bbe1/flow-animation?orgId=1"
+      params: null
+  relFlowAnimWithTime:
+    link:
+      url: "d/c3c52b34-4c6f-4f25-b2b9-b4c8cb31bbe1/flow-animation?orgId=1"
+      params: "time"
+  relFlowAnimNoTime:
+    link:
+      url: "/d/c3c52b34-4c6f-4f25-b2b9-b4c8cb31bbe1/flow-animation?orgId=1"
+      params: null
+  badLinkWithTime:
+    link:
+      url: "\\\\< > bad data"
+      params: "time"
+  badLinkNoTime:
+    link:
+      url: "\\\\< > bad data"
+      params: null
+

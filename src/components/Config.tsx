@@ -1,3 +1,5 @@
+import { createUrl } from "./Utils";
+
 export type DatapointMode = 'last' | 'lastNotNull';
 export type ColorGradientMode = 'none' | 'hue';
 export type LabelSeparator = 'cr' | 'colon' | 'space' | 'replace';
@@ -200,6 +202,10 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
     if (!cell.link && cell.linkRef) {
       cell.link = siteConfig.links.get(cell.linkRef);
     }
+    if (cell.link) {
+      cell.link = createUrl(cell.link);
+    }
+
     if (cell.label) {
       if (typeof cell.label.decimalPoints === 'undefined') {
         cell.label.decimalPoints = panelConfig.cellLabelDecimalPoints;
