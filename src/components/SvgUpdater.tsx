@@ -2,20 +2,22 @@ import { getValueFormatterIndex, formattedValueToString, GrafanaTheme2 } from '@
 import { 
   DatapointMode, FlowValueMapping, HighlightFactors,
   LabelSeparator, Link,
-  PanelConfig, PanelConfigCell, PanelConfigCellColor, PanelConfigCellFlowAnimation, PanelConfigCellLabel,
+  PanelConfig, PanelConfigCell, PanelConfigCellColor,
+  PanelConfigCellFillLevel, PanelConfigCellFlowAnimation, PanelConfigCellLabel,
   SiteConfig, VariableThresholdScalars } from 'components/Config';
 import { TimeSeriesData } from 'components/TimeSeries';
 import {
-  cellIdFactory, CellIdMaker, getColor,
-  primeColorCache,
+  cellIdFactory, CellIdMaker, getColor, primeColorCache,
   variableThresholdScalarsInit, variableThresholdScaleValue } from 'components/Utils';
 import { HighlightState } from './Highlighter';
-
+import {
+  CellFillLevelDriver, getClipper, isShapeElement } from 'components/FillLevel';
 // Defines the metadata stored against each drivable svg cell
 export type SvgCell = {
   cellId: string;
   textElements: HTMLElement[];
   fillElements: HTMLElement[];
+  fillClipDrivers: CellFillLevelDriver[];
   text: string;
   cellProps: PanelConfigCell;
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
@@ -102,10 +104,13 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
   }
 
   if (el.hasChildNodes()) {
-    for (let childNode of el.childNodes) {
-      let leaf = recurseElements(childNode as HTMLElement, cellData, cellIdMaker);
+    let clones: HTMLElement[] = [];
+    for (let child of el.childNodes) {
+      const childNode = child as HTMLElement;
+      let leaf = recurseElements(childNode, cellData, cellIdMaker);
       setAttributes(el);
       if (leaf && (el.childNodes.length === 1) && (el.nodeName !== 'title')) {
+    
         cellData.fillElements.push(el);
         const separator = cellData.cellProps.label ? cellData.cellProps.label.separator : null;
         cellData.text = generateLabelPreamble(el.textContent, separator);
@@ -113,6 +118,24 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
       else if (el.getAttribute('fill')) {
         cellData.fillElements.push(el);
       }
+      // The fill-level drive is achieved by cloning the original widget and then applying a
+      // rectangular clip-path to the original. The clone ensures the full shape is shown whilst
+      // the original gets dynamically clipped.
+      if (cellData.cellProps.fillLevel?.valid && isShapeElement(childNode)) {
+        const clipper = getClipper(cellData.cellProps.fillLevel, cellIdMaker, childNode);
+        if (clipper) {
+          const clone = childNode.cloneNode(true) as HTMLElement;
+          clone.setAttribute('fill-opacity', '0.0');
+          clones.push(clipper.element);
+          clones.push(clone);
+          childNode.setAttribute('clip-path', clipper.reference);
+          cellData.fillClipDrivers.push(clipper.driver);
+        }
+      }
+    }
+    // Now the loop of recursions is done, add in the additional clones
+    for (let clone of clones) {
+      el.prepend(clone);
     }
   }
   else {
@@ -138,6 +161,7 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
         cellId: cellId,
         textElements: [],
         fillElements: [],
+        fillClipDrivers: [],
         text: '',
         cellProps: cellProps,
         variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(),
@@ -294,7 +318,7 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     // This function sources the dataRef from the inner paramData and scales it using
     // the variables to a threshold seed. If it doesn't exist it returns the passed in
     // default.
-    function thresholdSeed(datapoint: DatapointMode | undefined, paramData: PanelConfigCellColor | PanelConfigCellFlowAnimation | undefined, defaultSeed: number | string | null) {
+    function thresholdSeed(datapoint: DatapointMode | undefined, paramData: PanelConfigCellColor | PanelConfigCellFillLevel | PanelConfigCellFlowAnimation | undefined, defaultSeed: number | string | null) {
       if (paramData?.dataRef) {
         const cellValue = getCellValue(datapoint, paramData.dataRef, tsData);
         return variableThresholdScaleValue(variableValues, cellData, cellValue);
@@ -318,6 +342,10 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     const cellFillColorDatapoint = cellFillColorData?.datapoint;
     const cellFillColorSeed = thresholdSeed(cellFillColorDatapoint, cellFillColorData, cellValueSeed);
     const cellFillColor = cellFillColorData && (typeof cellFillColorSeed === 'number') ? getColor(cellFillColorData, cellFillColorSeed, highlight, highlightFactors) : null;
+
+    const cellFillLevelData = cellData.cellProps.fillLevel;
+    const cellFillLevelDatapoint = cellFillLevelData?.datapoint;
+    const cellFillLevelSeed = thresholdSeed(cellFillLevelDatapoint, cellFillLevelData, cellValueSeed);
 
     const cellLabelColorData = cellData.cellProps.labelColor;
     const cellLabelColorDatapoint = cellLabelColorData?.datapoint;
@@ -343,6 +371,11 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     if (cellFillColorData) {
       cellData.textElements.forEach((el: HTMLElement) => {
         setFillAttribute(el, cellFillColor || elementAttribs.get(el.id)?.fillColor);
+      });
+    }
+    if (cellFillLevelData) {
+      cellData.fillClipDrivers.forEach((fillClipDriver) => {
+        fillClipDriver(cellFillLevelSeed);
       });
     }
     if (cellFlowAnimState) {

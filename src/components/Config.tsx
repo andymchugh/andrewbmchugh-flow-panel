@@ -4,6 +4,7 @@ export type DatapointMode = 'last' | 'lastNotNull';
 export type ColorGradientMode = 'none' | 'hue';
 export type LabelSeparator = 'cr' | 'colon' | 'space' | 'replace';
 export type LinkUrlParams = 'none' | 'time' | 'all';
+export type FillDirection = 'bottomToTop' | 'topToBottom' | 'leftToRight' | 'rightToLeft';
 
 export type VariableThresholdScalars = {
   variableValuePattern: string;
@@ -60,6 +61,18 @@ export type PanelConfigCellColor = {
   thresholds: Threshold[] | undefined;
 };
 
+export type PanelConfigCellFillLevel = {
+  dataRef: string | undefined;
+  datapoint: DatapointMode | undefined;
+  thresholdLwrFillPercent: number;
+  thresholdUprFillPercent: number;
+  thresholdOffValue: number | undefined;
+  thresholdLwrValue: number;
+  thresholdUprValue: number;
+  fillDirection: FillDirection;
+  valid: boolean;
+};
+
 export type PanelConfigCellFlowAnimation = {
   dataRef: string | undefined;
   datapoint: DatapointMode | undefined;
@@ -80,6 +93,7 @@ export type PanelConfigCell = {
   label: PanelConfigCellLabel | undefined;
   labelColor: PanelConfigCellColor | undefined;
   fillColor: PanelConfigCellColor | undefined;
+  fillLevel: PanelConfigCellFillLevel | undefined;
   flowAnimation: PanelConfigCellFlowAnimation | undefined;
   tags: Set<string> | undefined;
 };
@@ -227,6 +241,16 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
     }
     if (typeof cell.datapoint === 'undefined') {
       cell.datapoint = panelConfig.datapoint;
+    }
+
+    // Fill levels require a full bounded conversion from value to percent
+    if (cell.fillLevel) {
+      cell.fillLevel.valid = (typeof cell.fillLevel.thresholdLwrValue === 'number') &&
+      (typeof cell.fillLevel.thresholdUprValue === 'number') &&
+      (typeof cell.fillLevel.thresholdLwrFillPercent === 'number') &&
+      (typeof cell.fillLevel.thresholdUprFillPercent === 'number') &&
+      ((typeof cell.fillLevel.thresholdOffValue === 'number') ||
+       (typeof cell.fillLevel.thresholdOffValue === 'undefined'));
     }
 
     // Flow animation drives are valid only when all terms are defined
