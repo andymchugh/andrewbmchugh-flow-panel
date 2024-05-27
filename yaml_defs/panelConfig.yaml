@@ -110,8 +110,8 @@ datapoint: "last"
 gradientMode: "hue"
 
 # This defines the preamble that will be added to every svg ID listed under 'cells'.
-# It can be an empty string. DrawIO at the moment adds a non-configurable 'cell-' as
-# shown here.
+# It can be an empty string, which is the default value. DrawIO at the moment adds a non-configurable
+# 'cell-' as shown here.
 cellIdPreamble: "cell-"
 
 # During initialization all inner cells that are id-free are assigned a new ID based off the
@@ -129,11 +129,14 @@ cellLabelDecimalPoints: null
 # This defines the set of cells that are going to be driven
 cells: 
   # Each field name is the svg ID. i.e. within config this cell will be identifed as
-  # 'inbox_depth'. Within the actual svg it will be called 'cell-inbox_depth'.
+  # 'inbox_depth'. Within the actual svg the id will be the same name prepended with cellIdPreamble,
+  # e.g. 'cell-inbox_depth'.
   inbox_depth:
     # The dateRef defines the name of the time-series. This is the default time-series that will
-    # be applied to all configured attributes on this cell. It can be overriden on an attribute
-    # by attribute basis.
+    # be applied to all configured attributes on this cell. Note that you shouldn't set it to
+    # the Grafana query name, but to a time series returned by a query (e.g. for InfluxDB, that would
+    # be the 'Alias' name).
+    # It can be overriden on an attribute by attribute basis.
     dataRef: "test-data-large-sin"
 
     # From version 1.6.0: Optional cell level override. Full write up in the panel-level term definition.
