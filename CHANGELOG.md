@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.x.0
+Fill Level
+----------
+Adds support for driving fill levels. The yaml defines a data->percentage-fill mapping. Under the
+hood it's implemented using the SVG clip-path feature. The shapes bounding box is calculated and
+an additional clip-path rect is added to the SVG. This rect then gets driven based off of the
+incoming data. New config terms:
+- cells.cell-name.fillLevel
+
 ## 1.12.0
 URL Grafana Variables
 ---------------------

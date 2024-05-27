@@ -254,6 +254,33 @@ cells:
       # See labelColor
       thresholdsRef: "depth"
 
+    # Version 1.13.0 onwards: The fillLevel field defines the percentage-fill
+    # of the cell shape. For simple shapes such as 'rect' or 'ellipse', the bounding
+    # box is known so the min/max fill percentages will perfectly align. For complex
+    # shapes underpinned by the 'path' element the bounding box is more approximate.
+    # The approximation can be corrected by adjusting the upr and lwr fill bounds.
+    # Note that fillLevel does not require fillColor to be driven. It will also work
+    # with a static fill-color defined in the svg.
+    fillLevel:
+      # Optional attribute level override for the associated time-series.
+      dataRef: "test-data-large-cos"
+
+      # Optional attribute level override. Requires corresponding attribute level dataRef override.
+      datapoint: "last"
+
+      # The optional data value at or below which the fillLevel will be set to 0%.
+      thresholdOffValue: 0
+
+      # These terms define the conversion from incoming data values to percent-fill.
+      thresholdLwrValue: 0
+      thresholdLwrFillPercent: 0
+      thresholdUprValue: 900
+      thresholdUprFillPercent: 100
+
+      # This term defines how fill is rendered. Allowed values are 'bottomToTop', 'topToBottom',
+      # 'leftToRight', 'rightToLeft'. The default is 'bottomToTop'.
+      fillDirection: 'bottomToTop'
+
     # Version 1.11.0 onwards: draw.io has a selectable line property called 'Flow Animation'.
     # When selected the line animates in a particular direction at a particular rate to
     # visualize flow. This section provides control for these animations. Note that the SVG
