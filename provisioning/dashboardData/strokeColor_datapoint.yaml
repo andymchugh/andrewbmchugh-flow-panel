@@ -1,0 +1,63 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - link: &grafana-home
+      url: "https://grafana.com/"
+      params: "time"
+  - thresholds: &thresholds-lrg
+      - {color: "green", level: 0}
+      - {color: "orange", level: 500}
+      - {color: "red", level: 800}
+  - thresholds: &thresholds-sml
+      - {color: "green", level: 0}
+      - {color: "orange", level: 100}
+      - {color: "red", level: 150}
+
+test:
+  testDataSparse: true
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+gradientMode: "hue"
+cellIdPreamble: "cell-"
+
+cells: 
+  inbox_depth:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "cr"
+      units: "none"
+    labelColor:
+      thresholds: *thresholds-lrg
+    strokeColor:
+      thresholds: *thresholds-lrg
+  db_transactions:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "ops"
+      decimalPoints: 0
+    strokeColor:
+      thresholds: *thresholds-lrg
+  start_rate:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "colon"
+      units: "pps"
+    labelColor:
+      thresholds: *thresholds-sml
+    strokeColor:
+      thresholds: *thresholds-sml
+  active_workers:
+    dataRef: "test-data-small-cos"
+    label:
+      separator: "cr"
+      units: "none"
+    labelColor:
+      thresholds: *thresholds-sml
+    strokeColor:
+      thresholds: *thresholds-sml

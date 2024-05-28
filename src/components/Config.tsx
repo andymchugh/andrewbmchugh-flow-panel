@@ -92,6 +92,7 @@ export type PanelConfigCell = {
   link: Link | undefined;
   label: PanelConfigCellLabel | undefined;
   labelColor: PanelConfigCellColor | undefined;
+  strokeColor: PanelConfigCellColor | undefined;
   fillColor: PanelConfigCellColor | undefined;
   fillLevel: PanelConfigCellFillLevel | undefined;
   flowAnimation: PanelConfigCellFlowAnimation | undefined;
@@ -211,6 +212,7 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
   }
   panelConfig.cells.forEach((cell) => {
     colorDeref(cell, cell.labelColor);
+    colorDeref(cell, cell.strokeColor);
     colorDeref(cell, cell.fillColor);
 
     if (!cell.link && cell.linkRef) {

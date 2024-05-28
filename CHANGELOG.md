@@ -9,6 +9,13 @@ an additional clip-path rect is added to the SVG. This rect then gets driven bas
 incoming data. New config terms:
 - cells.cell-name.fillLevel
 
+Stroke Color
+------------
+Adds support for driving stroke color. i.e. coloring the structural lines of shapes and connections.
+The yaml drive is identical in nature to the fillColor drive.
+New config terms:
+- cells.cell-name.strokeColor
+
 ## 1.12.0
 URL Grafana Variables
 ---------------------
