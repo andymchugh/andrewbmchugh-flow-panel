@@ -233,6 +233,27 @@ cells:
       # checked.
       thresholdsRef: "depth"
 
+    # Version 1.13.0 onwards: The fstrokeColor field defines how the cell lines should be
+    # colored based on the time-series value. If no adjustment is wanted the field should be omitted.
+    strokeColor:
+      # See labelColor
+      dataRef: "test-data-large-cos"
+
+      # See labelColor
+      datapoint: "last"
+
+      # See labelColor
+      gradientMode: "hue"
+
+      # See labelColor
+      thresholds:
+        - {color: "semi-dark-green", level: 0}
+        - {color: "orange", level: 400}
+        - {color: "red", level: 800}
+
+      # See labelColor
+      thresholdsRef: "depth"
+
     # The fill color field defines how the cell should be colored based on the
     # time-series value. If no adjustment is wanted the field should be omitted.
     fillColor:

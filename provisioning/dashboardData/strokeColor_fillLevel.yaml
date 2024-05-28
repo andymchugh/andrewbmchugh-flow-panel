@@ -1,0 +1,370 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - link: &grafana-home
+      url: "https://grafana.com/"
+      params: "time"
+  - thresholds: &thresholds-slow
+      - {color: "green", level: 0}
+      - {color: "orange", level: 80}
+      - {color: "red", level: 150}
+  - fillLevel: &fillLevelFull
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 200
+      fillDirection: 'bottomToTop'
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+tagConfig:
+  condensed: false
+cells: 
+  loop_limit:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  db:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  switch:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  circle_cross:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  circle_line:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  opentop:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  triangle:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  hexagon:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  rhombus:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  circle:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  ellipse:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  cloud:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  round_flask:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  round_flask_label:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+  rect_left:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 200
+      fillDirection: 'leftToRight'
+    link: *grafana-home
+  rect_top:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 200
+      fillDirection: 'topToBottom'
+    link: *grafana-home
+  rect_right:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 200
+      fillDirection: 'rightToLeft'
+    link: *grafana-home
+  rect_bottom:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 200
+      fillDirection: 'bottomToTop'
+    link: *grafana-home
+  flask:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  flask_label:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+  frame:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  rect_double:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel: *fillLevelFull
+    link: *grafana-home
+  opentop_setcol:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 200
+      fillDirection: 'bottomToTop'
+    link: *grafana-home
+  rect_dataref:
+    dataRef: "test-data-small-sin"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel:
+      dataRef: "test-data-small-cos"
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 50
+      thresholdUprValue: 200
+      fillDirection: 'bottomToTop'
+  rect_upper:
+    dataRef: "test-data-small-sin"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 75
+      thresholdLwrValue: 0
+      thresholdUprValue: 200
+      fillDirection: 'bottomToTop'
+    link: *grafana-home
+  rect_lower:
+    dataRef: "test-data-small-sin"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel:
+      thresholdLwrFillPercent: 25
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 200
+      fillDirection: 'bottomToTop'
+    link: *grafana-home
+  rect_off:
+    dataRef: "test-data-small-sin"
+    strokeColor:
+      dataRef: "test-data-small-cos"
+      thresholds: *thresholds-slow
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel:
+      thresholdLwrFillPercent: 10
+      thresholdUprFillPercent: 100
+      thresholdOffValue: 15
+      thresholdLwrValue: 50
+      thresholdUprValue: 200
+      fillDirection: 'bottomToTop'
+    link: *grafana-home

@@ -16,6 +16,7 @@ import {
 export type SvgCell = {
   cellId: string;
   textElements: HTMLElement[];
+  strokeElements: HTMLElement[];
   fillElements: HTMLElement[];
   fillClipDrivers: CellFillLevelDriver[];
   text: string;
@@ -25,6 +26,7 @@ export type SvgCell = {
 
 export type SvgElementAttribs = {
   link: Link | null;
+  strokeColor: string | null;
   fillColor: string | null;
   styleColor: string | null;
 };
@@ -89,7 +91,7 @@ function dimensionCoherence(doc: Document) {
   }
 }
 
-function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellIdMaker): boolean {
+function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellIdMaker, additions: HTMLElement[]): boolean {
   const setAttributes = function(el: HTMLElement) {
     el.style.whiteSpace = 'pre';
 
@@ -103,11 +105,33 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
     }
   }
 
+  if (isShapeElement(el)) {
+    if (cellData.cellProps.strokeColor) {
+      cellData.strokeElements.push(el);
+    }
+    // The fill-level drive is achieved by cloning the original widget and then applying a
+    // rectangular clip-path to the original. The clone ensures the full shape is shown whilst
+    // the original gets dynamically clipped.
+    if (cellData.cellProps.fillLevel?.valid) {
+      const clipper = getClipper(cellData.cellProps.fillLevel, cellIdMaker, el);
+      if (clipper) {
+        const clone = el.cloneNode(true) as HTMLElement;
+        clone.setAttribute('fill-opacity', '0.0');
+        additions.push(clipper.element);
+        additions.push(clone);
+        el.setAttribute('clip-path', clipper.reference);
+        cellData.fillClipDrivers.push(clipper.driver);
+        if (cellData.cellProps.strokeColor) {
+          cellData.strokeElements.push(clone);
+        }
+      }
+    }
+  }
+
   if (el.hasChildNodes()) {
-    let clones: HTMLElement[] = [];
     for (let child of el.childNodes) {
       const childNode = child as HTMLElement;
-      let leaf = recurseElements(childNode, cellData, cellIdMaker);
+      let leaf = recurseElements(childNode, cellData, cellIdMaker, additions);
       setAttributes(el);
       if (leaf && (el.childNodes.length === 1) && (el.nodeName !== 'title')) {
     
@@ -118,24 +142,6 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
       else if (el.getAttribute('fill')) {
         cellData.fillElements.push(el);
       }
-      // The fill-level drive is achieved by cloning the original widget and then applying a
-      // rectangular clip-path to the original. The clone ensures the full shape is shown whilst
-      // the original gets dynamically clipped.
-      if (cellData.cellProps.fillLevel?.valid && isShapeElement(childNode)) {
-        const clipper = getClipper(cellData.cellProps.fillLevel, cellIdMaker, childNode);
-        if (clipper) {
-          const clone = childNode.cloneNode(true) as HTMLElement;
-          clone.setAttribute('fill-opacity', '0.0');
-          clones.push(clipper.element);
-          clones.push(clone);
-          childNode.setAttribute('clip-path', clipper.reference);
-          cellData.fillClipDrivers.push(clipper.driver);
-        }
-      }
-    }
-    // Now the loop of recursions is done, add in the additional clones
-    for (let clone of clones) {
-      el.prepend(clone);
     }
   }
   else {
@@ -159,6 +165,7 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
     if (el) {
       const cell = {
         cellId: cellId,
+        strokeElements: [],
         textElements: [],
         fillElements: [],
         fillClipDrivers: [],
@@ -167,7 +174,13 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
         variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(),
       };
       cells.set(cellIdShort, cell);
-      recurseElements(el, cell, cellIdMaker);
+
+      let additions: HTMLElement[] = [];
+      recurseElements(el, cell, cellIdMaker, additions);
+      // Now the loop of recursions is done, add in the additional elements
+      for (let addition of additions) {
+        el.prepend(addition);
+      }
     }
   });
   
@@ -182,6 +195,7 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
       arr.forEach((el) => {
         elementAttribs.set(el.id, {
           link: link || null,
+          strokeColor: el.getAttribute('stroke'),
           fillColor: el.getAttribute('fill'),
           styleColor: el.style?.color,
         });
@@ -296,6 +310,14 @@ export function getFlowAnimationState(config: PanelConfigCellFlowAnimation, cell
   }
 }
 
+function setStrokeAttribute(el: Element, color: string | null | undefined) {
+  if (color) {
+    el.setAttribute('stroke', color);
+  } else {
+    el.removeAttribute('stroke');
+  }
+}
+
 function setFillAttribute(el: Element, color: string | null | undefined) {
   if (color) {
     el.setAttribute('fill', color);
@@ -338,6 +360,11 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     const cellLabelMappedValue = cellLabelData?.valueMappings ? valueMapping(cellLabelData.valueMappings, cellLabelValue) : null;
     const cellLabel = cellLabelMappedValue || (cellLabelData && (typeof cellLabelValue === 'number') ? formatCellValue(cellLabelData, cellLabelValue) : cellLabelValue);
 
+    const cellStrokeColorData = cellData.cellProps.strokeColor;
+    const cellStrokeColorDatapoint = cellStrokeColorData?.datapoint;
+    const cellStrokeColorSeed = thresholdSeed(cellStrokeColorDatapoint, cellStrokeColorData, cellValueSeed);
+    const cellStrokeColor = cellStrokeColorData && (typeof cellStrokeColorSeed === 'number') ? getColor(cellStrokeColorData, cellStrokeColorSeed, highlight, highlightFactors) : null;
+
     const cellFillColorData = cellData.cellProps.fillColor;
     const cellFillColorDatapoint = cellFillColorData?.datapoint;
     const cellFillColorSeed = thresholdSeed(cellFillColorDatapoint, cellFillColorData, cellValueSeed);
@@ -368,6 +395,11 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
         el.replaceChildren(cellData.text + (cellLabel || ''));
       }
     });
+    if (cellStrokeColorData) {
+      cellData.strokeElements.forEach((el: HTMLElement) => {
+        setStrokeAttribute(el, cellStrokeColor || elementAttribs.get(el.id)?.strokeColor);
+      });
+    }
     if (cellFillColorData) {
       cellData.textElements.forEach((el: HTMLElement) => {
         setFillAttribute(el, cellFillColor || elementAttribs.get(el.id)?.fillColor);
