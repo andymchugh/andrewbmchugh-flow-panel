@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.x.0
+## 1.13.0
 Fill Level
 ----------
 Adds support for driving fill levels. The yaml defines a data->percentage-fill mapping. Under the

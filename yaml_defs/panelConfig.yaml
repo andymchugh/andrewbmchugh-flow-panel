@@ -180,10 +180,12 @@ cells:
       # value: [optional] value must match this term.
       # valueMin: [optional] value must match or exceed this term.
       # valueMax: [optional] value must match or be under this term.
-      # text: text to substitute for the value when a match is made.
+      # text: text to substitute for the value when a match is made. As of version 1.13.0 this text will
+      #       pass through grafana variable substitution.
       #
-      # Criteria can be specified as an exact match, a range or just a min or just a max. The min/max
-      # terms will be ignored if an exact match is also specified.
+      # Criteria can be specified as an exact match, a range, just a min, just a max or no criteria
+      # at all. The min/max terms will be ignored if an exact match is also specified. All terms are
+      # optional apart from 'text'.
       valueMappings:
         - {value: null, text: "value is null"}
         - {value: 3, text: "value is 3"}
@@ -333,9 +335,13 @@ cells:
       # of the animation is determined off the sign of the data, unless this flag is true.
       unidirectional: true
 
-    # The link defines the url to open if the cell is left clicked.
+    # The link defines the url to open if the cell is left clicked. Links defined in yaml can be
+    # relative or absolute and go through grafana variable substitution. Note that links defined
+    # directly in the SVG are opaque to the plugin and so get dealt with by the underlying framework.
+    # If defining links in the SVG, absolute links should pass through correctly.
     link:
       # URL to open. It can contain parameters and those parameters can contain grafana variables.
+      # The link can be relative or absolute.
       url: "https://drawio-app.com"
 
       # This defines what portion of the dashboard params should be added to the URL. Appended parameters
