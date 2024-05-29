@@ -1,3 +1,4 @@
+import { VariableInterpolation, getTemplateSrv } from "@grafana/runtime";
 import { createUrl } from "./Utils";
 
 export type DatapointMode = 'last' | 'lastNotNull';
@@ -39,6 +40,7 @@ export type FlowValueMapping = {
   valueMin: number | undefined;
   valueMax: number | undefined;
   text: string;
+  variableSubst: boolean;
   valid: boolean;
 };
 
@@ -238,6 +240,12 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
             (typeof mapping.text === 'string') &&
             ((typeof mapping.valueMin === 'number') || (typeof mapping.valueMin === 'undefined')) &&
             ((typeof mapping.valueMax === 'number') || (typeof mapping.valueMax === 'undefined')));
+
+          if (mapping.valid && (typeof mapping.variableSubst === 'undefined')) {
+            let interpolations: VariableInterpolation[] = [];
+            getTemplateSrv().replace(mapping.text, undefined, undefined, interpolations);
+            mapping.variableSubst = interpolations.length > 0;
+          }
         }
       }
     }

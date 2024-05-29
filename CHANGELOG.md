@@ -16,6 +16,14 @@ The yaml drive is identical in nature to the fillColor drive.
 New config terms:
 - cells.cell-name.strokeColor
 
+Grafana Variable Substitution in ValueMappings
+----------------------------------------------
+Adds support for passing valueMappings text through grafana variable substitution. i.e. to substitute
+all values of a timeseries with a variable value:
+cell abc:
+  valueMappings:
+    - {text = "${myVariableName}"}
+
 ## 1.12.0
 URL Grafana Variables
 ---------------------

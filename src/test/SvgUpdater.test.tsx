@@ -143,14 +143,15 @@ test('zero', () => {
 });
 
 test('valuemapping', () => {
+  // Note getTemplateSrv is not available in the test framework so variableSubst is always false
   let fvm: FlowValueMapping[] = [
-    {valid: true, value: -3, valueMin: undefined, valueMax: undefined, text: 'val_-3'},
-    {valid: true, value: 0, valueMin: undefined, valueMax: undefined, text: 'val_0'},
-    {valid: true, value: 3, valueMin: undefined, valueMax: undefined, text: 'val_3'},
-    {valid: true, value: undefined, valueMin: 10, valueMax: 20, text: 'hello1'},
-    {valid: true, value: undefined, valueMin: 21, valueMax: 30, text: 'hello2'},
-    {valid: true, value: undefined, valueMin: 1000, valueMax: undefined, text: 'high'},
-    {valid: true, value: undefined, valueMin: undefined, valueMax: -1000, text: 'low'},
+    {valid: true, value: -3, valueMin: undefined, valueMax: undefined, text: 'val_-3', variableSubst: false},
+    {valid: true, value: 0, valueMin: undefined, valueMax: undefined, text: 'val_0', variableSubst: false},
+    {valid: true, value: 3, valueMin: undefined, valueMax: undefined, text: 'val_3', variableSubst: false},
+    {valid: true, value: undefined, valueMin: 10, valueMax: 20, text: 'hello1', variableSubst: false},
+    {valid: true, value: undefined, valueMin: 21, valueMax: 30, text: 'hello2', variableSubst: false},
+    {valid: true, value: undefined, valueMin: 1000, valueMax: undefined, text: 'high', variableSubst: false},
+    {valid: true, value: undefined, valueMin: undefined, valueMax: -1000, text: 'low', variableSubst: false},
   ];
   expect(valueMapping(fvm, -4)).toEqual(null);
   expect(valueMapping(fvm, -3)).toEqual('val_-3');
@@ -163,7 +164,7 @@ test('valuemapping', () => {
 
 test('valuemappingnocriteria', () => {
   let fvm: FlowValueMapping[] = [
-    {valid: true, value:  undefined, valueMin: undefined, valueMax: undefined, text: 'custom'},
+    {valid: true, value:  undefined, valueMin: undefined, valueMax: undefined, text: 'custom', variableSubst: false},
   ];
   expect(valueMapping(fvm, -4)).toEqual('custom');
   expect(valueMapping(fvm, 0)).toEqual('custom');

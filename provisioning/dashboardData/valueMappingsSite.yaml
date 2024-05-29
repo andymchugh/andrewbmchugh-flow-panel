@@ -9,6 +9,6 @@ valueMappings:
   dbTrans:
     - {value: null, text: "site null"}
     - {value: 0, text: "site off"}
-    - {valueMax: 300, text: "site low"}
+    - {valueMax: 300, text: "site ${exampleVar}"}
     - {valueMin: 300, valueMax: 600, text: "site medium"}
     - {valueMin: 600, text: "site high"}
