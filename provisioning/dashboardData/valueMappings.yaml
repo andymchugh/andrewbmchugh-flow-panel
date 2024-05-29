@@ -10,7 +10,7 @@ anchorLinks:
   - valueMappings: &valuemap1
     - {value: null, text: "panel null"}
     - {value: 0, text: "panel off"}
-    - {valueMax: 300, text: "panel low"}
+    - {valueMax: 300, text: "panel ${exampleVar}"}
     - {valueMin: 300, valueMax: 600, text: "panel medium"}
     - {valueMin: 600, text: "panel high"}
   - thresholds: &thresholds

@@ -12,6 +12,7 @@ import {
 import { HighlightState } from './Highlighter';
 import {
   CellFillLevelDriver, getClipper, isShapeElement } from 'components/FillLevel';
+import { getTemplateSrv } from '@grafana/runtime';
 // Defines the metadata stored against each drivable svg cell
 export type SvgCell = {
   cellId: string;
@@ -261,7 +262,7 @@ export function valueMapping(valueMappings: FlowValueMapping[], value: number | 
           ((typeof mapping.valueMax === 'undefined') || (value <= mapping.valueMax));
       }
       if (match) {
-        return mapping.text;
+        return mapping.variableSubst ? getTemplateSrv().replace(mapping.text) : mapping.text;
       }
     }
   }
