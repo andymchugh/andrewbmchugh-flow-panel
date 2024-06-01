@@ -173,6 +173,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
       };
       clickHandlerRef.current = clickHandlerFactory(svgAttribs.elementAttribs);
 
+      setHighlighterSelection(undefined);
       setInitialized(true);
     }
   }, [initialized, svgStr, panelConfig, siteConfig]);
