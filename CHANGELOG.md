@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.x.0
+Compound Colors
+---------------
+This feature allows a labelColor, strokeColor or fillColor to be driven based off
+an array of dataRef inputs. i.e you can choose the worst or the best color based off of
+a set of inputs. To support this a new field has been added to 'threshold' called 'order'.
+It defaults to the threshold-array index but can be explicitly driven in yaml. This is the term used to compare thresholds from different dataRefs. On the whole it won't be needed but it's inclusion means no implicit ordering has to cross all threshold definitions.
+New config terms:
+- cells.cell-name.labelColors
+- cells.cell-name.strokeColors
+- cells.cell-name.fillColors
+
 ## 1.13.0
 Fill Level
 ----------

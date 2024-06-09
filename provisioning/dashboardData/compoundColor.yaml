@@ -1,0 +1,109 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - thresholds: &thresholds-fast
+      - {color: "green", level: 0}
+      - {color: "orange", level: 200}
+      - {color: "red", level: 600}
+  - thresholds: &thresholds-fast-inverse
+      - {color: "green", level: 0, order: 2}
+      - {color: "orange", level: 200, order: 1}
+      - {color: "red", level: 600, order: 0}
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+cells: 
+
+  fill1:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "replace"
+      units: "none"
+    fillColor:
+      thresholds: *thresholds-fast
+  fill2:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "replace"
+      units: "none"
+    fillColor:
+      thresholds: *thresholds-fast
+  label_min:
+    dataRef: "test-data-large-cos"
+    labelColorCompound:
+      function: "min"
+      colors:
+       - dataRef: "test-data-large-sin"
+         thresholds: *thresholds-fast
+       - dataRef: "test-data-large-cos"
+         thresholds: *thresholds-fast
+  label_max:
+    dataRef: "test-data-large-cos"
+    labelColorCompound:
+      function: "max"
+      colors:
+       - dataRef: "test-data-large-sin"
+         thresholds: *thresholds-fast
+       - dataRef: "test-data-large-cos"
+         thresholds: *thresholds-fast
+  fill_min:
+    dataRef: "test-data-large-cos"
+    fillColorCompound:
+      function: "min"
+      colors:
+       - dataRef: "test-data-large-sin"
+         thresholds: *thresholds-fast
+       - dataRef: "test-data-large-cos"
+         thresholds: *thresholds-fast
+  fill_max:
+    dataRef: "test-data-large-cos"
+    fillColorCompound:
+      function: "max"
+      colors:
+       - dataRef: "test-data-large-sin"
+         thresholds: *thresholds-fast
+       - dataRef: "test-data-large-cos"
+         thresholds: *thresholds-fast
+  fill_max_via_inverse:
+    dataRef: "test-data-large-cos"
+    fillColorCompound:
+      function: "min"
+      colors:
+       - dataRef: "test-data-large-sin"
+         thresholds: *thresholds-fast-inverse
+       - dataRef: "test-data-large-cos"
+         thresholds: *thresholds-fast-inverse
+  fill_max_via_both:
+    dataRef: "test-data-large-cos"
+    fillColor:
+      dataRef: "test-data-large-sin"
+      thresholds: *thresholds-fast-inverse
+    fillColorCompound:
+      function: "min"
+      colors:
+       - dataRef: "test-data-large-cos"
+         thresholds: *thresholds-fast-inverse
+  stroke_min:
+    dataRef: "test-data-large-cos"
+    strokeColorCompound:
+      function: "min"
+      colors:
+       - dataRef: "test-data-large-sin"
+         thresholds: *thresholds-fast
+       - dataRef: "test-data-large-cos"
+         thresholds: *thresholds-fast
+  stroke_max:
+    dataRef: "test-data-large-cos"
+    strokeColorCompound:
+      function: "max"
+      colors:
+       - dataRef: "test-data-large-sin"
+         thresholds: *thresholds-fast
+       - dataRef: "test-data-large-cos"
+         thresholds: *thresholds-fast

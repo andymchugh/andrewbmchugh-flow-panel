@@ -212,10 +212,15 @@ cells:
       # If not defined it defaults to panelConfig gradientMode.
       gradientMode: "hue"
 
-      # Thresholds define a color and a value. The threshold array order matters. The time-series
-      # value is compared to each threshold breaking out when it spans the surrounding thresholds.
-      # The base color is the first threshold color. The first threshold value is relevent only in
-      # the "hue" gradientMode as it determines the value at which the color should start to transition.
+      # Thresholds define a color, a value and a global-order. The threshold array-order matters.
+      # The time-series value is compared to each threshold breaking out when it spans the surrounding
+      # thresholds. The base color is the first threshold color. The first threshold value is relevent
+      # only in the "hue" gradientMode as it determines the value at which the color should start to transition.
+      #
+      # The order term (from version 1.14.0) determines how a threshold compares across threshold sets.
+      # It defaults to the array index and only needs to be explicitly defined when threshold sets are being
+      # compared and the default 'array-order' is not suitable. This comparison only occurs when fields
+      # labelColors, strokeColors or fillColors (note the 's') are being used.
       #
       # The color can be in the following formats:
       # - a grafana color as can be seen from 'Debugging Colors'.
@@ -225,9 +230,9 @@ cells:
       # - rgb: i.e. 'rgb(255, 0, 0)
       # - hsl: i.e. 'hsl(0, 100%, 50%)'
       thresholds:
-        - {color: "green", level: 0}
-        - {color: "orange", level: 500}
-        - {color: "red", level: 1000}
+        - {color: "green", level: 0, order: null}
+        - {color: "orange", level: 500, order: null}
+        - {color: "red", level: 1000, order: null}
 
       # This defines an ID to a thresholds set defined in the siteConfig. If you want to share a
       # thresholds set just within the panelConfig you should instead use a yaml anchor/alias.
@@ -235,7 +240,17 @@ cells:
       # checked.
       thresholdsRef: "depth"
 
-    # Version 1.13.0 onwards: The fstrokeColor field defines how the cell lines should be
+    # Version 1.14.0 onwards: This defines an array of 'labelColor' alongside an
+    # aggregation function on how the color should be chosen from the array. If 'labelColor'
+    # is also defined it is prepended to this array and color is just driven from this array.
+    labelColors:
+      # Aggregation function defined as either 'min' or 'max'. 'max' is the default.
+      function: "max"
+
+      # Array of labelColor
+      colors: ...
+
+    # Version 1.13.0 onwards: The strokeColor field defines how the cell lines should be
     # colored based on the time-series value. If no adjustment is wanted the field should be omitted.
     strokeColor:
       # See labelColor
@@ -255,6 +270,16 @@ cells:
 
       # See labelColor
       thresholdsRef: "depth"
+
+    # Version 1.14.0 onwards: This defines an array of 'strokeColor' alongside an
+    # aggregation function on how the color should be chosen from the array. If 'strokeColor'
+    # is also defined it is prepended to this array and color is just driven from this array.
+    strokeColors:
+      # Aggregation function defined as either 'min' or 'max'. 'max' is the default.
+      function: "max"
+
+      # Array of strokeColor
+      colors: ...
 
     # The fill color field defines how the cell should be colored based on the
     # time-series value. If no adjustment is wanted the field should be omitted.
@@ -276,6 +301,16 @@ cells:
 
       # See labelColor
       thresholdsRef: "depth"
+
+    # Version 1.14.0 onwards: This defines an array of 'fillColor' alongside an
+    # aggregation function on how the color should be chosen from the array. If 'fillColor'
+    # is also defined it is prepended to this array and color is just driven from this array.
+    fillColors:
+      # Aggregation function defined as either 'min' or 'max'. 'max' is the default.
+      function: "max"
+
+      # Array of fillColor
+      colors: ...
 
     # Version 1.13.0 onwards: The fillLevel field defines the percentage-fill
     # of the cell shape. For simple shapes such as 'rect' or 'ellipse', the bounding

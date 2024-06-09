@@ -3,6 +3,7 @@ import {
   DatapointMode, FlowValueMapping, HighlightFactors,
   LabelSeparator, Link,
   PanelConfig, PanelConfigCell, PanelConfigCellColor,
+  PanelConfigCellColorCompound,
   PanelConfigCellFillLevel, PanelConfigCellFlowAnimation, PanelConfigCellLabel,
   SiteConfig, VariableThresholdScalars } from 'components/Config';
 import { TimeSeriesData } from 'components/TimeSeries';
@@ -13,6 +14,7 @@ import { HighlightState } from './Highlighter';
 import {
   CellFillLevelDriver, getClipper, isShapeElement } from 'components/FillLevel';
 import { getTemplateSrv } from '@grafana/runtime';
+
 // Defines the metadata stored against each drivable svg cell
 export type SvgCell = {
   cellId: string;
@@ -107,7 +109,7 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
   }
 
   if (isShapeElement(el)) {
-    if (cellData.cellProps.strokeColor) {
+    if (cellData.cellProps.strokeColor || cellData.cellProps.strokeColorCompound) {
       cellData.strokeElements.push(el);
     }
     // The fill-level drive is achieved by cloning the original widget and then applying a
@@ -332,25 +334,71 @@ function setFlowAnimationAttributes(el: HTMLElement, state: FlowAnimationState) 
   el.style.animationDirection = state.direction;
 }
 
+type SvgDriveBase = {
+  variableValues: Map<string, string>,
+  tsData: TimeSeriesData,
+  cellData: SvgCell,
+  highlight: HighlightState,
+  highlightFactors: HighlightFactors,
+};
+
+// This function sources the dataRef from the inner paramData and scales it using
+// the variables to a threshold seed. If it doesn't exist it returns the passed in
+// default.
+function thresholdSeed(sdb: SvgDriveBase,
+  datapoint: DatapointMode | undefined,
+  paramData: PanelConfigCellColor | PanelConfigCellFillLevel | PanelConfigCellFlowAnimation | undefined,
+  defaultSeed: number | string | null) {
+  if (paramData?.dataRef) {
+    const cellValue = getCellValue(datapoint, paramData.dataRef, sdb.tsData);
+    return variableThresholdScaleValue(sdb.variableValues, sdb.cellData, cellValue);
+  }
+  else {
+    return paramData ? defaultSeed : null;
+  }
+}
+
+function getThresholdColor(sdb: SvgDriveBase,
+  cellValueSeed: string | number | null,
+  configCellColor: PanelConfigCellColor | undefined) {
+  const datapoint = configCellColor?.datapoint;
+  const colorSeed = thresholdSeed(sdb, datapoint, configCellColor, cellValueSeed);
+  const thresholdColor = configCellColor && (typeof colorSeed === 'number') ? getColor(configCellColor, colorSeed, sdb.highlight, sdb.highlightFactors) : null;
+  return thresholdColor;
+}
+
+function getThresholdColorCompound(sdb: SvgDriveBase,
+  cellValueSeed: string | number | null,
+  configCellColorCompound: PanelConfigCellColorCompound) {
+  const chooseSecond = configCellColorCompound.function === 'min' ?
+    (first: number, second: number) => second <= first:
+    (first: number, second: number) => second >= first; // default is 'max'
+
+  let compound: any = undefined;
+  configCellColorCompound.colors.forEach((configCellColor) => {
+    const thresholdColor = getThresholdColor(sdb, cellValueSeed, configCellColor);
+    if (thresholdColor) {
+      compound = compound && chooseSecond(thresholdColor.order, compound.order) ? compound : thresholdColor;
+    }
+  })
+  return compound;
+}
+
 export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highlighterSelection: string | undefined, animationsEnabled: boolean) {
   const variableValues = svgHolder.attribs.variableValues;
   const elementAttribs = svgHolder.attribs.elementAttribs;
   const highlightFactors = svgHolder.attribs.highlightFactors;
+
   const cells = svgHolder.attribs.cells;
   cells.forEach((cellData) => {
-    // This function sources the dataRef from the inner paramData and scales it using
-    // the variables to a threshold seed. If it doesn't exist it returns the passed in
-    // default.
-    function thresholdSeed(datapoint: DatapointMode | undefined, paramData: PanelConfigCellColor | PanelConfigCellFillLevel | PanelConfigCellFlowAnimation | undefined, defaultSeed: number | string | null) {
-      if (paramData?.dataRef) {
-        const cellValue = getCellValue(datapoint, paramData.dataRef, tsData);
-        return variableThresholdScaleValue(variableValues, cellData, cellValue);
-      }
-      else {
-        return paramData ? defaultSeed : null;
-      }
-    }
     const highlight = highlighterSelection && cellData.cellProps.tags?.has(highlighterSelection) ? HighlightState.Highlight : highlighterSelection ? HighlightState.Lowlight : HighlightState.Ambient;
+    const sdb: SvgDriveBase = {
+      variableValues: variableValues,
+      tsData: tsData,
+      highlightFactors: highlightFactors,
+      cellData: cellData,
+      highlight: highlight,
+    };
     const cellDataRef = cellData.cellProps.dataRef;
     const cellValue = cellDataRef ? getCellValue(cellData.cellProps.datapoint, cellDataRef, tsData) : null;
     const cellValueSeed = variableThresholdScaleValue(variableValues, cellData, cellValue);
@@ -361,49 +409,46 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     const cellLabelMappedValue = cellLabelData?.valueMappings ? valueMapping(cellLabelData.valueMappings, cellLabelValue) : null;
     const cellLabel = cellLabelMappedValue || (cellLabelData && (typeof cellLabelValue === 'number') ? formatCellValue(cellLabelData, cellLabelValue) : cellLabelValue);
 
-    const cellStrokeColorData = cellData.cellProps.strokeColor;
-    const cellStrokeColorDatapoint = cellStrokeColorData?.datapoint;
-    const cellStrokeColorSeed = thresholdSeed(cellStrokeColorDatapoint, cellStrokeColorData, cellValueSeed);
-    const cellStrokeColor = cellStrokeColorData && (typeof cellStrokeColorSeed === 'number') ? getColor(cellStrokeColorData, cellStrokeColorSeed, highlight, highlightFactors) : null;
+    const cellStrokeColor = cellData.cellProps.strokeColorCompound ?
+      getThresholdColorCompound(sdb, cellValueSeed, cellData.cellProps.strokeColorCompound) :
+      getThresholdColor(sdb, cellValueSeed, cellData.cellProps.strokeColor);
 
-    const cellFillColorData = cellData.cellProps.fillColor;
-    const cellFillColorDatapoint = cellFillColorData?.datapoint;
-    const cellFillColorSeed = thresholdSeed(cellFillColorDatapoint, cellFillColorData, cellValueSeed);
-    const cellFillColor = cellFillColorData && (typeof cellFillColorSeed === 'number') ? getColor(cellFillColorData, cellFillColorSeed, highlight, highlightFactors) : null;
+    const cellFillColor = cellData.cellProps.fillColorCompound ?
+      getThresholdColorCompound(sdb, cellValueSeed, cellData.cellProps.fillColorCompound) :
+      getThresholdColor(sdb, cellValueSeed, cellData.cellProps.fillColor);
+
+    const cellLabelColor = cellData.cellProps.labelColorCompound ?
+      getThresholdColorCompound(sdb, cellValueSeed, cellData.cellProps.labelColorCompound) :
+      getThresholdColor(sdb, cellValueSeed, cellData.cellProps.labelColor);
 
     const cellFillLevelData = cellData.cellProps.fillLevel;
     const cellFillLevelDatapoint = cellFillLevelData?.datapoint;
-    const cellFillLevelSeed = thresholdSeed(cellFillLevelDatapoint, cellFillLevelData, cellValueSeed);
-
-    const cellLabelColorData = cellData.cellProps.labelColor;
-    const cellLabelColorDatapoint = cellLabelColorData?.datapoint;
-    const cellLabelColorSeed = thresholdSeed(cellLabelColorDatapoint, cellLabelColorData, cellValueSeed);
-    const cellLabelColor = cellLabelColorData && (typeof cellLabelColorSeed === 'number') ? getColor(cellLabelColorData, cellLabelColorSeed, highlight, highlightFactors) : null;
+    const cellFillLevelSeed = thresholdSeed(sdb, cellFillLevelDatapoint, cellFillLevelData, cellValueSeed);
 
     const cellFlowAnimData = cellData.cellProps.flowAnimation;
     const cellFlowAnimDatapoint = cellFlowAnimData?.datapoint;
-    const cellFlowAnimSeed = thresholdSeed(cellFlowAnimDatapoint, cellFlowAnimData, cellValueSeed);
+    const cellFlowAnimSeed = thresholdSeed(sdb, cellFlowAnimDatapoint, cellFlowAnimData, cellValueSeed);
     const cellFlowAnimState = cellFlowAnimData ? getFlowAnimationState(cellFlowAnimData, animationsEnabled ? cellFlowAnimSeed : null ) : null;
 
     cellData.fillElements.forEach((el: HTMLElement) => {
-      if (cellFillColorData) {
-        setFillAttribute(el, cellFillColor || elementAttribs.get(el.id)?.fillColor);
-      }
-      if (cellLabelColorData) {
-        el.style.color = cellLabelColor || elementAttribs.get(el.id)?.styleColor || '';
+      if (cellData.cellProps.labelColor || cellData.cellProps.labelColorCompound) {
+        el.style.color = cellLabelColor?.color || elementAttribs.get(el.id)?.styleColor || '';
       }
       if (cellLabelData) {
         el.replaceChildren(cellData.text + (cellLabel || ''));
       }
     });
-    if (cellStrokeColorData) {
+    if (cellData.cellProps.strokeColor || cellData.cellProps.strokeColorCompound) {
       cellData.strokeElements.forEach((el: HTMLElement) => {
-        setStrokeAttribute(el, cellStrokeColor || elementAttribs.get(el.id)?.strokeColor);
+        setStrokeAttribute(el, cellStrokeColor?.color || elementAttribs.get(el.id)?.strokeColor);
       });
     }
-    if (cellFillColorData) {
+    if (cellData.cellProps.fillColor || cellData.cellProps.fillColorCompound) {
+      cellData.fillElements.forEach((el: HTMLElement) => {
+        setFillAttribute(el, cellFillColor?.color || elementAttribs.get(el.id)?.fillColor);
+      });
       cellData.textElements.forEach((el: HTMLElement) => {
-        setFillAttribute(el, cellFillColor || elementAttribs.get(el.id)?.fillColor);
+        setFillAttribute(el, cellFillColor?.color || elementAttribs.get(el.id)?.fillColor);
       });
     }
     if (cellFillLevelData) {
