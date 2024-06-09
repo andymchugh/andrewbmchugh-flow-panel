@@ -1,5 +1,14 @@
 ---
 
+# Version 1.14.0 onwards: The zoomPanPinch yaml provides customization of the zoom-pan-pinch
+# behavior. It can be defined in either panelConfig or siteConfig.
+zoomPanPinch:
+  # This optional term defines the array of keys that can be used to enable wheel zoom. There's
+  # a clash of interest between panel zoom and dashboard scrolling which is easy to avoid with small
+  # SVGs, but becomes more problematic when the SVG is large and covers a lot of the screen. By
+  # requiring a combo such as ALT+Scroll this clash can be avoided. 
+  wheelActivationKeys: ["Alt"]
+
 # These scalars provide a way for grafana variable settings to adjust the threshold
 # limits. They are explained in the panelConfig documentation. These scalar
 # rules across the two files are additive. As in the panelConfig rules are added first, then

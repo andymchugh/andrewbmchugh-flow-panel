@@ -360,7 +360,8 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
     <div>
       <TransformWrapper
         disabled={!options.panZoomEnabled}
-        doubleClick={{mode: "reset"}}>
+        doubleClick={{mode: "reset"}}
+        wheel={{activationKeys: panelConfig?.zoomPanPinch.wheelActivationKeys || []}}>
         <TransformComponent>
           <div className={cx(
             styles.wrapper,

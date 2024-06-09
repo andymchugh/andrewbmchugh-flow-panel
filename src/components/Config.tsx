@@ -125,7 +125,12 @@ export type PanelConfigHighlighter = {
   condensed: boolean;
 };
 
+export type ZoomPanPinch = {
+  wheelActivationKeys: string[] | undefined;
+};
+
 export type SiteConfig = {
+  zoomPanPinch: ZoomPanPinch;
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
   links: Map<string, Link>;
   colors: Map<string, string>;
@@ -135,6 +140,7 @@ export type SiteConfig = {
 
 export type PanelConfig = {
   test: TestConfig;
+  zoomPanPinch: ZoomPanPinch;
   background: Background;
   animationsPresent: boolean;
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
@@ -175,6 +181,7 @@ export function panelConfigFactory(config: any) {
 
   return {
     test: config.test || {},
+    zoomPanPinch: config.zoomPanPinch || {},
     background: config.background || {},
     variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(Object.entries(config.variableThresholdScalars || {})),
     gradientMode: config.gradientMode || 'none',
@@ -190,6 +197,7 @@ export function panelConfigFactory(config: any) {
 export function siteConfigFactory(config: any) {
   config = config || {};
   return {
+    zoomPanPinch: config.zoomPanPinch || {},
     links: new Map<string, Link>(Object.entries(config.links || {})),
     colors: new Map<string, string>(Object.entries(config.colors || {})),
     variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(Object.entries(config.variableThresholdScalars || {})),
@@ -304,6 +312,9 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
       panelConfig.animationsPresent = true;
     }
   });
+
+  // Blend ZoomPanPinch settings
+  panelConfig.zoomPanPinch = {...siteConfig.zoomPanPinch, ...panelConfig.zoomPanPinch};
 }
 
 export function configInit(siteConfig: SiteConfig, panelConfig: PanelConfig) {

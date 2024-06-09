@@ -1,0 +1,217 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 3,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 123127,
+        "options": {
+          "code": {
+            "language": "plaintext",
+            "showLineNumbers": false,
+            "showMiniMap": false
+          },
+          "content": "# Zoom Pan Pinch\n\nThis dashboard demonstrates the Zoom-Pan-Pinch configurability which supports:\n- Enable / disable as panel configuration\n- Wheel activation keys. These are helpful as there's a clash of interests between dashboard scroll and panel zoom.",
+          "mode": "markdown"
+        },
+        "pluginVersion": "10.0.0",
+        "type": "text"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 5
+        },
+        "id": 123125,
+        "options": {
+          "animationsEnabled": true,
+          "debuggingCtr": {
+            "colorsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 0,
+            "mappingsCtr": 0,
+            "timingsCtr": 0
+          },
+          "highlighterEnabled": true,
+          "panZoomEnabled": true,
+          "panelConfig": "---\n\nzoomPanPinch:\n  wheelActivationKeys: [\"Alt\"]",
+          "siteConfig": "",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
+          "testDataEnabled": true,
+          "timeSliderEnabled": true
+        },
+        "title": "PanelConfig => wheel activation to 'Alt'",
+        "type": "andrewbmchugh-flow-panel"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 5
+        },
+        "id": 123130,
+        "options": {
+          "animationsEnabled": true,
+          "debuggingCtr": {
+            "colorsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 0,
+            "mappingsCtr": 0,
+            "timingsCtr": 0
+          },
+          "highlighterEnabled": true,
+          "panZoomEnabled": true,
+          "siteConfig": "---\n\nzoomPanPinch:\n  wheelActivationKeys: [\"Alt\"]",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
+          "testDataEnabled": true,
+          "timeSliderEnabled": true
+        },
+        "title": "SiteConfig => wheel activation to 'Alt'",
+        "type": "andrewbmchugh-flow-panel"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 14
+        },
+        "id": 123129,
+        "options": {
+          "animationsEnabled": true,
+          "debuggingCtr": {
+            "colorsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 0,
+            "mappingsCtr": 0,
+            "timingsCtr": 0
+          },
+          "highlighterEnabled": true,
+          "panZoomEnabled": true,
+          "panelConfig": "---\n\nzoomPanPinch:\n  wheelActivationKeys: []",
+          "siteConfig": "---\n\nzoomPanPinch:\n  wheelActivationKeys: [\"Alt\"]",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
+          "testDataEnabled": true,
+          "timeSliderEnabled": true
+        },
+        "title": "SiteConfig => wheel activation to 'Alt', panelConfig overrides back to empty",
+        "type": "andrewbmchugh-flow-panel"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 14
+        },
+        "id": 123128,
+        "options": {
+          "animationsEnabled": true,
+          "debuggingCtr": {
+            "colorsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 0,
+            "mappingsCtr": 0,
+            "timingsCtr": 0
+          },
+          "highlighterEnabled": true,
+          "panZoomEnabled": false,
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg1.svg",
+          "testDataEnabled": true,
+          "timeSliderEnabled": true
+        },
+        "title": "Pan / Zoom Disabled",
+        "type": "andrewbmchugh-flow-panel"
+      }
+    ],
+    "refresh": "",
+    "schemaVersion": 38,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-3h",
+      "to": "now"
+    },
+    "timepicker": {
+      "hidden": false,
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h",
+        "12h",
+        "24h",
+        "2d",
+        "7d",
+        "30d"
+      ],
+      "type": "timepicker"
+    },
+    "timezone": "browser",
+    "title": "Zoom Pan Pinch",
+    "version": 1,
+    "weekStart": ""
+  }
