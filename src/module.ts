@@ -43,7 +43,9 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
     path: 'panZoomEnabled',
     name: 'Pan / Zoom Enabled',
     description: `When enabled the scroll wheel allows you to zoom and click-drag allows
-    you to pan. Double-Click to reset zoom to normal.`,
+    you to pan. Double-Click to reset zoom to normal. Note the scroll wheel can be configured
+    to need additional keys such as 'Alt' to separate panel zoom from dashboard scroll. Check
+    in the site and panel yaml under zoomPanPinch.wheelActivationKeys.`,
     defaultValue: true,
   })
   .addBooleanSwitch({
