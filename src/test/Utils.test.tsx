@@ -140,11 +140,9 @@ test('colorGradient', () => {
     const rgbGreen = 'rgb(0, 0, 100)';
     colorStringToRgb(theme, rgbGreen);
 
-    expect(colorGradient(rgbRed, rgbBlue, 0/0, HighlightState.Ambient, highlightFactors))
+    expect(colorGradient(rgbRed, rgbBlue, 1, HighlightState.Ambient, highlightFactors))
         .toEqual('rgba(0, 100, 0, 1)');
-    expect(colorGradient(rgbRed, rgbBlue, 1/0, HighlightState.Ambient, highlightFactors))
-        .toEqual('rgba(0, 100, 0, 1)');
-    expect(colorGradient(rgbRed, rgbBlue, -999999999, HighlightState.Ambient, highlightFactors))
+    expect(colorGradient(rgbRed, rgbBlue, 0, HighlightState.Ambient, highlightFactors))
         .toEqual('rgba(100, 0, 0, 1)');
     expect(colorGradient(rgbRed, rgbBlue, 1, HighlightState.Ambient, highlightFactors))
         .toEqual('rgba(0, 100, 0, 1)');

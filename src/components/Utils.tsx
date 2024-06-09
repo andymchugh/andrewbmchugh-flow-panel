@@ -151,14 +151,13 @@ export function colorLookup(color: string, highlight: HighlightState, highlightF
 }
 
 export function colorGradient(color1: string, color2: string, scalar: number, highlight: HighlightState, highlightFactors: HighlightFactors) {
-  const scalarBounded = isFinite(scalar) ? Math.min(1, Math.max(0, scalar)) : 1;
   const color1Vals = gColorCache.get(color1);
   const color2Vals = gColorCache.get(color2);
 
   if (color1Vals && color2Vals) {
     let blend = {...color1Vals};
     for (let i = 0; i < 3; i++) {
-      blend[i] += ((color2Vals[i] - blend[i]) * scalarBounded);
+      blend[i] += ((color2Vals[i] - blend[i]) * scalar);
     }
     return rgbToString(blend, highlight, highlightFactors);
   }
@@ -232,15 +231,26 @@ export function getColor(cellColorData: PanelConfigCellColor, value: number, hig
         const thresholdLwr = thresholds[i - 1];
         if (cellColorData.gradientMode === 'hue') {
           const scalar = (value - thresholdLwr.level) / (threshold.level - thresholdLwr.level);
-          return colorGradient(thresholdLwr.color, threshold.color, scalar, highlight, highlightFactors);
+          const scalarBounded = isFinite(scalar) ? Math.min(1, Math.max(0, scalar)) : 1;
+
+          return {
+            color: colorGradient(thresholdLwr.color, threshold.color, scalarBounded, highlight, highlightFactors),
+            order: thresholdLwr.order + scalarBounded,
+          };
         }
         else {
           // The only other mode is 'none'
-          return colorLookup(thresholdLwr.color, highlight, highlightFactors);
+          return {
+            color: colorLookup(thresholdLwr.color, highlight, highlightFactors),
+            order: thresholdLwr.order,
+          }
         }
       }
     }
-    return colorLookup(threshold.color, highlight, highlightFactors);
+    return {
+      color: colorLookup(threshold.color, highlight, highlightFactors),
+      order: threshold.order,
+    }
   }
   return null;
 }

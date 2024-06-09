@@ -6,6 +6,8 @@ export type ColorGradientMode = 'none' | 'hue';
 export type LabelSeparator = 'cr' | 'colon' | 'space' | 'replace';
 export type LinkUrlParams = 'none' | 'time' | 'all';
 export type FillDirection = 'bottomToTop' | 'topToBottom' | 'leftToRight' | 'rightToLeft';
+export type CompoundFunction = 'min' | 'max';
+export type ColorDrives = 'labelColor' | 'strokeColor' | 'fillColor';
 
 export type VariableThresholdScalars = {
   variableValuePattern: string;
@@ -16,6 +18,7 @@ export type VariableThresholdScalars = {
 export type Threshold = {
   color: string;
   level: number;
+  order: number;
 };
 
 export type Link = {
@@ -63,6 +66,11 @@ export type PanelConfigCellColor = {
   thresholds: Threshold[] | undefined;
 };
 
+export type PanelConfigCellColorCompound = {
+  function: CompoundFunction;
+  colors: PanelConfigCellColor[];
+};
+
 export type PanelConfigCellFillLevel = {
   dataRef: string | undefined;
   datapoint: DatapointMode | undefined;
@@ -94,8 +102,11 @@ export type PanelConfigCell = {
   link: Link | undefined;
   label: PanelConfigCellLabel | undefined;
   labelColor: PanelConfigCellColor | undefined;
+  labelColorCompound: PanelConfigCellColorCompound | undefined;
   strokeColor: PanelConfigCellColor | undefined;
+  strokeColorCompound: PanelConfigCellColorCompound | undefined;
   fillColor: PanelConfigCellColor | undefined;
+  fillColorCompound: PanelConfigCellColorCompound | undefined;
   fillLevel: PanelConfigCellFillLevel | undefined;
   flowAnimation: PanelConfigCellFlowAnimation | undefined;
   tags: Set<string> | undefined;
@@ -200,8 +211,9 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
     if (color) {
       color.gradientMode = color.gradientMode || panelConfig.gradientMode;
       if (color.thresholds) {
-        color.thresholds.forEach(function(threshold) {
+        color.thresholds.forEach(function(threshold, index) {
           threshold.color = siteConfig.colors.get(threshold.color) || threshold.color;
+          threshold.order = typeof threshold.order === 'number' ? threshold.order : index;
         });
       }
       if (!color.thresholds && color.thresholdsRef) {
@@ -212,10 +224,24 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
       }
     }
   }
+  function colorBlend(cell: PanelConfigCell, colorStr: ColorDrives, colorCompound: PanelConfigCellColorCompound | undefined) {
+    colorDeref(cell, cell[colorStr]);
+    if (colorCompound) {
+      (colorCompound.colors || []).forEach((color) => {
+        colorDeref(cell, color);
+      });
+      if (cell[colorStr]) {
+        // Prepend the single color value to the pre-existing compound
+        colorCompound.colors.unshift(cell[colorStr] as PanelConfigCellColor);
+        cell[colorStr] = undefined;
+      }
+    }
+
+  }
   panelConfig.cells.forEach((cell) => {
-    colorDeref(cell, cell.labelColor);
-    colorDeref(cell, cell.strokeColor);
-    colorDeref(cell, cell.fillColor);
+    colorBlend(cell, 'labelColor', cell.labelColorCompound);
+    colorBlend(cell, 'strokeColor', cell.strokeColorCompound);
+    colorBlend(cell, 'fillColor', cell.fillColorCompound);
 
     if (!cell.link && cell.linkRef) {
       cell.link = siteConfig.links.get(cell.linkRef);
