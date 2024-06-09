@@ -220,7 +220,7 @@ cells:
       # The order term (from version 1.14.0) determines how a threshold compares across threshold sets.
       # It defaults to the array index and only needs to be explicitly defined when threshold sets are being
       # compared and the default 'array-order' is not suitable. This comparison only occurs when fields
-      # labelColors, strokeColors or fillColors (note the 's') are being used.
+      # labelColorCompound, strokeColorCompound or fillColorCompound are being used.
       #
       # The color can be in the following formats:
       # - a grafana color as can be seen from 'Debugging Colors'.
@@ -243,7 +243,7 @@ cells:
     # Version 1.14.0 onwards: This defines an array of 'labelColor' alongside an
     # aggregation function on how the color should be chosen from the array. If 'labelColor'
     # is also defined it is prepended to this array and color is just driven from this array.
-    labelColors:
+    labelColorCompound:
       # Aggregation function defined as either 'min' or 'max'. 'max' is the default.
       function: "max"
 
@@ -274,7 +274,7 @@ cells:
     # Version 1.14.0 onwards: This defines an array of 'strokeColor' alongside an
     # aggregation function on how the color should be chosen from the array. If 'strokeColor'
     # is also defined it is prepended to this array and color is just driven from this array.
-    strokeColors:
+    strokeColorCompound:
       # Aggregation function defined as either 'min' or 'max'. 'max' is the default.
       function: "max"
 
@@ -305,7 +305,7 @@ cells:
     # Version 1.14.0 onwards: This defines an array of 'fillColor' alongside an
     # aggregation function on how the color should be chosen from the array. If 'fillColor'
     # is also defined it is prepended to this array and color is just driven from this array.
-    fillColors:
+    fillColorCompound:
       # Aggregation function defined as either 'min' or 'max'. 'max' is the default.
       function: "max"
 
