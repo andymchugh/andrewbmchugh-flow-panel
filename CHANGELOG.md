@@ -6,7 +6,7 @@ Zoom Pan Pinch Wheel Activation
 -------------------------------
 This adds the ability to require an activation key such as 'Alt' to be pressed in order to enter
 panel zoom. There's a clash of interest between panel zoom and dashboard scroll which can be
-avoided by using this feature. Mew config terms in siteConfig and panelConfig:
+avoided by using this feature. New config terms in siteConfig and panelConfig:
 - zoomPanPinch
 
 Compound Colors
