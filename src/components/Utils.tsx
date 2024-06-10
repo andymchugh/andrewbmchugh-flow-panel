@@ -41,15 +41,43 @@ export function isUrl(str: string) {
   }
 }
 
-export function createUrl(link: Link) {
+export function createUrl(url: string) {
   try {
-    link.url = new URL(link.url, document.baseURI).href;
-    return link;
+    url = new URL(url, document.baseURI).href;
+    return url;
   }
   catch(err) {
-    console.log('invalid url link', link.url, 'error:', err);
+    console.log('invalid url', url, 'error:', err);
     return undefined;
   }
+}
+
+export function constructUrl(link: Link, linkVariables: Map<string, string>) {
+  if (!link.initialized) {
+    link.initialized = true;
+    linkVariables.forEach((value: string, key: string) => {
+      const token = '\$\{'.concat(key, '\}');
+      link.url = link.url.split(token).join(value);
+    });
+    link.url = createUrl(link.url) || "";
+  }
+  if (link.url.length) {
+    let url = link.url;
+    if (link.params === 'time') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const from = urlParams.get('from');
+      const to = urlParams.get('to');
+      const phrase = from && to ? `?from=${from}&to=${to}` :
+        from ? `?from=${from}` :
+        to ? `?to=${to}` : '';
+      url = appendUrlParams(url, phrase);
+    }
+    else if (link.params === 'all') {
+      url = appendUrlParams(url, window.location.search);
+    }
+    return url;
+  }
+  return undefined;
 }
 
 //-----------------------------------------------------------------------------

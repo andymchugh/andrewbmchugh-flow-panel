@@ -1,5 +1,4 @@
 import { VariableInterpolation, getTemplateSrv } from "@grafana/runtime";
-import { createUrl } from "./Utils";
 
 export type DatapointMode = 'last' | 'lastNotNull';
 export type ColorGradientMode = 'none' | 'hue';
@@ -24,6 +23,7 @@ export type Threshold = {
 export type Link = {
   url: string;
   params: LinkUrlParams;
+  initialized: boolean | undefined;
 };
 
 export type Background = {
@@ -132,6 +132,7 @@ export type ZoomPanPinch = {
 export type SiteConfig = {
   zoomPanPinch: ZoomPanPinch;
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
+  linkVariables: Map<string, string>;
   links: Map<string, Link>;
   colors: Map<string, string>;
   thresholds: Map<string, Threshold[]>;
@@ -141,6 +142,7 @@ export type SiteConfig = {
 export type PanelConfig = {
   test: TestConfig;
   zoomPanPinch: ZoomPanPinch;
+  linkVariables: Map<string, string>;
   background: Background;
   animationsPresent: boolean;
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
@@ -182,6 +184,7 @@ export function panelConfigFactory(config: any) {
   return {
     test: config.test || {},
     zoomPanPinch: config.zoomPanPinch || {},
+    linkVariables: new Map<string, string>(Object.entries(config.linkVariables || {})),
     background: config.background || {},
     variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(Object.entries(config.variableThresholdScalars || {})),
     gradientMode: config.gradientMode || 'none',
@@ -198,6 +201,7 @@ export function siteConfigFactory(config: any) {
   config = config || {};
   return {
     zoomPanPinch: config.zoomPanPinch || {},
+    linkVariables: new Map<string, string>(Object.entries(config.linkVariables || {})),
     links: new Map<string, Link>(Object.entries(config.links || {})),
     colors: new Map<string, string>(Object.entries(config.colors || {})),
     variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(Object.entries(config.variableThresholdScalars || {})),
@@ -246,6 +250,7 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
     }
 
   }
+
   panelConfig.cells.forEach((cell) => {
     colorBlend(cell, 'labelColor', cell.labelColorCompound);
     colorBlend(cell, 'strokeColor', cell.strokeColorCompound);
@@ -253,9 +258,6 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
 
     if (!cell.link && cell.linkRef) {
       cell.link = siteConfig.links.get(cell.linkRef);
-    }
-    if (cell.link) {
-      cell.link = createUrl(cell.link);
     }
 
     if (cell.label) {
@@ -312,6 +314,9 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
       panelConfig.animationsPresent = true;
     }
   });
+
+  // Blend linkVariables
+  panelConfig.linkVariables = new Map([...siteConfig.linkVariables, ...panelConfig.linkVariables]);
 
   // Blend ZoomPanPinch settings
   panelConfig.zoomPanPinch = {...siteConfig.zoomPanPinch, ...panelConfig.zoomPanPinch};

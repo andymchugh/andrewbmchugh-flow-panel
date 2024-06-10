@@ -20,6 +20,13 @@ variableThresholdScalars:
   environment:
     - {variableValuePattern: "dev", thresholdScalar: 0.2, cellIdPatternScope: ["inbox_depth"]}
 
+# Version 1.14.0 onwards: Link variables will be substituted in urls prior to passing through
+# grafana variable substitution. Variables should be defined in the same format as grafana variables.
+# i.e. ${urlBasePlugin}. These variables can be defined in siteConfig or panelConfig.
+linkVariables:
+  urlBasePlugin: "https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/"
+  urlBaseGrafana: "https://app.diagrams.net/"
+
 # These are referenced from panelConfig via the 'linkRef' field.
 # The fields inside a link are explained in the panelConfig documentation.
 # i.e. In panelConfig you see: linkRef: "drawio"
