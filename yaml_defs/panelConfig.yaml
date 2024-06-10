@@ -45,6 +45,10 @@ zoomPanPinch:
 # Version 1.14.0 onwards: Link variables will be substituted in urls prior to passing through
 # grafana variable substitution. Variables should be defined in the same format as grafana variables.
 # i.e. ${urlBasePlugin}. These variables can be defined in siteConfig or panelConfig.
+# Alongside these bespoke variables there are two reserved variables driven from the cell yaml of:
+# ${cell.name}
+# ${cell.dataRef}
+# Substitution order is: reserved-vars -> siteConfig-vars -> panelConfig-vars -> grafana-vars
 linkVariables:
   urlBasePlugin: "https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/"
   urlBaseGrafana: "https://app.diagrams.net/"

@@ -78,9 +78,10 @@ function clickHandlerFactory(elementAttribs: Map<string, SvgElementAttribs>, lin
   return (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     if (event.target) {
       const element = event.target as HTMLElement;
-      const link = elementAttribs.get(element.id)?.link;
+      const attribs = elementAttribs.get(element.id);
+      const link = attribs?.link;
       if (link) {
-        const url = constructUrl(link, linkVariables);
+        const url = constructUrl(link, attribs, linkVariables);
         if (url) {
           window.open(getTemplateSrv().replace(url));
         }
