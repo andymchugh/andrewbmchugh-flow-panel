@@ -1,5 +1,5 @@
 import { GrafanaTheme2, colorManipulator } from '@grafana/data';
-import { SvgAttribs, SvgCell } from 'components/SvgUpdater'
+import { SvgAttribs, SvgCell, SvgElementAttribs } from 'components/SvgUpdater'
 import { Background, HighlightFactors, Link, PanelConfigCellColor, Threshold, VariableThresholdScalars } from 'components/Config';
 import { HighlightState } from './Highlighter';
 
@@ -52,15 +52,27 @@ export function createUrl(url: string) {
   }
 }
 
-export function constructUrl(link: Link, linkVariables: Map<string, string>) {
-  if (!link.initialized) {
-    link.initialized = true;
-    linkVariables.forEach((value: string, key: string) => {
-      const token = '\$\{'.concat(key, '\}');
-      link.url = link.url.split(token).join(value);
-    });
-    link.url = createUrl(link.url) || "";
-  }
+function tokenStr(key: string) {
+  return '\$\{'.concat(key, '\}');
+}
+
+export function constructUrl(link: Link, attribs: SvgElementAttribs, linkVariables: Map<string, string>) {
+  // Blend reserved tokens with variables
+  const linkVars = new Map([
+    ['cell.name', attribs.name],
+    ['cell.dataRef', attribs.dataRef || tokenStr('cell.dataRef')],
+    ...linkVariables]);
+
+  // Substitute tokens
+  linkVars.forEach((value: string, key: string) => {
+    const token = tokenStr(key);
+    link.url = link.url.split(token).join(value);
+  });
+
+  // Generate url
+  link.url = createUrl(link.url) || "";
+
+  // Append window args
   if (link.url.length) {
     let url = link.url;
     if (link.params === 'time') {

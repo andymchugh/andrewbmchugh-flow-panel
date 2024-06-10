@@ -23,7 +23,6 @@ export type Threshold = {
 export type Link = {
   url: string;
   params: LinkUrlParams;
-  initialized: boolean | undefined;
 };
 
 export type Background = {

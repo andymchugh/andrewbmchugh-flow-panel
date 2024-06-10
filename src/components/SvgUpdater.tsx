@@ -28,6 +28,8 @@ export type SvgCell = {
 };
 
 export type SvgElementAttribs = {
+  name: string;
+  dataRef: string | null;
   link: Link | null;
   strokeColor: string | null;
   fillColor: string | null;
@@ -197,6 +199,8 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
     [cell.textElements, cell.fillElements].forEach((arr) => {
       arr.forEach((el) => {
         elementAttribs.set(el.id, {
+          name: cellIdShort,
+          dataRef: panelConfigCell?.dataRef || null,
           link: link || null,
           strokeColor: el.getAttribute('stroke'),
           fillColor: el.getAttribute('fill'),
