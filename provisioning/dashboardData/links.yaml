@@ -35,8 +35,12 @@ cellIdPreamble: "cell-"
 gradientMode: "hue"
 tagConfig:
   condensed: false
-cells: 
 
+linkVariables:
+  urlPanelWebsiteBase: "https://github.com/andymchugh/andrewbmchugh-flow-panel"
+  urlPanelWebsiteSurname: "mchugh"
+
+cells: 
   grafana:
     link:
       url: "https://grafana.com/"
@@ -69,4 +73,19 @@ cells:
     link:
       url: "\\\\< > bad data"
       params: null
-
+  websiteSiteVariables:
+    link:
+      url: "https://github.com/andy${urlSiteWebsiteSurname}/andrewb${urlSiteWebsiteSurname}-flow-panel"
+      params: null
+  websitePanelVariables:
+    link:
+      url: "${urlPanelWebsiteBase}/tree/main/src/README.md"
+      params: null
+  relativeSiteVar:
+    link:
+      url: "/d/c3c52b34-4c6f-4f25-b2b9-b4c8cb31bbe1/flow-${animationSiteVar}?orgId=1"
+      params: null
+  badLinkSiteVar:
+    link:
+      url: "\\\\< > bad link ${animationSiteVar} variable data"
+      params: null

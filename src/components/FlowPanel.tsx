@@ -11,7 +11,7 @@ import { svgInit, svgUpdate, SvgHolder, SvgElementAttribs } from 'components/Svg
 import { seriesExtend, seriesInterpolate , seriesTransform } from 'components/TimeSeries';
 import { TimeSliderFactory } from 'components/TimeSlider';
 import { displayColorsInner, displayDataInner, displayMappingsInner, displaySvgInner } from 'components/DebuggingEditor';
-import { appendUrlParams, colorLookup, getInstrumenter } from 'components/Utils';
+import { colorLookup, constructUrl, getInstrumenter } from 'components/Utils';
 import { addHook, sanitize } from 'dompurify';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
@@ -74,30 +74,21 @@ const getStyles = () => {
   };
 };
 
-function clickHandlerFactory(elementAttribs: Map<string, SvgElementAttribs>) {
+function clickHandlerFactory(elementAttribs: Map<string, SvgElementAttribs>, linkVariables: Map<string, string>) {
   return (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     if (event.target) {
       const element = event.target as HTMLElement;
       const link = elementAttribs.get(element.id)?.link;
       if (link) {
-        let url = link.url;
-        if (link.params === 'time') {
-          const urlParams = new URLSearchParams(window.location.search);
-          const from = urlParams.get('from');
-          const to = urlParams.get('to');
-          const phrase = from && to ? `?from=${from}&to=${to}` :
-            from ? `?from=${from}` :
-            to ? `?to=${to}` : '';
-          url = appendUrlParams(url, phrase);
+        const url = constructUrl(link, linkVariables);
+        if (url) {
+          window.open(getTemplateSrv().replace(url));
         }
-        else if (link.params === 'all') {
-          url = appendUrlParams(url, window.location.search);
-        }
-        window.open(getTemplateSrv().replace(url));
       }
     }
   }
 }
+
 
 export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZone }) => {
   //---------------------------------------------------------------------------
@@ -171,7 +162,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
         doc: svgDoc,
         attribs: svgAttribs,
       };
-      clickHandlerRef.current = clickHandlerFactory(svgAttribs.elementAttribs);
+      clickHandlerRef.current = clickHandlerFactory(svgAttribs.elementAttribs, panelConfig.linkVariables);
 
       setHighlighterSelection(undefined);
       setInitialized(true);

@@ -31,6 +31,7 @@ test:
   # Version 1.12.0 onwards: When set test data values are extended with a string-data timeseries.
   testDataStringData: false
 
+#------------------------------------------------------------------------------
 # Version 1.14.0 onwards: The zoomPanPinch yaml provides customization of the zoom-pan-pinch
 # behavior. It can be defined in either panelConfig or siteConfig.
 zoomPanPinch:
@@ -39,6 +40,14 @@ zoomPanPinch:
   # SVGs, but becomes more problematic when the SVG is large and covers a lot of the screen. By
   # requiring a combo such as ALT+Scroll this clash can be avoided. 
   wheelActivationKeys: ["Alt"]
+
+#------------------------------------------------------------------------------
+# Version 1.14.0 onwards: Link variables will be substituted in urls prior to passing through
+# grafana variable substitution. Variables should be defined in the same format as grafana variables.
+# i.e. ${urlBasePlugin}. These variables can be defined in siteConfig or panelConfig.
+linkVariables:
+  urlBasePlugin: "https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/"
+  urlBaseGrafana: "https://app.diagrams.net/"
 
 #------------------------------------------------------------------------------
 # Grafana Variable Scalars

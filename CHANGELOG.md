@@ -2,6 +2,12 @@
 
 ## 1.x.0
 
+Link Variables
+---------------
+This adds the ability to define link url substitutions to simplify oft-repeated base urls
+or argument sets. New config terms in siteConfig and panelConfig:
+- linkVariables
+
 Zoom Pan Pinch Wheel Activation
 -------------------------------
 This adds the ability to require an activation key such as 'Alt' to be pressed in order to enter
