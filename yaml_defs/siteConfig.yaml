@@ -20,6 +20,11 @@ variableThresholdScalars:
   environment:
     - {variableValuePattern: "dev", thresholdScalar: 0.2, cellIdPatternScope: ["inbox_depth"]}
 
+# Version 1.14.0 onwards: This section defines site level defaults for the link window
+linkWindow:
+  # Default for '<cell>.link.sameTab'.
+  sameTab: true
+
 # Version 1.14.0 onwards: Link variables will be substituted in urls prior to passing through
 # grafana variable substitution. Variables should be defined in the same format as grafana variables.
 # i.e. ${urlBasePlugin}. These variables can be defined in siteConfig or panelConfig.

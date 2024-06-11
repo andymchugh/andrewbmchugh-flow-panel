@@ -42,6 +42,11 @@ zoomPanPinch:
   wheelActivationKeys: ["Alt"]
 
 #------------------------------------------------------------------------------
+# Version 1.14.0 onwards: This section defines panel level defaults for the link window
+linkWindow:
+  # Default for '<cell>.link.sameTab'.
+  sameTab: true
+
 # Version 1.14.0 onwards: Link variables will be substituted in urls prior to passing through
 # grafana variable substitution. Variables should be defined in the same format as grafana variables.
 # i.e. ${urlBasePlugin}. These variables can be defined in siteConfig or panelConfig.
@@ -408,7 +413,12 @@ cells:
       #         aren't available as grafana-variables.
       # 'all': all params will be appended
       params: "time"
-      
+
+      # Version 1.14.0 onwards: When set the url will be opened in the same tab unless the
+      # <CTRL> or <SHFT> overrides are depressed. When undefined the setting falls back to
+      # the panel level 'linkWindow.sameTab' and then to the site level 'linkWindow.sameTab'.
+      sameTab: true
+
     # This defines an ID to a link defined in the siteConfig. If you want to share a
     # link just within the panelConfig you should instead use a yaml anchor/alias.
     # The above 'link' field takes precedence. Only if undefined will linkRef be

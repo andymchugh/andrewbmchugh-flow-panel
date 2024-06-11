@@ -2,6 +2,14 @@
 
 ## 1.x.0
 
+Link in the Same Tab
+--------------------
+This adds the ability to configure links to open in the same tab rather than a new tab.
+It can be set at the cell, panel or site level. New config terms in siteConfig and panelConfig:
+- siteConfig:linkWindow
+- panelConfig:linkWindow
+- panelConfig:cells.cell-name.link.sameTab
+
 Link Variables
 ---------------
 This adds the ability to define link url substitutions to simplify oft-repeated base urls
