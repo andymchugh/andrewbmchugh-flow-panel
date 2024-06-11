@@ -83,7 +83,8 @@ function clickHandlerFactory(elementAttribs: Map<string, SvgElementAttribs>, lin
       if (link) {
         const url = constructUrl(link, attribs, linkVariables);
         if (url) {
-          window.open(getTemplateSrv().replace(url));
+          const sameTarget = link.sameTab && !event.ctrlKey && !event.shiftKey;
+          window.open(getTemplateSrv().replace(url), (sameTarget ? '_self' : undefined));
         }
       }
     }

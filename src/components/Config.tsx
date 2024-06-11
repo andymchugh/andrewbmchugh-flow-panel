@@ -23,6 +23,7 @@ export type Threshold = {
 export type Link = {
   url: string;
   params: LinkUrlParams;
+  sameTab: boolean | undefined;
 };
 
 export type Background = {
@@ -128,9 +129,14 @@ export type ZoomPanPinch = {
   wheelActivationKeys: string[] | undefined;
 };
 
+type LinkWindow = {
+  sameTab: boolean;
+};
+
 export type SiteConfig = {
   zoomPanPinch: ZoomPanPinch;
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
+  linkWindow: LinkWindow,
   linkVariables: Map<string, string>;
   links: Map<string, Link>;
   colors: Map<string, string>;
@@ -141,6 +147,7 @@ export type SiteConfig = {
 export type PanelConfig = {
   test: TestConfig;
   zoomPanPinch: ZoomPanPinch;
+  linkWindow: LinkWindow,
   linkVariables: Map<string, string>;
   background: Background;
   animationsPresent: boolean;
@@ -183,6 +190,7 @@ export function panelConfigFactory(config: any) {
   return {
     test: config.test || {},
     zoomPanPinch: config.zoomPanPinch || {},
+    linkWindow: config.linkWindow,
     linkVariables: new Map<string, string>(Object.entries(config.linkVariables || {})),
     background: config.background || {},
     variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(Object.entries(config.variableThresholdScalars || {})),
@@ -200,6 +208,7 @@ export function siteConfigFactory(config: any) {
   config = config || {};
   return {
     zoomPanPinch: config.zoomPanPinch || {},
+    linkWindow: config.linkWindow,
     linkVariables: new Map<string, string>(Object.entries(config.linkVariables || {})),
     links: new Map<string, Link>(Object.entries(config.links || {})),
     colors: new Map<string, string>(Object.entries(config.colors || {})),
@@ -255,8 +264,14 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
     colorBlend(cell, 'strokeColor', cell.strokeColorCompound);
     colorBlend(cell, 'fillColor', cell.fillColorCompound);
 
+    // Links
     if (!cell.link && cell.linkRef) {
       cell.link = siteConfig.links.get(cell.linkRef);
+    }
+    if (cell.link) {
+      cell.link.sameTab = typeof cell.link.sameTab === 'boolean' ? cell.link.sameTab :
+        typeof panelConfig.linkWindow?.sameTab === 'boolean' ? panelConfig.linkWindow.sameTab :
+        typeof siteConfig.linkWindow?.sameTab === 'boolean' ? siteConfig.linkWindow.sameTab : false;
     }
 
     if (cell.label) {

@@ -1,0 +1,15 @@
+---
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+
+linkWindow:
+  sameTab: true
+
+cells: 
+  website:
+    link:
+      url: "https://github.com/andymchugh/andrewbmchugh-flow-panel"
+      params: null
