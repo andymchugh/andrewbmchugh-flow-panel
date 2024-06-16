@@ -1,6 +1,18 @@
 # Changelog
 
-## 1.x.0
+## 1.14.0
+
+Threshold Support for Text Data 
+-------------------------------
+This adds the ability to configure thresholds using regex patterns for text data.
+New config terms in siteConfig and panelConfig:
+- siteConfig:thresholdPatterns
+- panelConfig:cells.cell-name.labelColor.thresholdPatterns
+- panelConfig:cells.cell-name.labelColor.thresholdPatternsRef
+- panelConfig:cells.cell-name.strokeColor.thresholdPatterns
+- panelConfig:cells.cell-name.strokeColor.thresholdPatternsRef
+- panelConfig:cells.cell-name.fillColor.thresholdPatterns
+- panelConfig:cells.cell-name.fillColor.thresholdPatternsRef
 
 Link in the Same Tab
 --------------------

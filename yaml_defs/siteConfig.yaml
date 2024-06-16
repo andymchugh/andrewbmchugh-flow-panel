@@ -58,7 +58,7 @@ colors:
   green: "#00AA00"
 
 # These are refenced from panelConfig via the 'thresholdsRef' field.
-# i.e. in panelConfig you see: thresholdsRef: "queueCount".
+# i.e. in panelConfig you see: thresholdsRef: "queuecount".
 # The fields inside are explained in the panelConfig documentation.
 thresholds:
   queuecount:
@@ -69,6 +69,21 @@ thresholds:
     - {color: "green", level: 200}
     - {color: "amber", level: 300}
     - {color: "red", level: 1500}
+
+# Version 1.14.0 onwards: These are refenced from panelConfig via the 'thresholdPatternsRef'
+# field. i.e. in panelConfig you see: thresholdPatternsRef: "queuecount".
+# The fields inside are explained in the panelConfig documentation.
+thresholdPatterns:
+  queuecount:
+    - {color: "green", pattern: '.*INFO.*'}
+    - {color: "amber", pattern: '.*WARNING.*'}
+    - {color: "red", pattern: '.*ERROR.*'}
+    - {color: "gray", pattern: '.*'}
+  queuedepth:
+    - {color: "green", level: 200}
+    - {color: "amber", level: 300}
+    - {color: "red", level: 1500}
+    - {color: "gray", pattern: '.*'}
 
 # Version 1.11.0 onwards: These are refenced from panelConfig via the 'valueMappingsRef' field.
 # i.e. in panelConfig you see: valueMappingsRef: "dbTrans".

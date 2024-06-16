@@ -1,6 +1,6 @@
 import { GrafanaTheme2, colorManipulator } from '@grafana/data';
 import { SvgAttribs, SvgCell, SvgElementAttribs } from 'components/SvgUpdater'
-import { Background, HighlightFactors, Link, PanelConfigCellColor, Threshold, VariableThresholdScalars } from 'components/Config';
+import { Background, ColorGradientMode, HighlightFactors, Link, PanelConfigCellColor, ThresholdNumber, ThresholdPattern, VariableThresholdScalars } from 'components/Config';
 import { HighlightState } from './Highlighter';
 
 
@@ -126,7 +126,7 @@ function rgbToString(rgb: number[], highlight: HighlightState, highlightFactors:
 }
 
 export function primeColorCache(theme: GrafanaTheme2, svgAttribs: SvgAttribs, background: Background) {
-  function initCache(thresholds: Threshold[] | undefined) {
+  function initCache(thresholds: ThresholdNumber[] | ThresholdPattern[] | undefined) {
     if (thresholds) {
       thresholds.forEach(function(threshold) {
         colorStringToRgb(theme, threshold.color);
@@ -135,8 +135,12 @@ export function primeColorCache(theme: GrafanaTheme2, svgAttribs: SvgAttribs, ba
   }
 
   svgAttribs.cells.forEach((cellData) => {
-    initCache(cellData.cellProps.fillColor && cellData.cellProps.fillColor.thresholds);
-    initCache(cellData.cellProps.labelColor && cellData.cellProps.labelColor.thresholds);
+    initCache(cellData.cellProps.strokeColor?.thresholds);
+    initCache(cellData.cellProps.strokeColor?.thresholdPatterns);
+    initCache(cellData.cellProps.fillColor?.thresholds);
+    initCache(cellData.cellProps.fillColor?.thresholdPatterns);
+    initCache(cellData.cellProps.labelColor?.thresholds);
+    initCache(cellData.cellProps.labelColor?.thresholdPatterns);
   });
 
   if (background.darkThemeColor) {
@@ -261,36 +265,55 @@ export function variableThresholdScaleValue(variableValues: Map<string, string>,
   return value / scalar;
 }
 
-export function getColor(cellColorData: PanelConfigCellColor, value: number, highlight: HighlightState, highlightFactors: HighlightFactors) {
-  if (cellColorData.thresholds && cellColorData.thresholds.length > 0) {
-    const thresholds = cellColorData.thresholds;
-    let threshold = thresholds[0];
-    for (let i = 1; i < thresholds.length; i++) {
-      threshold = thresholds[i];
-      if (value < threshold.level) {
-        const thresholdLwr = thresholds[i - 1];
-        if (cellColorData.gradientMode === 'hue') {
-          const scalar = (value - thresholdLwr.level) / (threshold.level - thresholdLwr.level);
-          const scalarBounded = isFinite(scalar) ? Math.min(1, Math.max(0, scalar)) : 1;
+export function getColorFromPattern(thresholds: ThresholdPattern[], value: string, highlight: HighlightState, highlightFactors: HighlightFactors) {
+  for (let i = 0; i < thresholds.length; i++) {
+    const threshold = thresholds[i];
+    if (value.match(threshold.regexp)) {
+      return {
+        color: colorLookup(threshold.color, highlight, highlightFactors),
+        order: threshold.order,
+      }
+    }
+  }
+  return null;
+}
 
-          return {
-            color: colorGradient(thresholdLwr.color, threshold.color, scalarBounded, highlight, highlightFactors),
-            order: thresholdLwr.order + scalarBounded,
-          };
-        }
-        else {
-          // The only other mode is 'none'
-          return {
-            color: colorLookup(thresholdLwr.color, highlight, highlightFactors),
-            order: thresholdLwr.order,
-          }
+export function getColorFromNumber(gradientMode: ColorGradientMode | undefined, thresholds: ThresholdNumber[], value: number, highlight: HighlightState, highlightFactors: HighlightFactors) {
+  let threshold = thresholds[0];
+  for (let i = 1; i < thresholds.length; i++) {
+    threshold = thresholds[i];
+    if (value < threshold.level) {
+      const thresholdLwr = thresholds[i - 1];
+      if (gradientMode === 'hue') {
+        const scalar = (value - thresholdLwr.level) / (threshold.level - thresholdLwr.level);
+        const scalarBounded = isFinite(scalar) ? Math.min(1, Math.max(0, scalar)) : 1;
+
+        return {
+          color: colorGradient(thresholdLwr.color, threshold.color, scalarBounded, highlight, highlightFactors),
+          order: thresholdLwr.order + scalarBounded,
+        };
+      }
+      else {
+        // The only other mode is 'none'
+        return {
+          color: colorLookup(thresholdLwr.color, highlight, highlightFactors),
+          order: thresholdLwr.order,
         }
       }
     }
-    return {
-      color: colorLookup(threshold.color, highlight, highlightFactors),
-      order: threshold.order,
-    }
+  }
+  return {
+    color: colorLookup(threshold.color, highlight, highlightFactors),
+    order: threshold.order,
+  }
+}
+
+export function getColor(cellColorData: PanelConfigCellColor, value: number | string, highlight: HighlightState, highlightFactors: HighlightFactors) {
+  if (cellColorData.thresholdPatterns && cellColorData.thresholdPatterns.length > 0) {
+    return getColorFromPattern(cellColorData.thresholdPatterns, value.toString(), highlight, highlightFactors);
+  }
+  else if ((typeof value === 'number') && cellColorData.thresholds && (cellColorData.thresholds.length > 0)) {
+    return getColorFromNumber(cellColorData.gradientMode, cellColorData.thresholds, value, highlight, highlightFactors);
   }
   return null;
 }

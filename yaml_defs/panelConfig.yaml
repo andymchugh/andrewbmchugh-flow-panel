@@ -267,6 +267,29 @@ cells:
       # checked.
       thresholdsRef: "depth"
 
+      # Version 1.14.0 onwards: ThresholdPatterns are the same concept as thresholds but are used with
+      # text data. They have the same fields apart from 'level' being substituted for 'pattern'.
+      # Whereas thresholds start with a base value and then progress through the numerical levels,
+      # thresholdPatterns define a regex that must be explicitely matched for the color to be applied.
+      # As a match has to occur there is no 'gradient' possible. If no match occurs, no color is
+      # applied, so if a default color is wanted it should be in the last 'catch-all' pattern. Pattern
+      # match breaks out on first match so patterns should be defined in most-specific->least specific
+      # order.
+      # If both 'thresholds' and 'thresholdPatterns' are defined, 'thresholdPatterns' take precedence
+      # and the 'thresholds' definitions are ignored.
+      thresholdPatterns:
+        queuecount:
+          - {color: "green", pattern: '.*INFO.*', order: null}
+          - {color: "amber", pattern: '.*WARNING.*', order: null}
+          - {color: "red", pattern: '.*ERROR.*', order: null}
+          - {color: "gray", pattern: '.*', order: null}
+
+      # Version 1.14.0 onwards: This defines an ID to a thresholdPatterns set defined in the siteConfig.
+      # If you want to share a thresholdPatterns set just within the panelConfig you should instead use a
+      # yaml anchor/alias. The above 'thresholdPatterns' field takes precedence. Only if undefined will
+      # thresholdPatternsRef be checked.
+      thresholdPatternsRef: "depth"
+
     # Version 1.14.0 onwards: This defines an array of 'labelColor' alongside an
     # aggregation function on how the color should be chosen from the array. If 'labelColor'
     # is also defined it is prepended to this array and color is just driven from this array.
@@ -298,6 +321,16 @@ cells:
       # See labelColor
       thresholdsRef: "depth"
 
+      # Version 1.14.0 onwards: See labelColor
+      thresholdPatterns:
+        - {color: "green", pattern: '.*INFO.*'}
+        - {color: "amber", pattern: '.*WARNING.*'}
+        - {color: "red", pattern: '.*ERROR.*'}
+        - {color: "gray", pattern: '.*'}
+
+      # Version 1.14.0 onwards: See labelColor
+      thresholdPatternsRef: "depth"
+
     # Version 1.14.0 onwards: This defines an array of 'strokeColor' alongside an
     # aggregation function on how the color should be chosen from the array. If 'strokeColor'
     # is also defined it is prepended to this array and color is just driven from this array.
@@ -328,6 +361,16 @@ cells:
 
       # See labelColor
       thresholdsRef: "depth"
+
+      # Version 1.14.0 onwards: See labelColor
+      thresholdPatterns:
+        - {color: "green", pattern: '.*INFO.*'}
+        - {color: "amber", pattern: '.*WARNING.*'}
+        - {color: "red", pattern: '.*ERROR.*'}
+        - {color: "gray", pattern: '.*'}
+
+      # Version 1.14.0 onwards: See labelColor
+      thresholdPatternsRef: "depth"
 
     # Version 1.14.0 onwards: This defines an array of 'fillColor' alongside an
     # aggregation function on how the color should be chosen from the array. If 'fillColor'

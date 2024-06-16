@@ -367,7 +367,7 @@ function getThresholdColor(sdb: SvgDriveBase,
   configCellColor: PanelConfigCellColor | undefined) {
   const datapoint = configCellColor?.datapoint;
   const colorSeed = thresholdSeed(sdb, datapoint, configCellColor, cellValueSeed);
-  const thresholdColor = configCellColor && (typeof colorSeed === 'number') ? getColor(configCellColor, colorSeed, sdb.highlight, sdb.highlightFactors) : null;
+  const thresholdColor = configCellColor && (colorSeed !== null) ? getColor(configCellColor, colorSeed, sdb.highlight, sdb.highlightFactors) : null;
   return thresholdColor;
 }
 
