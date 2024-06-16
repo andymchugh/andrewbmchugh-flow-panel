@@ -14,7 +14,6 @@ anchorLinks:
 test:
   testDataExtendedZero: true
   testDataStringData: true
-  testDataSparse: true
 
 cellIdPreamble: "cell-"
 gradientMode: "hue"
@@ -29,9 +28,8 @@ cells:
       url: "https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/src/README.md"
   inbox_depth:
     tags: ['depth']
-    dataRef: "test-data-large-sin"
+    dataRef: "test-data-string"
     label:
-      dataRef: "test-data-string"
       valueMappings:
         - {value: "*0*", text: "*mapped to 0*"}
         - {value: "*29*", text: "*mapped to 29*"}
@@ -39,11 +37,7 @@ cells:
       separator: "cr"
       units: "none"
     labelColor:
-      gradientMode: "hue"
-      thresholds:
-        - {color: "green", level: 0}
-        - {color: "orange", level: 500}
-        - {color: "red", level: 1000}
+      thresholdPatternsRef: "example"
     link: *grafana-home
   db_transactions:
     dataRef: "test-data-large-cos"
@@ -80,7 +74,7 @@ cells:
       separator: "cr"
       units: "none"
     labelColor:
-      dataRef: "test-data-large-cos"
-      thresholds:
-        - {color: "#888888", level: 0}
-        - {color: "light-blue", level: 100}
+      thresholdPatterns:
+        - {color: "#888888", pattern: '\*1[0-9][0-9]\*'} # 100-199
+        - {color: "light-blue", pattern: '\*2[0-9][0-9]\*'} # 200-299
+        - {color: "green", pattern: '.*'} # base

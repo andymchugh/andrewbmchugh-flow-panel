@@ -14,11 +14,19 @@ export type VariableThresholdScalars = {
   cellIdPatternScope: string[];
 };
 
-export type Threshold = {
+export type ThresholdNumber = {
   color: string;
   level: number;
   order: number;
 };
+
+export type ThresholdPattern = {
+  color: string;
+  pattern: string;
+  regexp: RegExp;
+  order: number;
+};
+
 
 export type Link = {
   url: string;
@@ -63,7 +71,9 @@ export type PanelConfigCellColor = {
   datapoint: DatapointMode | undefined;
   gradientMode: ColorGradientMode | undefined;
   thresholdsRef: string | undefined;
-  thresholds: Threshold[] | undefined;
+  thresholds: ThresholdNumber[] |undefined;
+  thresholdPatternsRef: string | undefined;
+  thresholdPatterns: ThresholdPattern[] | undefined;
 };
 
 export type PanelConfigCellColorCompound = {
@@ -140,7 +150,8 @@ export type SiteConfig = {
   linkVariables: Map<string, string>;
   links: Map<string, Link>;
   colors: Map<string, string>;
-  thresholds: Map<string, Threshold[]>;
+  thresholds: Map<string, ThresholdNumber[]>;
+  thresholdPatterns: Map<string, ThresholdPattern[]>;
   valueMappings: Map<string, FlowValueMapping[]>;
 };
 
@@ -213,14 +224,15 @@ export function siteConfigFactory(config: any) {
     links: new Map<string, Link>(Object.entries(config.links || {})),
     colors: new Map<string, string>(Object.entries(config.colors || {})),
     variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(Object.entries(config.variableThresholdScalars || {})),
-    thresholds: new Map<string, Threshold[]>(Object.entries(config.thresholds || {})),
+    thresholds: new Map<string, ThresholdNumber[]>(Object.entries(config.thresholds || {})),
+    thresholdPatterns: new Map<string, ThresholdPattern[]>(Object.entries(config.thresholdPatterns || {})),
     valueMappings: new Map<string, FlowValueMapping[]>(Object.entries(config.valueMappings || {})),
   } as SiteConfig;
 }
 
 function siteConfigDereference(siteConfig: SiteConfig) {
   siteConfig.thresholds.forEach((thresholds) => {
-    thresholds.forEach(function(threshold: Threshold) {
+    thresholds.forEach(function(threshold: ThresholdNumber | ThresholdPattern) {
       threshold.color = siteConfig.colors.get(threshold.color) || threshold.color;
     });
   });
@@ -230,14 +242,24 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
   function colorDeref(cell: PanelConfigCell, color: PanelConfigCellColor | undefined) {
     if (color) {
       color.gradientMode = color.gradientMode || panelConfig.gradientMode;
+      if (!color.thresholds && color.thresholdsRef) {
+        color.thresholds = siteConfig.thresholds.get(color.thresholdsRef);
+      }
       if (color.thresholds) {
         color.thresholds.forEach(function(threshold, index) {
           threshold.color = siteConfig.colors.get(threshold.color) || threshold.color;
           threshold.order = typeof threshold.order === 'number' ? threshold.order : index;
         });
       }
-      if (!color.thresholds && color.thresholdsRef) {
-        color.thresholds = siteConfig.thresholds.get(color.thresholdsRef);
+      if (!color.thresholdPatterns && color.thresholdPatternsRef) {
+        color.thresholdPatterns = siteConfig.thresholdPatterns.get(color.thresholdPatternsRef);
+      }
+      if (color.thresholdPatterns) {
+        color.thresholdPatterns.forEach(function(threshold, index) {
+          threshold.color = siteConfig.colors.get(threshold.color) || threshold.color;
+          threshold.order = typeof threshold.order === 'number' ? threshold.order : index;
+          threshold.regexp = typeof threshold.pattern === 'object' ? threshold.regexp : new RegExp(threshold.pattern);
+        });
       }
       if (typeof color.datapoint === 'undefined') {
         color.datapoint = cell.datapoint || panelConfig.datapoint;

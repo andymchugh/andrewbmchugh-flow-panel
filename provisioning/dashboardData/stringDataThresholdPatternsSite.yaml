@@ -1,0 +1,10 @@
+---
+
+#------------------------------------------------------------------------------
+# Site Config
+
+thresholdPatterns:
+  example:
+    - {color: "#888888", pattern: '\*1[0-9][0-9]\*'} # 100-199
+    - {color: "light-blue", pattern: '\*2[0-9][0-9]\*'} # 200-299
+    - {color: "green", pattern: '.*'} # base
