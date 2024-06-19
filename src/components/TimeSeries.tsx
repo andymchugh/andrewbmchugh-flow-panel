@@ -17,7 +17,9 @@ export type TimeSeriesData = {
   ts: Map<string, TimeSeries>;
 };
 
-export function seriesExtend(tsData: TimeSeriesData, timeMin: number, timeMax: number, testConfig: TestConfig | undefined) {
+export function seriesExtend(tsData: TimeSeriesData, testConfig: TestConfig | undefined) {
+  const timeMin = tsData.timeMin;
+  const timeMax = tsData.timeMax;
   const dataSparse = testConfig?.testDataSparse;
   const dataExtendedZero = testConfig?.testDataExtendedZero;
   const baseOffset = typeof testConfig?.testDataBaseOffset === 'number' ? testConfig.testDataBaseOffset : 1;
@@ -61,8 +63,10 @@ export function seriesExtend(tsData: TimeSeriesData, timeMin: number, timeMax: n
 // This transforms the data so we have name-indexable sets of time and value.
 // i.e.:
 // - series: [fields: [{name, values}]] => Map<string, TimeSeries>
-export function seriesTransform(series: any[], timeMin: number, timeMax: number): TimeSeriesData {
+export function seriesTransform(series: any[], panelTimeMin: number, panelTimeMax: number): TimeSeriesData {
   const timeSeries = new Map<string, TimeSeries>();
+  let timeMin: number | undefined = undefined;
+  let timeMax: number | undefined = undefined;
 
   series.forEach((frame: any) => {
     if (('fields' in frame) && Array.isArray(frame.fields)) {
@@ -95,8 +99,8 @@ export function seriesTransform(series: any[], timeMin: number, timeMax: number)
     }
   });
       
-  timeMin = Math.floor(timeMin ?? 0);
-  timeMax = Math.ceil(timeMax ?? 0);
+  timeMin = Math.floor(timeMin ?? panelTimeMin ?? 0);
+  timeMax = Math.ceil(timeMax ?? panelTimeMax ?? 0);
 
   return {
     timeMin: timeMin,
