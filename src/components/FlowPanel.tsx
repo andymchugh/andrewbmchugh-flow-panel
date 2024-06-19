@@ -186,7 +186,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   let tsData = instrument('transform', seriesTransform)(dataFrames, timeMin, timeMax);
 
   if (options.testDataEnabled) {
-    instrument('seriesExtend', seriesExtend)(tsData, timeMin, timeMax, panelConfig?.test);
+    instrument('seriesExtend', seriesExtend)(tsData, panelConfig?.test);
   }
   
   instrument('seriesInterpolate', seriesInterpolate)(tsData, timeSliderScalarRef.current);

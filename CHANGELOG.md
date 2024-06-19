@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.x.0
+
+TimeSlider time range compatible with time-shift 
+------------------------------------------------
+Corrects the way the time-slider time range is initialized so that it now behaves correctly
+when used in conjunction with panel-query-options time-shift.
+
 ## 1.14.0
 
 Threshold Support for Text Data 
