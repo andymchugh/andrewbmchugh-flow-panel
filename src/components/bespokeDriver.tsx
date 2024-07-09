@@ -28,7 +28,7 @@ export type CellBespokeDrivers = {
 
 export function bespokeDriveFactory(config: PanelConfigCellBespoke | undefined) {
   return {
-    dataRefs: Array.isArray(config?.dataRefs) ? config.dataRefs : undefined,
+    dataRefs: Array.isArray(config?.dataRefs) ? config?.dataRefs : undefined,
     handlers: [],
   };
 }
