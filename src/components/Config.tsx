@@ -44,6 +44,7 @@ export type TestConfig = {
   testDataBaseOffset: number | undefined;
   testDataExtendedZero: boolean | undefined;
   testDataStringData: boolean | undefined;
+  testDataNoTime: boolean | undefined;
 };
 
 export type FlowValueMapping = {

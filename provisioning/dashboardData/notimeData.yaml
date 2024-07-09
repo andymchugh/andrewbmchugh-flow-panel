@@ -1,0 +1,61 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - link: &grafana-home
+      url: "https://grafana.com/"
+      params: "time"
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+test:
+  testDataNoTime: true
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+
+cells: 
+  drawio:
+    link:
+      url: "https://app.diagrams.net/?p=svgdata"
+  docs:
+    link:
+      url: "https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/src/README.md"
+  inbox_depth:
+    dataRef: "test-data-no-time"
+    label:
+      separator: "cr"
+      units: "none"
+  db_transactions:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "cr"
+      units: "ops"
+    fillColor:
+      thresholds:
+        - {color: "semi-dark-green", level: 0}
+        - {color: "orange", level: 400}
+        - {color: "red", level: 800}
+    link: *grafana-home
+  start_rate:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "colon"
+      units: "pps"
+    labelColor:
+      thresholds:
+        - {color: "green", level: 0}
+        - {color: "orange", level: 100}
+    link: *grafana-home
+  active_workers:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "cr"
+      units: "none"
+    labelColor:
+      thresholds:
+        - {color: "green", level: 0}
+        - {color: "orange", level: 100}

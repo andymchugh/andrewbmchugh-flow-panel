@@ -58,6 +58,12 @@ export function seriesExtend(tsData: TimeSeriesData, testConfig: TestConfig | un
       tsData.ts.set(ds.name, create(ds.datapoints, ds.scalar, ds.fn, ds.asString));
     }
   });
+  if (testConfig?.testDataNoTime) {
+    const name = 'test-data-no-time';
+    if (!tsData.ts.get(name)) {
+      tsData.ts.set(name, {values: [123], time: {values: [0], valuesIndex: null}});
+    }
+  }
 }
 
 // This transforms the data so we have name-indexable sets of time and value.
@@ -90,11 +96,10 @@ export function seriesTransform(series: any[], panelTimeMin: number, panelTimeMa
         }
       });
       // Embed a time shallow copy against each ts in the frame and export to holder
-      if (tsTime) {
-        for (const [name, ts] of Object.entries<any>(tsNamed)) {
-            ts.time = tsTime;
-            timeSeries.set(name, ts);
-        }
+      tsTime = tsTime || {values: [0], valuesIndex: null};
+      for (const [name, ts] of Object.entries<any>(tsNamed)) {
+          ts.time = tsTime;
+          timeSeries.set(name, ts);
       }
     }
   });

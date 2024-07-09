@@ -1,6 +1,11 @@
 # Changelog
 
-## 1.x.0
+## 1.15.0
+
+Single data point dataFrames
+----------------------------
+Support added for incoming data that doesn't have an associated time array, just a single data-point
+in the array.
 
 Bespoke Attribute and Value Drive 
 ---------------------------------
