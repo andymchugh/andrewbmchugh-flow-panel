@@ -31,6 +31,9 @@ test:
   # Version 1.12.0 onwards: When set test data values are extended with a string-data timeseries.
   testDataStringData: false
 
+  # Version 1.15.0 onwards: When set test the data values are extended with a 'no-time' timeseries.
+  testDataNoTime: false
+
 #------------------------------------------------------------------------------
 # Version 1.14.0 onwards: The zoomPanPinch yaml provides customization of the zoom-pan-pinch
 # behavior. It can be defined in either panelConfig or siteConfig.
