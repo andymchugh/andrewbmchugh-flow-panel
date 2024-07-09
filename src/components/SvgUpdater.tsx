@@ -9,11 +9,12 @@ import {
 import { TimeSeriesData } from 'components/TimeSeries';
 import {
   cellIdFactory, CellIdMaker, getColor, primeColorCache,
-  variableThresholdScalarsInit, variableThresholdScaleValue } from 'components/Utils';
+  variableThresholdScalarsInit, variableThresholdScaleValue, isShapeElement } from 'components/Utils';
 import { HighlightState } from './Highlighter';
 import {
-  CellFillLevelDriver, getClipper, isShapeElement } from 'components/FillLevel';
+  CellFillLevelDriver, getClipper, isFillLevelElement } from 'components/FillLevel';
 import { getTemplateSrv } from '@grafana/runtime';
+import { CellBespokeDrivers, attribDriverManager, bespokeDriveHandlerFactory, bespokeDriveFactory } from './bespokeDriver';
 
 // Defines the metadata stored against each drivable svg cell
 export type SvgCell = {
@@ -22,6 +23,7 @@ export type SvgCell = {
   strokeElements: HTMLElement[];
   fillElements: HTMLElement[];
   fillClipDrivers: CellFillLevelDriver[];
+  bespokeDrivers: CellBespokeDrivers;
   text: string;
   cellProps: PanelConfigCell;
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
@@ -56,6 +58,12 @@ type FlowAnimationState = {
   durationSecs: number;
   direction: string;
 };
+
+export type BespokeStateHolder = {
+  panelState: Object;
+  cellState: Object;
+  elementCounts: Map<string, number>;
+}
 
 function generateLabelPreamble(label: string | null, separator: LabelSeparator | null) {
   label = (label || '').trim();
@@ -96,7 +104,7 @@ function dimensionCoherence(doc: Document) {
   }
 }
 
-function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellIdMaker, additions: HTMLElement[]): boolean {
+function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellIdMaker, additions: HTMLElement[], bespokeStateHolder: BespokeStateHolder): boolean {
   const setAttributes = function(el: HTMLElement) {
     el.style.whiteSpace = 'pre';
 
@@ -111,9 +119,13 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
   }
 
   if (isShapeElement(el)) {
+    // Stroke color drive
     if (cellData.cellProps.strokeColor || cellData.cellProps.strokeColorCompound) {
       cellData.strokeElements.push(el);
     }
+  }
+
+  if (isFillLevelElement(el)) {
     // The fill-level drive is achieved by cloning the original widget and then applying a
     // rectangular clip-path to the original. The clone ensures the full shape is shown whilst
     // the original gets dynamically clipped.
@@ -133,10 +145,15 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
     }
   }
 
+  if (cellData.cellProps.bespoke) {
+    const handlers = bespokeDriveHandlerFactory(el, cellData.cellProps.bespoke.drives, bespokeStateHolder);
+    cellData.bespokeDrivers.handlers.push(...handlers);
+  }
+
   if (el.hasChildNodes()) {
     for (let child of el.childNodes) {
       const childNode = child as HTMLElement;
-      let leaf = recurseElements(childNode, cellData, cellIdMaker, additions);
+      const leaf = recurseElements(childNode, cellData, cellIdMaker, additions, bespokeStateHolder);
       setAttributes(el);
       if (leaf && (el.childNodes.length === 1) && (el.nodeName !== 'title')) {
     
@@ -163,6 +180,7 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
 export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig: PanelConfig, siteConfig: SiteConfig):  SvgAttribs {
   let cells = new Map<string, SvgCell>();
   const cellIdPreamble = panelConfig.cellIdPreamble;
+  const panelState = {};
   panelConfig.cells.forEach((cellProps, cellIdShort) => {
     const cellId = cellIdPreamble + cellIdShort;
     const cellIdMaker = cellIdFactory(cellId + panelConfig.cellIdExtender);
@@ -174,14 +192,21 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
         textElements: [],
         fillElements: [],
         fillClipDrivers: [],
+        bespokeDrivers: bespokeDriveFactory(cellProps.bespoke),
         text: '',
         cellProps: cellProps,
         variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(),
       };
       cells.set(cellIdShort, cell);
 
-      let additions: HTMLElement[] = [];
-      recurseElements(el, cell, cellIdMaker, additions);
+      const additions: HTMLElement[] = [];
+
+      const bespokeStateHolder = {
+        panelState: panelState,
+        cellState: {},
+        elementCounts: new Map<string, number>(),
+      }
+      recurseElements(el, cell, cellIdMaker, additions, bespokeStateHolder);
       // Now the loop of recursions is done, add in the additional elements
       for (let addition of additions) {
         el.prepend(addition);
@@ -465,5 +490,16 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
         setFlowAnimationAttributes(el, cellFlowAnimState);
       });
     }
-  });
+    if (cellData.bespokeDrivers) {
+      const bespokeData = cellData.cellProps.bespoke;
+      const bespokeDataDatapoint = bespokeData?.datapoint;
+      const data: any = cellDataRef ? {[cellDataRef]: cellValue} : {};
+      bespokeData?.dataRefs?.forEach((dataRef: string) => {
+        const dataValue = getCellValue(bespokeDataDatapoint, dataRef, tsData);
+        data[dataRef] = dataValue;
+      })
+
+      attribDriverManager(cellData.bespokeDrivers.handlers, data);
+    }
+  })
 }

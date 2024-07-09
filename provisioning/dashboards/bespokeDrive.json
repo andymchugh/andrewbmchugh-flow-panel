@@ -1,0 +1,146 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 49,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 17,
+          "w": 7,
+          "x": 0,
+          "y": 0
+        },
+        "id": 4,
+        "options": {
+          "code": {
+            "language": "plaintext",
+            "showLineNumbers": false,
+            "showMiniMap": false
+          },
+          "content": "# Bespoke Drive\n\nThis dashboard demonstrates the bespoke drive in the following ways:\n\nTop Left Rect - scales with data around the top left corner\n\nBottom Left Range Ring - scales with data around the center with aligned 'normally defined'\nlabel.\n\nMiddle Clock - Hands rotate around the centre which requires\npath-d deconstruction whilst also demonstrating the normal stroke-color drive on the\nlarge hand.\n\nMiddle Bottom Arrow - Shows head (aka direction) configurability based off of data.\n\nTop Right Cloud - Shows a bespoke label drive including grafana variable substitution.\n\nBottom Right Propeller - Shows two paths, one for each blade, rotating around a set origin, both with coherent\nfillLevel drives.",
+          "mode": "markdown"
+        },
+        "pluginVersion": "10.0.0",
+        "type": "text"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "description": "",
+        "gridPos": {
+          "h": 17,
+          "w": 17,
+          "x": 7,
+          "y": 0
+        },
+        "id": 3,
+        "options": {
+          "animationsEnabled": true,
+          "debuggingCtr": {
+            "colorsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 13,
+            "mappingsCtr": 2,
+            "timingsCtr": 0
+          },
+          "highlighterEnabled": true,
+          "panZoomEnabled": true,
+          "panelConfig": "---\n\n#------------------------------------------------------------------------------\n# YAML Aliases to simplify maintenance\n\nanchorLinks:\n  - thresholds: &thresholds-high\n      - {color: \"green\", level: 100}\n      - {color: \"orange\", level: 400}\n      - {color: \"red\", level: 700}\n\n#------------------------------------------------------------------------------\n# Panel Config\n\ncellIdPreamble: \"cell-\"\ngradientMode: \"hue\"\ncells: \n\n  box:\n    dataRef: \"test-data-large-sin\"\n    label:\n      separator: \"replace\"\n      units: \"ops\"\n    fillColor:\n      thresholds: *thresholds-high\n    bespoke:\n      drives:\n        # Filter the init drive to capture the rect-top-left-corner for the transform origin\n        - elementName: \"rect\"\n          initFn: |\n            state.cellScope.transformX = Number(state.elementScope.element.getAttribute('x'));\n            state.cellScope.transformY = Number(state.elementScope.element.getAttribute('y'));\n\n        # Filter the render drive to just apply the transform on the outer 'g'\n        - elementName: \"g\"\n          elementPosition: 1\n          renderFn: |\n            const scale = 0.5 + Math.max(0.0, Math.min(1.0, data['test-data-large-sin'] / 1000));\n            return {\n              attribs: {\n                transform: `scale(${scale})`,\n                'transform-origin': `${state.cellScope.transformX} ${state.cellScope.transformY}`,\n              },\n            };\n  clock_long_hand:\n    dataRef: \"test-data-large-sin\"\n    strokeColor:\n      thresholds: *thresholds-high\n    bespoke:\n      dataRefs:\n        - \"test-data-large-cos\"\n      drives:\n        # Decompose the path element to capture the origin of the line for use as the rotation point\n        # Note color thresholds are using large-sin but the roation is using the additional large-cos dataRef\n        - elementName: \"path\"\n          initFn: |\n            const pathD = utils.splitPathDAttrib(state.elementScope.element);\n            state.panelScope.clockOriginX = pathD.length > 2 ? pathD[1] : 0;\n            state.panelScope.clockOriginY = pathD.length > 2 ? pathD[2] : 0;\n          renderFn: |\n            return {\n              attribs: {\n                transform: `rotate(${data['test-data-large-cos']} ${state.panelScope.clockOriginX} ${state.panelScope.clockOriginY})`,\n              },\n            };\n  clock_short_hand:\n    bespoke:\n      dataRefs:\n        - \"test-data-large-cos\"\n      drives:\n        # Use the long-hand origin shared via state.panelScope and rotate at a 12th of the angle\n        - elementName: \"path\"\n          renderFn: |\n            return {\n              attribs: {\n                transform: `rotate(${data['test-data-large-cos'] / 12} ${state.panelScope.clockOriginX} ${state.panelScope.clockOriginY})`,\n              },\n            };\n  connector_double_arrow:\n    dataRef: \"test-data-large-sin\"\n    bespoke:\n      drives:\n        # Three path elements exist. The first is the line and the 2nd, 3rd are the arror heads. Drive the\n        # arrow head visibility off of data so only one is visible at a time. The filter is just for 'path'\n        # so the function is called three times as the cell-tree is rendered, once for each element.\n        - elementName: \"path\"\n          renderFn: |\n            const positiveFlow = data['test-data-large-sin'] >= 500;\n            const visible = (state.elementScope.elementPosition === 1) ||\n              ((state.elementScope.elementPosition === 2) && !positiveFlow) ||\n              ((state.elementScope.elementPosition === 3) && positiveFlow);\n            return {\n              attribs: {\n                visibility: visible ? 'visible' : 'hidden',\n              },\n            };\n  range_ring:\n    dataRef: \"test-data-large-cos\"\n    labelColor:\n      thresholds: *thresholds-high\n    bespoke:\n      dataRefs:\n        - \"test-data-large-sin\"\n      drives:\n        # Capture the range-ring origin on the inner 'ellipse' element\n        - elementName: \"ellipse\"\n          initFn: |\n            state.cellScope.rangeRingOriginX = state.elementScope.element.getAttribute('cx');\n            state.cellScope.rangeRingOriginY = state.elementScope.element.getAttribute('cy');\n\n        # Scale the range-ring on the outer 'g' around the ellipse origin. Scaling on the outer 'g' ensures\n        # everything within such as the label is kept coherently positioned.\n        - elementName: \"g\"\n          elementPosition: 1\n          renderFn: |\n            const scale = 0.5 + Math.max(0.0, Math.min(1.0, data['test-data-large-sin'] / 1000));\n            return {\n              attribs: {\n                transform: `scale(${scale} ${scale})`,\n                'transform-origin': `${state.cellScope.rangeRingOriginX} ${state.cellScope.rangeRingOriginY}`,\n              },\n            };\n\n        # Drive the 'value' of the div element containing the label text to the data value. As draw.io has positioned\n        # this on the circumference, the scaling on the outer 'g' ensures it stays on the circumference.\n        - elementName: \"div\"\n          renderFn: |\n            if (state.elementScope.element.firstChild?.nodeType === 3) {\n              return {\n                value: Math.round(data['test-data-large-cos']),\n              };\n            }\n  prop_blade_1:\n    dataRef: \"test-data-large-cos\"\n    fillColor:\n      thresholds: *thresholds-high\n    fillLevel:\n      thresholdLwrFillPercent: 0\n      thresholdUprFillPercent: 100\n      thresholdLwrValue: 0\n      thresholdUprValue: 1000\n      fillDirection: 'bottomToTop'\n    bespoke:\n      drives:\n        # The prime function provides a way to inject terms into the initFn/renderFn allowing those functions\n        # to be reused with yaml aliases whilst still doing specific things. In this case we inject the same\n        # dataRef on both blades, but you could change them to see the effect.\n        # The initFn is shared across both blades by storing origin information at cellScope. But we could store\n        # this at panelScope and so not need the blade2 initFn.\n        - elementName: \"path\"\n          elementPosition: 1\n          primeFn: |\n            state.cellScope.dataRef = 'test-data-large-cos';\n          initFn: &propDriveInit |\n            const pathD = utils.splitPathDAttrib(state.elementScope.element);\n            state.cellScope.originX = pathD.length > 2 ? pathD[1] : 0;\n            state.cellScope.originY = pathD.length > 2 ? pathD[2] : 0;\n\n        # Rotate the outer 'g' using transform. This ensures the inner clip-path setup for the fillLevel drive remains\n        # coherently positioned as the blade rotates.\n        - elementName: \"g\"\n          elementPosition: 1\n          renderFn: &propDriveRender |\n            return {\n              attribs: {\n                transform: `rotate(${data[state.cellScope.dataRef]} ${state.cellScope.originX} ${state.cellScope.originY})`,\n              },\n            };\n  prop_blade_2:\n    dataRef: \"test-data-large-cos\"\n    fillColor:\n      thresholds: *thresholds-high\n    fillLevel:\n      thresholdLwrFillPercent: 0\n      thresholdUprFillPercent: 100\n      thresholdLwrValue: 0\n      thresholdUprValue: 1000\n      fillDirection: 'topToBottom'\n    bespoke:\n      drives:\n        # The second blade drives can be complete duplicates or can diverge based on the needs of the widget. As shown\n        # the initFn and renderFn functions are repeated through yaml alias and the primeFn is repeated but injecting the\n        # same dataRef id for the rotation drive.\n        - elementName: \"path\"\n          elementPosition: 1\n          primeFn: |\n            state.cellScope.dataRef = 'test-data-large-cos';\n          initFn: *propDriveInit\n        - elementName: \"g\"\n          elementPosition: 1\n          renderFn: *propDriveRender\n  cloud:\n    dataRef: \"test-data-large-cos\"\n    fillColor:\n      thresholds: *thresholds-high\n    bespoke:\n      drives:\n        # The cloud drive replaces the label text with a bespoke value sourced from a grafana variable concatenated\n        # with data text.\n        - elementName: \"div\"\n          renderFn: |\n            if (state.elementScope.element.firstChild?.nodeType === 3) {\n              return {\n                value: utils.variablesReplace('${myvar} - ') + Math.round(data['test-data-large-cos']).toString(),\n              };\n            };",
+          "siteConfig": "",
+          "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!-- Do not edit this file with editors other than draw.io -->\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" width=\"882px\" height=\"442px\" viewBox=\"-0.5 -0.5 882 442\" content=\"&lt;mxfile host=&quot;Electron&quot; modified=&quot;2024-07-07T18:19:17.626Z&quot; agent=&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.0 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36&quot; etag=&quot;8swnIaGLCLR8l4_q8kLB&quot; version=&quot;24.4.0&quot; type=&quot;device&quot;&gt;&#10;  &lt;diagram name=&quot;Page-1&quot; id=&quot;W_RbZscRSesyZdvg9Xao&quot;&gt;&#10;    &lt;mxGraphModel dx=&quot;1098&quot; dy=&quot;702&quot; grid=&quot;1&quot; gridSize=&quot;10&quot; guides=&quot;1&quot; tooltips=&quot;1&quot; connect=&quot;1&quot; arrows=&quot;1&quot; fold=&quot;1&quot; page=&quot;1&quot; pageScale=&quot;1&quot; pageWidth=&quot;827&quot; pageHeight=&quot;1169&quot; math=&quot;0&quot; shadow=&quot;0&quot;&gt;&#10;      &lt;root&gt;&#10;        &lt;mxCell id=&quot;0&quot; /&gt;&#10;        &lt;mxCell id=&quot;1&quot; parent=&quot;0&quot; /&gt;&#10;        &lt;object label=&quot;abc&quot; id=&quot;box&quot;&gt;&#10;          &lt;mxCell style=&quot;rounded=0;whiteSpace=wrap;html=1;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt;&#10;            &lt;mxGeometry x=&quot;70&quot; y=&quot;140&quot; width=&quot;120&quot; height=&quot;60&quot; as=&quot;geometry&quot; /&gt;&#10;          &lt;/mxCell&gt;&#10;        &lt;/object&gt;&#10;        &lt;mxCell id=&quot;UjOmiuCYSrWj93g50u-M-1&quot; value=&quot;&quot; style=&quot;ellipse;whiteSpace=wrap;html=1;aspect=fixed;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt;&#10;          &lt;mxGeometry x=&quot;258&quot; y=&quot;140&quot; width=&quot;280&quot; height=&quot;280&quot; as=&quot;geometry&quot; /&gt;&#10;        &lt;/mxCell&gt;&#10;        &lt;object label=&quot;&quot; id=&quot;clock_long_hand&quot;&gt;&#10;          &lt;mxCell style=&quot;endArrow=none;html=1;rounded=0;&quot; parent=&quot;1&quot; edge=&quot;1&quot;&gt;&#10;            &lt;mxGeometry width=&quot;50&quot; height=&quot;50&quot; relative=&quot;1&quot; as=&quot;geometry&quot;&gt;&#10;              &lt;mxPoint x=&quot;398&quot; y=&quot;280&quot; as=&quot;sourcePoint&quot; /&gt;&#10;              &lt;mxPoint x=&quot;398&quot; y=&quot;140&quot; as=&quot;targetPoint&quot; /&gt;&#10;            &lt;/mxGeometry&gt;&#10;          &lt;/mxCell&gt;&#10;        &lt;/object&gt;&#10;        &lt;object label=&quot;&quot; id=&quot;clock_short_hand&quot;&gt;&#10;          &lt;mxCell style=&quot;endArrow=none;html=1;rounded=0;&quot; parent=&quot;1&quot; edge=&quot;1&quot;&gt;&#10;            &lt;mxGeometry width=&quot;50&quot; height=&quot;50&quot; relative=&quot;1&quot; as=&quot;geometry&quot;&gt;&#10;              &lt;mxPoint x=&quot;458&quot; y=&quot;240&quot; as=&quot;sourcePoint&quot; /&gt;&#10;              &lt;mxPoint x=&quot;398&quot; y=&quot;280&quot; as=&quot;targetPoint&quot; /&gt;&#10;            &lt;/mxGeometry&gt;&#10;          &lt;/mxCell&gt;&#10;        &lt;/object&gt;&#10;        &lt;object label=&quot;&quot; id=&quot;connector_double_arrow&quot;&gt;&#10;          &lt;mxCell style=&quot;endArrow=classic;startArrow=classic;html=1;rounded=0;&quot; parent=&quot;1&quot; edge=&quot;1&quot;&gt;&#10;            &lt;mxGeometry width=&quot;50&quot; height=&quot;50&quot; relative=&quot;1&quot; as=&quot;geometry&quot;&gt;&#10;              &lt;mxPoint x=&quot;343&quot; y=&quot;480&quot; as=&quot;sourcePoint&quot; /&gt;&#10;              &lt;mxPoint x=&quot;453&quot; y=&quot;480&quot; as=&quot;targetPoint&quot; /&gt;&#10;            &lt;/mxGeometry&gt;&#10;          &lt;/mxCell&gt;&#10;        &lt;/object&gt;&#10;        &lt;object label=&quot;label&quot; id=&quot;range_ring&quot;&gt;&#10;          &lt;mxCell style=&quot;ellipse;whiteSpace=wrap;html=1;aspect=fixed;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;align=center;horizontal=1;spacingBottom=0;spacing=-15;fontSize=16;labelBackgroundColor=#1A1A1A;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt;&#10;            &lt;mxGeometry x=&quot;70&quot; y=&quot;350&quot; width=&quot;110&quot; height=&quot;110&quot; as=&quot;geometry&quot; /&gt;&#10;          &lt;/mxCell&gt;&#10;        &lt;/object&gt;&#10;        &lt;mxCell id=&quot;3B9jX31oIDrCwLLYUlRD-1&quot; value=&quot;&quot; style=&quot;endArrow=none;html=1;rounded=1;curved=0;&quot; parent=&quot;1&quot; edge=&quot;1&quot;&gt;&#10;          &lt;mxGeometry width=&quot;50&quot; height=&quot;50&quot; relative=&quot;1&quot; as=&quot;geometry&quot;&gt;&#10;            &lt;mxPoint y=&quot;440&quot; as=&quot;sourcePoint&quot; /&gt;&#10;            &lt;mxPoint x=&quot;80&quot; y=&quot;520&quot; as=&quot;targetPoint&quot; /&gt;&#10;            &lt;Array as=&quot;points&quot;&gt;&#10;              &lt;mxPoint y=&quot;520&quot; /&gt;&#10;            &lt;/Array&gt;&#10;          &lt;/mxGeometry&gt;&#10;        &lt;/mxCell&gt;&#10;        &lt;mxCell id=&quot;3B9jX31oIDrCwLLYUlRD-2&quot; value=&quot;&quot; style=&quot;endArrow=none;html=1;rounded=1;curved=0;&quot; parent=&quot;1&quot; edge=&quot;1&quot;&gt;&#10;          &lt;mxGeometry width=&quot;50&quot; height=&quot;50&quot; relative=&quot;1&quot; as=&quot;geometry&quot;&gt;&#10;            &lt;mxPoint x=&quot;880&quot; y=&quot;440&quot; as=&quot;sourcePoint&quot; /&gt;&#10;            &lt;mxPoint x=&quot;800&quot; y=&quot;520&quot; as=&quot;targetPoint&quot; /&gt;&#10;            &lt;Array as=&quot;points&quot;&gt;&#10;              &lt;mxPoint x=&quot;880&quot; y=&quot;520&quot; /&gt;&#10;            &lt;/Array&gt;&#10;          &lt;/mxGeometry&gt;&#10;        &lt;/mxCell&gt;&#10;        &lt;mxCell id=&quot;3B9jX31oIDrCwLLYUlRD-3&quot; value=&quot;&quot; style=&quot;endArrow=none;html=1;rounded=1;curved=0;&quot; parent=&quot;1&quot; edge=&quot;1&quot;&gt;&#10;          &lt;mxGeometry width=&quot;50&quot; height=&quot;50&quot; relative=&quot;1&quot; as=&quot;geometry&quot;&gt;&#10;            &lt;mxPoint x=&quot;80&quot; y=&quot;80&quot; as=&quot;sourcePoint&quot; /&gt;&#10;            &lt;mxPoint y=&quot;160&quot; as=&quot;targetPoint&quot; /&gt;&#10;            &lt;Array as=&quot;points&quot;&gt;&#10;              &lt;mxPoint y=&quot;80&quot; /&gt;&#10;            &lt;/Array&gt;&#10;          &lt;/mxGeometry&gt;&#10;        &lt;/mxCell&gt;&#10;        &lt;mxCell id=&quot;3B9jX31oIDrCwLLYUlRD-4&quot; value=&quot;&quot; style=&quot;endArrow=none;html=1;rounded=1;curved=0;&quot; parent=&quot;1&quot; edge=&quot;1&quot;&gt;&#10;          &lt;mxGeometry width=&quot;50&quot; height=&quot;50&quot; relative=&quot;1&quot; as=&quot;geometry&quot;&gt;&#10;            &lt;mxPoint x=&quot;880&quot; y=&quot;160&quot; as=&quot;sourcePoint&quot; /&gt;&#10;            &lt;mxPoint x=&quot;800&quot; y=&quot;80&quot; as=&quot;targetPoint&quot; /&gt;&#10;            &lt;Array as=&quot;points&quot;&gt;&#10;              &lt;mxPoint x=&quot;880&quot; y=&quot;80&quot; /&gt;&#10;            &lt;/Array&gt;&#10;          &lt;/mxGeometry&gt;&#10;        &lt;/mxCell&gt;&#10;        &lt;object label=&quot;&quot; id=&quot;prop_blade_1&quot;&gt;&#10;          &lt;mxCell style=&quot;endArrow=none;html=1;rounded=0;curved=1;&quot; edge=&quot;1&quot; parent=&quot;1&quot;&gt;&#10;            &lt;mxGeometry width=&quot;50&quot; height=&quot;50&quot; relative=&quot;1&quot; as=&quot;geometry&quot;&gt;&#10;              &lt;mxPoint x=&quot;700&quot; y=&quot;360&quot; as=&quot;sourcePoint&quot; /&gt;&#10;              &lt;mxPoint x=&quot;700&quot; y=&quot;360&quot; as=&quot;targetPoint&quot; /&gt;&#10;              &lt;Array as=&quot;points&quot;&gt;&#10;                &lt;mxPoint x=&quot;760&quot; y=&quot;480&quot; /&gt;&#10;                &lt;mxPoint x=&quot;640&quot; y=&quot;480&quot; /&gt;&#10;              &lt;/Array&gt;&#10;            &lt;/mxGeometry&gt;&#10;          &lt;/mxCell&gt;&#10;        &lt;/object&gt;&#10;        &lt;object label=&quot;label&quot; id=&quot;cloud&quot;&gt;&#10;          &lt;mxCell style=&quot;ellipse;shape=cloud;whiteSpace=wrap;html=1;&quot; vertex=&quot;1&quot; parent=&quot;1&quot;&gt;&#10;            &lt;mxGeometry x=&quot;580&quot; y=&quot;110&quot; width=&quot;240&quot; height=&quot;80&quot; as=&quot;geometry&quot; /&gt;&#10;          &lt;/mxCell&gt;&#10;        &lt;/object&gt;&#10;        &lt;object label=&quot;&quot; id=&quot;prop_blade_2&quot;&gt;&#10;          &lt;mxCell style=&quot;endArrow=none;html=1;rounded=0;curved=1;&quot; edge=&quot;1&quot; parent=&quot;1&quot;&gt;&#10;            &lt;mxGeometry width=&quot;50&quot; height=&quot;50&quot; relative=&quot;1&quot; as=&quot;geometry&quot;&gt;&#10;              &lt;mxPoint x=&quot;700&quot; y=&quot;360&quot; as=&quot;sourcePoint&quot; /&gt;&#10;              &lt;mxPoint x=&quot;700&quot; y=&quot;360&quot; as=&quot;targetPoint&quot; /&gt;&#10;              &lt;Array as=&quot;points&quot;&gt;&#10;                &lt;mxPoint x=&quot;760&quot; y=&quot;240&quot; /&gt;&#10;                &lt;mxPoint x=&quot;640&quot; y=&quot;240&quot; /&gt;&#10;              &lt;/Array&gt;&#10;            &lt;/mxGeometry&gt;&#10;          &lt;/mxCell&gt;&#10;        &lt;/object&gt;&#10;      &lt;/root&gt;&#10;    &lt;/mxGraphModel&gt;&#10;  &lt;/diagram&gt;&#10;&lt;/mxfile&gt;&#10;\"><defs/><g><g id=\"cell-box\" content=\"&lt;object label=&quot;abc&quot;/&gt;\" data-label=\"abc\"><g><rect x=\"70\" y=\"60\" width=\"120\" height=\"60\" fill=\"rgb(24, 20, 29)\" stroke=\"rgb(240, 240, 240)\" pointer-events=\"all\"/></g><g><g transform=\"translate(-0.5 -0.5)\"><switch><foreignObject pointer-events=\"none\" width=\"100%\" height=\"100%\" requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\" style=\"overflow: visible; text-align: left;\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"display: flex; align-items: unsafe center; justify-content: unsafe center; width: 118px; height: 1px; padding-top: 90px; margin-left: 71px;\"><div data-drawio-colors=\"color: rgb(240, 240, 240); \" style=\"box-sizing: border-box; font-size: 0px; text-align: center;\"><div style=\"display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(240, 240, 240); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;\">abc</div></div></div></foreignObject><text x=\"130\" y=\"94\" fill=\"rgb(240, 240, 240)\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">abc</text></switch></g></g></g><g id=\"cell-UjOmiuCYSrWj93g50u-M-1\"><g><ellipse cx=\"398\" cy=\"200\" rx=\"140\" ry=\"140\" fill=\"rgb(24, 20, 29)\" stroke=\"rgb(240, 240, 240)\" pointer-events=\"all\"/></g></g><g id=\"cell-clock_long_hand\" content=\"&lt;object label=&quot;&quot;/&gt;\" data-label=\"\"><g><path d=\"M 398 200 L 398 60\" fill=\"none\" stroke=\"rgb(240, 240, 240)\" stroke-miterlimit=\"10\" pointer-events=\"stroke\"/></g></g><g id=\"cell-clock_short_hand\" content=\"&lt;object label=&quot;&quot;/&gt;\" data-label=\"\"><g><path d=\"M 458 160 L 398 200\" fill=\"none\" stroke=\"rgb(240, 240, 240)\" stroke-miterlimit=\"10\" pointer-events=\"stroke\"/></g></g><g id=\"cell-connector_double_arrow\" content=\"&lt;object label=&quot;&quot;/&gt;\" data-label=\"\"><g><path d=\"M 349.37 400 L 446.63 400\" fill=\"none\" stroke=\"rgb(240, 240, 240)\" stroke-miterlimit=\"10\" pointer-events=\"stroke\"/><path d=\"M 344.12 400 L 351.12 396.5 L 349.37 400 L 351.12 403.5 Z\" fill=\"rgb(240, 240, 240)\" stroke=\"rgb(240, 240, 240)\" stroke-miterlimit=\"10\" pointer-events=\"all\"/><path d=\"M 451.88 400 L 444.88 403.5 L 446.63 400 L 444.88 396.5 Z\" fill=\"rgb(240, 240, 240)\" stroke=\"rgb(240, 240, 240)\" stroke-miterlimit=\"10\" pointer-events=\"all\"/></g></g><g id=\"cell-range_ring\" content=\"&lt;object label=&quot;label&quot;/&gt;\" data-label=\"label\"><g><ellipse cx=\"125\" cy=\"325\" rx=\"55\" ry=\"55\" fill=\"rgb(24, 20, 29)\" stroke=\"rgb(240, 240, 240)\" pointer-events=\"all\"/></g><g><g transform=\"translate(-0.5 -0.5)\"><switch><foreignObject pointer-events=\"none\" width=\"100%\" height=\"100%\" requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\" style=\"overflow: visible; text-align: left;\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"display: flex; align-items: unsafe flex-start; justify-content: unsafe center; width: 142px; height: 1px; padding-top: 370px; margin-left: 54px;\"><div data-drawio-colors=\"color: rgb(240, 240, 240); background-color: #1A1A1A; \" style=\"box-sizing: border-box; font-size: 0px; text-align: center;\"><div style=\"display: inline-block; font-size: 16px; font-family: Helvetica; color: rgb(240, 240, 240); line-height: 1.2; pointer-events: all; background-color: rgb(26, 26, 26); white-space: normal; overflow-wrap: normal;\">label</div></div></div></foreignObject><text x=\"125\" y=\"386\" fill=\"rgb(240, 240, 240)\" font-family=\"Helvetica\" font-size=\"16px\" text-anchor=\"middle\">label</text></switch></g></g></g><g id=\"cell-3B9jX31oIDrCwLLYUlRD-1\"><g><path d=\"M 0 360 L 0 430 Q 0 440 10 440 L 80 440\" fill=\"none\" stroke=\"rgb(240, 240, 240)\" stroke-miterlimit=\"10\" pointer-events=\"stroke\"/></g></g><g id=\"cell-3B9jX31oIDrCwLLYUlRD-2\"><g><path d=\"M 880 360 L 880 430 Q 880 440 870 440 L 800 440\" fill=\"none\" stroke=\"rgb(240, 240, 240)\" stroke-miterlimit=\"10\" pointer-events=\"stroke\"/></g></g><g id=\"cell-3B9jX31oIDrCwLLYUlRD-3\"><g><path d=\"M 80 0 L 10 0 Q 0 0 0 10 L 0 80\" fill=\"none\" stroke=\"rgb(240, 240, 240)\" stroke-miterlimit=\"10\" pointer-events=\"stroke\"/></g></g><g id=\"cell-3B9jX31oIDrCwLLYUlRD-4\"><g><path d=\"M 880 80 L 880 10 Q 880 0 870 0 L 800 0\" fill=\"none\" stroke=\"rgb(240, 240, 240)\" stroke-miterlimit=\"10\" pointer-events=\"stroke\"/></g></g><g id=\"cell-prop_blade_1\" content=\"&lt;object label=&quot;&quot;/&gt;\" data-label=\"\"><g><path d=\"M 700 280 Q 760 400 700 400 Q 640 400 700 280\" fill=\"none\" stroke=\"rgb(240, 240, 240)\" stroke-miterlimit=\"10\" pointer-events=\"stroke\"/></g></g><g id=\"cell-cloud\" content=\"&lt;object label=&quot;label&quot;/&gt;\" data-label=\"label\"><g><path d=\"M 640 50 C 592 50 580 70 618.4 74 C 580 82.8 623.2 102 654.4 94 C 676 110 748 110 772 94 C 820 94 820 78 790 70 C 820 54 772 38 730 46 C 700 34 652 34 640 50 Z\" fill=\"rgb(24, 20, 29)\" stroke=\"rgb(240, 240, 240)\" stroke-miterlimit=\"10\" pointer-events=\"all\"/></g><g><g transform=\"translate(-0.5 -0.5)\"><switch><foreignObject pointer-events=\"none\" width=\"100%\" height=\"100%\" requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\" style=\"overflow: visible; text-align: left;\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"display: flex; align-items: unsafe center; justify-content: unsafe center; width: 238px; height: 1px; padding-top: 70px; margin-left: 581px;\"><div data-drawio-colors=\"color: rgb(240, 240, 240); \" style=\"box-sizing: border-box; font-size: 0px; text-align: center;\"><div style=\"display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(240, 240, 240); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;\">label</div></div></div></foreignObject><text x=\"700\" y=\"74\" fill=\"rgb(240, 240, 240)\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">label</text></switch></g></g></g><g id=\"cell-prop_blade_2\" content=\"&lt;object label=&quot;&quot;/&gt;\" data-label=\"\"><g><path d=\"M 700 280 Q 760 160 700 160 Q 640 160 700 280\" fill=\"none\" stroke=\"rgb(240, 240, 240)\" stroke-miterlimit=\"10\" pointer-events=\"stroke\"/></g></g></g><switch><g requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\"/><a transform=\"translate(0,-5)\" xlink:href=\"https://www.drawio.com/doc/faq/svg-export-text-problems\" target=\"_blank\"><text text-anchor=\"middle\" font-size=\"10px\" x=\"50%\" y=\"100%\">Text is not SVG - cannot display</text></a></switch></svg>",
+          "testDataEnabled": true,
+          "timeSliderEnabled": true
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "datasource",
+              "uid": "grafana"
+            },
+            "queryType": "list",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "datasource",
+              "uid": "grafana"
+            },
+            "hide": false,
+            "queryType": "randomWalk",
+            "refId": "B"
+          }
+        ],
+        "title": "Bespoke Drives",
+        "type": "andrewbmchugh-flow-panel"
+      }
+    ],
+    "refresh": "",
+    "schemaVersion": 38,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "selected": false,
+            "text": "var-value2",
+            "value": "var-value2"
+          },
+          "hide": 0,
+          "includeAll": false,
+          "multi": false,
+          "name": "myvar",
+          "options": [
+            {
+              "selected": false,
+              "text": "var-value1",
+              "value": "var-value1"
+            },
+            {
+              "selected": true,
+              "text": "var-value2",
+              "value": "var-value2"
+            }
+          ],
+          "query": "var-value1,var-value2",
+          "queryValue": "",
+          "skipUrlSync": false,
+          "type": "custom"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Bespoke Drive",
+    "version": 1,
+    "weekStart": ""
+  }
