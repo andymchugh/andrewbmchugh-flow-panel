@@ -1,0 +1,206 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - thresholds: &thresholds-high
+      - {color: "green", level: 100}
+      - {color: "orange", level: 400}
+      - {color: "red", level: 700}
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+cells: 
+
+  box:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "replace"
+      units: "ops"
+    fillColor:
+      thresholds: *thresholds-high
+    bespoke:
+      drives:
+        # Filter the init drive to capture the rect-top-left-corner for the transform origin
+        - elementName: "rect"
+          initFn: |
+            state.cellScope.transformX = Number(state.elementScope.element.getAttribute('x'));
+            state.cellScope.transformY = Number(state.elementScope.element.getAttribute('y'));
+
+        # Filter the render drive to just apply the transform on the outer 'g'
+        - elementName: "g"
+          elementPosition: 1
+          renderFn: |
+            const scale = 0.5 + Math.max(0.0, Math.min(1.0, data['test-data-large-sin'] / 1000));
+            return {
+              attribs: {
+                transform: `scale(${scale})`,
+                'transform-origin': `${state.cellScope.transformX} ${state.cellScope.transformY}`,
+              },
+            };
+  clock_long_hand:
+    dataRef: "test-data-large-sin"
+    strokeColor:
+      thresholds: *thresholds-high
+    bespoke:
+      dataRefs:
+        - "test-data-large-cos"
+      drives:
+        # Decompose the path element to capture the origin of the line for use as the rotation point
+        # Note color thresholds are using large-sin but the roation is using the additional large-cos dataRef
+        - elementName: "path"
+          initFn: |
+            const pathD = utils.splitPathDAttrib(state.elementScope.element);
+            state.panelScope.clockOriginX = pathD.length > 2 ? pathD[1] : 0;
+            state.panelScope.clockOriginY = pathD.length > 2 ? pathD[2] : 0;
+          renderFn: |
+            return {
+              attribs: {
+                transform: `rotate(${data['test-data-large-cos']} ${state.panelScope.clockOriginX} ${state.panelScope.clockOriginY})`,
+              },
+            };
+  clock_short_hand:
+    bespoke:
+      dataRefs:
+        - "test-data-large-cos"
+      drives:
+        # Use the long-hand origin shared via state.panelScope and rotate at a 12th of the angle
+        - elementName: "path"
+          renderFn: |
+            return {
+              attribs: {
+                transform: `rotate(${data['test-data-large-cos'] / 12} ${state.panelScope.clockOriginX} ${state.panelScope.clockOriginY})`,
+              },
+            };
+  connector_double_arrow:
+    dataRef: "test-data-large-sin"
+    bespoke:
+      drives:
+        # Three path elements exist. The first is the line and the 2nd, 3rd are the arror heads. Drive the
+        # arrow head visibility off of data so only one is visible at a time. The filter is just for 'path'
+        # so the function is called three times as the cell-tree is rendered, once for each element.
+        - elementName: "path"
+          renderFn: |
+            const positiveFlow = data['test-data-large-sin'] >= 500;
+            const visible = (state.elementScope.elementPosition === 1) ||
+              ((state.elementScope.elementPosition === 2) && !positiveFlow) ||
+              ((state.elementScope.elementPosition === 3) && positiveFlow);
+            return {
+              attribs: {
+                visibility: visible ? 'visible' : 'hidden',
+              },
+            };
+  range_ring:
+    dataRef: "test-data-large-cos"
+    labelColor:
+      thresholds: *thresholds-high
+    bespoke:
+      dataRefs:
+        - "test-data-large-sin"
+      drives:
+        # Capture the range-ring origin on the inner 'ellipse' element
+        - elementName: "ellipse"
+          initFn: |
+            state.cellScope.rangeRingOriginX = state.elementScope.element.getAttribute('cx');
+            state.cellScope.rangeRingOriginY = state.elementScope.element.getAttribute('cy');
+
+        # Scale the range-ring on the outer 'g' around the ellipse origin. Scaling on the outer 'g' ensures
+        # everything within such as the label is kept coherently positioned.
+        - elementName: "g"
+          elementPosition: 1
+          renderFn: |
+            const scale = 0.5 + Math.max(0.0, Math.min(1.0, data['test-data-large-sin'] / 1000));
+            return {
+              attribs: {
+                transform: `scale(${scale} ${scale})`,
+                'transform-origin': `${state.cellScope.rangeRingOriginX} ${state.cellScope.rangeRingOriginY}`,
+              },
+            };
+
+        # Drive the 'value' of the div element containing the label text to the data value. As draw.io has positioned
+        # this on the circumference, the scaling on the outer 'g' ensures it stays on the circumference.
+        - elementName: "div"
+          renderFn: |
+            if (state.elementScope.element.firstChild?.nodeType === 3) {
+              return {
+                value: Math.round(data['test-data-large-cos']),
+              };
+            }
+  prop_blade_1:
+    dataRef: "test-data-large-cos"
+    fillColor:
+      thresholds: *thresholds-high
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 1000
+      fillDirection: 'bottomToTop'
+    bespoke:
+      drives:
+        # The prime function provides a way to inject terms into the initFn/renderFn allowing those functions
+        # to be reused with yaml aliases whilst still doing specific things. In this case we inject the same
+        # dataRef on both blades, but you could change them to see the effect.
+        # The initFn is shared across both blades by storing origin information at cellScope. But we could store
+        # this at panelScope and so not need the blade2 initFn.
+        - elementName: "path"
+          elementPosition: 1
+          primeFn: |
+            state.cellScope.dataRef = 'test-data-large-cos';
+          initFn: &propDriveInit |
+            const pathD = utils.splitPathDAttrib(state.elementScope.element);
+            state.cellScope.originX = pathD.length > 2 ? pathD[1] : 0;
+            state.cellScope.originY = pathD.length > 2 ? pathD[2] : 0;
+
+        # Rotate the outer 'g' using transform. This ensures the inner clip-path setup for the fillLevel drive remains
+        # coherently positioned as the blade rotates.
+        - elementName: "g"
+          elementPosition: 1
+          renderFn: &propDriveRender |
+            return {
+              attribs: {
+                transform: `rotate(${data[state.cellScope.dataRef]} ${state.cellScope.originX} ${state.cellScope.originY})`,
+              },
+            };
+  prop_blade_2:
+    dataRef: "test-data-large-cos"
+    fillColor:
+      thresholds: *thresholds-high
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 1000
+      fillDirection: 'topToBottom'
+    bespoke:
+      drives:
+        # The second blade drives can be complete duplicates or can diverge based on the needs of the widget. As shown
+        # the initFn and renderFn functions are repeated through yaml alias and the primeFn is repeated but injecting the
+        # same dataRef id for the rotation drive.
+        - elementName: "path"
+          elementPosition: 1
+          primeFn: |
+            state.cellScope.dataRef = 'test-data-large-cos';
+          initFn: *propDriveInit
+        - elementName: "g"
+          elementPosition: 1
+          renderFn: *propDriveRender
+  cloud:
+    dataRef: "test-data-large-cos"
+    fillColor:
+      thresholds: *thresholds-high
+    bespoke:
+      drives:
+        # The cloud drive replaces the label text with a bespoke value sourced from a grafana variable concatenated
+        # with data text.
+        - elementName: "div"
+          renderFn: |
+            if (state.elementScope.element.firstChild?.nodeType === 3) {
+              return {
+                value: utils.variablesReplace('${myvar} - ') + Math.round(data['test-data-large-cos']).toString(),
+              };
+            };

@@ -2,6 +2,14 @@
 
 ## 1.x.0
 
+Bespoke Attribute and Value Drive 
+---------------------------------
+New javascript based drive for SVG element attributes and the SVG element value. This allows
+clients to do bespoke things such as transform their shape elements according to incoming data.
+
+New config terms in siteConfig and panelConfig:
+- panelConfig:cells.cell-name.bespoke
+
 TimeSlider time range compatible with time-shift 
 ------------------------------------------------
 Corrects the way the time-slider time range is initialized so that it now behaves correctly

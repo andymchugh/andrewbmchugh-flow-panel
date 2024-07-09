@@ -9,6 +9,18 @@ export type CellIdMaker = () => string;
 const gRegExpCache: Map<string, RegExp> = new Map<string, RegExp>();
 const gColorCache: Map<string, number[]> = new Map<string, number[]> ();
 
+const gShapeElements: Set<string> = new Set<string>([
+  'ellipse', 'circle', 'path', 'rect', 'line', 'polyline', 'polygon']
+);
+
+//-----------------------------------------------------------------------------
+// Shape Elements
+//---------------
+
+export function isShapeElement(el: HTMLElement) {
+  return gShapeElements.has(el.nodeName);
+}
+
 //-----------------------------------------------------------------------------
 // Cell IDs
 //-----------------

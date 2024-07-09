@@ -9,22 +9,22 @@ export type CellFillLevelState = {
   driver: CellFillLevelDriver;
 };
 
-const gShapeElements: Set<string> = new Set<string>([
+const gFillLevelElements: Set<string> = new Set<string>([
   'ellipse', 'circle', 'path', 'rect']
 );
 
 //-----------------------------------------------------------------------------
-// SVG Shape Elements
-//-----------------
+// SVG Fill Level Elements
+//------------------------
 
-export function isShapeElement(el: HTMLElement) {
-  return gShapeElements.has(el.nodeName);
+export function isFillLevelElement(el: HTMLElement) {
+  return gFillLevelElements.has(el.nodeName);
 }
 
 // The path element supports a bundle of formatting styles. This function
 // normalizes what's received to a space delimited string and then splits
 // that string into tokens.
-function splitPath(d: string) {
+export function splitPath(d: string) {
   // Convert commas and whitespace to space
   d = d.replace(/([\s,\t,\n\,])/g, ' ');
 

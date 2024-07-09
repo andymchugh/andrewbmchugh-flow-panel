@@ -105,6 +105,20 @@ export type PanelConfigCellFlowAnimation = {
   dataCoherent: boolean;
 };
 
+export type PanelConfigCellBespokeDrive = {
+  elementName: string | undefined;
+  elementPosition: number | undefined;
+  primeFn: string | undefined;
+  initFn: string | undefined;
+  renderFn: string | undefined;
+};
+
+export type PanelConfigCellBespoke = {
+  datapoint: DatapointMode | undefined;
+  dataRefs: string[] | undefined;
+  drives: PanelConfigCellBespokeDrive[];
+};
+
 export type PanelConfigCell = {
   dataRef: string | undefined;
   datapoint: DatapointMode | undefined;
@@ -119,6 +133,7 @@ export type PanelConfigCell = {
   fillColorCompound: PanelConfigCellColorCompound | undefined;
   fillLevel: PanelConfigCellFillLevel | undefined;
   flowAnimation: PanelConfigCellFlowAnimation | undefined;
+  bespoke: PanelConfigCellBespoke | undefined;
   tags: Set<string> | undefined;
 };
 
@@ -262,7 +277,7 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
         });
       }
       if (typeof color.datapoint === 'undefined') {
-        color.datapoint = cell.datapoint || panelConfig.datapoint;
+        color.datapoint = cell.datapoint;
       }
     }
   }
@@ -282,6 +297,10 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
   }
 
   panelConfig.cells.forEach((cell) => {
+    if (typeof cell.datapoint === 'undefined') {
+      cell.datapoint = panelConfig.datapoint;
+    }
+
     colorBlend(cell, 'labelColor', cell.labelColorCompound);
     colorBlend(cell, 'strokeColor', cell.strokeColorCompound);
     colorBlend(cell, 'fillColor', cell.fillColorCompound);
@@ -301,7 +320,7 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
         cell.label.decimalPoints = panelConfig.cellLabelDecimalPoints;
       }
       if (typeof cell.label.datapoint === 'undefined') {
-        cell.label.datapoint = cell.datapoint || panelConfig.datapoint;
+        cell.label.datapoint = cell.datapoint;
       }
       if (!cell.label.valueMappings && cell.label.valueMappingsRef) {
         cell.label.valueMappings = siteConfig.valueMappings.get(cell.label.valueMappingsRef);
@@ -321,9 +340,6 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
         }
       }
     }
-    if (typeof cell.datapoint === 'undefined') {
-      cell.datapoint = panelConfig.datapoint;
-    }
 
     // Fill levels require a full bounded conversion from value to percent
     if (cell.fillLevel) {
@@ -333,6 +349,7 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
       (typeof cell.fillLevel.thresholdUprFillPercent === 'number') &&
       ((typeof cell.fillLevel.thresholdOffValue === 'number') ||
        (typeof cell.fillLevel.thresholdOffValue === 'undefined'));
+      cell.fillLevel.datapoint = cell.fillLevel.datapoint || cell.datapoint;
     }
 
     // Flow animation drives are valid only when all terms are defined
@@ -347,7 +364,13 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
         (cell.flowAnimation.thresholdUprValue >= cell.flowAnimation.thresholdLwrValue);
 
       cell.flowAnimation.unidirectional = !!cell.flowAnimation.unidirectional;
+      cell.flowAnimation.datapoint = cell.flowAnimation.datapoint || cell.datapoint;
       panelConfig.animationsPresent = true;
+    }
+
+    // Bespoke Drives
+    if (cell.bespoke) {
+      cell.bespoke.datapoint = cell.bespoke.datapoint || cell.datapoint;
     }
   });
 
