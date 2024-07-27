@@ -1,6 +1,6 @@
 import YAML from 'yaml';
 import { VariableInterpolation, getTemplateSrv } from '@grafana/runtime';
-import { isUrl } from 'components/Utils';
+import { flowDebug, isUrl } from 'components/Utils';
 
 //-----------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ export async function loadSvg(source: string, fn: (svgStr: string) => void, fnVa
       fn(responseText.substring(responseText.search('<svg')));
     }
   } catch(err) {
-    console.log('Error loading svg. source =', source, ', error =', err);
+    flowDebug().warn('Error loading svg. source =', source, ', error =', err);
     fn('<svg/>');
   }
 }
@@ -49,7 +49,7 @@ export async function loadYaml(source: (Object | string), fn: (yaml: Object) => 
       fn(source);
     }
     else if (!isUrl(source)) {
-      fn(YAML.parse(source));
+      fn(YAML.parse(source || ''));
     }
     else {
       let interpolations: VariableInterpolation[] = [];
@@ -64,7 +64,7 @@ export async function loadYaml(source: (Object | string), fn: (yaml: Object) => 
       fn(responseYaml);
     }
   } catch(err) {
-    console.log('Error loading config. source =', source, ', error =', err);
+    flowDebug().warn('Error loading config. source =', source, ', error =', err);
     fn({});
   }
 }

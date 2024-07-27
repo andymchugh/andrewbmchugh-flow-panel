@@ -1,5 +1,5 @@
 import {  PanelConfigCellFillLevel } from 'components/Config';
-import { CellIdMaker } from './Utils';
+import { CellIdMaker, flowDebug } from './Utils';
 
 
 export type CellFillLevelDriver = (value: string | number | null) => void;
@@ -207,7 +207,7 @@ export function svgPathBounds(el: HTMLElement) {
         }
         break;
       default:
-        console.log('misinterpreted svg path', control, i, toks[i], toks, d);
+        flowDebug().warn('misinterpreted svg path', control, i, toks[i], toks, d);
         ok = false;
     }
   }

@@ -3,6 +3,7 @@ import { BespokeStateHolder, getCellValue} from './SvgUpdater';
 import { MathNode, parse } from 'mathjs'
 import { TimeSeriesData } from './TimeSeries';
 import { getTemplateSrv } from '@grafana/runtime';
+import { flowDebug } from './Utils';
 
 const gAllowedNewElementAttributes: Set<string> = new Set<string>([
   'transform', 'transform-origin', 'visibility']
@@ -86,7 +87,7 @@ export function bespokeDriveHandlerFactory(cellId: string, dataRef: string | und
       state.formulas.push(parse(v as string));
     }
     catch (err) {
-      console.log('Error occured parsing bespoke formula [', v, ']', element, 'error =', err);
+      flowDebug().warn('Error occured parsing bespoke formula [', v, ']', element, 'error =', err);
     }
   });
 
@@ -116,7 +117,7 @@ export function bespokeDriveHandlerFactory(cellId: string, dataRef: string | und
             });
           }
           else {
-            console.log('attribute drive [', k, '] not allowed on element', element);
+            flowDebug().warn('attribute drive [', k, '] not allowed on element', element);
           }
         }
         bespokeStateHolder.handlers.push({
@@ -126,7 +127,7 @@ export function bespokeDriveHandlerFactory(cellId: string, dataRef: string | und
         });
       }
       catch (err) {
-        console.log('Error occured creating bespoke functions for',  element, 'error =', err, 'config =', config);
+        flowDebug().warn('Error occured creating bespoke functions for',  element, 'error =', err, 'config =', config);
       }
     }
   });
@@ -146,7 +147,7 @@ function grafanaVariablesReplace(str: string) {
 
 function clientExposedUtils() {
   return {
-    log: console.log,
+    log: flowDebug().info,
     variablesReplace: grafanaVariablesReplace,
   }
 }
@@ -190,7 +191,7 @@ export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSerie
       });
     }
     catch (err) {
-      console.log('Error occured calculating bespoke formulas for', handler.element, 'error =', err);
+      flowDebug().warn('Error occured calculating bespoke formulas for', handler.element, 'error =', err);
     }
   });
 
@@ -206,7 +207,7 @@ export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSerie
       });
     }
     catch (err) {
-      console.log('Error occured calculating bespoke attribute for', handler.element, 'error =', err);
+      flowDebug().warn('Error occured calculating bespoke attribute for', handler.element, 'error =', err);
     }
   });
 

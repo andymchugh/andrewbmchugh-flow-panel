@@ -496,7 +496,7 @@ cells:
     # All formulas are presented with a state object that contains:
     # - The constants you've defined and extracted.
     # - A 'utils' Framework object containing functions:
-    #   - log = function(...) -> void. Forwards through to console.log. For developing and debug use.
+    #   - log = function(...) -> void. Forwards through to console.info. For developing and debug use.
     #   - variablesReplace = function(string) -> string. Grafana variables defined in the string in the normal
     #     '${myVar}' way are replaced in the result with the actual grafana variable values.
     # - data : Object containing an item for every dataRef defined in the namespace.

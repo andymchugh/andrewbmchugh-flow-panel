@@ -5,13 +5,14 @@ import { css, cx } from '@emotion/css';
 import { PanelConfig } from 'components/Config';
 import { SvgHolder } from 'components/SvgUpdater';
 import { TimeSeriesData } from 'components/TimeSeries';
+import { flowDebug } from './Utils';
 
 function displayDocs() {
   window.open('https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/src/README.md');
 }
 
 function displayUnits() {
-  console.log(`Debugging TimeSeries Unit Map of Category -> Subcategory -> {text, value}
+  flowDebug().info(`Debugging TimeSeries Unit Map of Category -> Subcategory -> {text, value}
   where 'text' is the unit displayed and 'value' is the 'id' you enter in the yaml config.`,
   getValueFormats());
 }
@@ -23,8 +24,8 @@ function displayData(context: any, onChange: any) {
 }
 
 export function displayDataInner(rawSeries: any, tsData: TimeSeriesData) {
-  console.log('Debugging Data enriched:', tsData);
-  console.log('Debugging Data raw:', rawSeries);
+  flowDebug().info('Debugging Data enriched:', tsData);
+  flowDebug().info('Debugging Data raw:', rawSeries);
 }
 
 function displayMappings(context: any, onChange: any) {
@@ -57,10 +58,10 @@ export function displayMappingsInner(panelConfig: PanelConfig, svgHolder: SvgHol
     unmappedSvgIds.delete(v.cellId);
   });
 
-  console.log('Debugging Mappings: abstract:', abstract);
-  console.log('Debugging Mappings: verbose:', svgHolder.attribs);
-  console.log('Debugging Mappings: unmapped config ids:', unmappedConfigIds);
-  console.log('Debugging Mappings: unmapped svg ids:', unmappedSvgIds);
+  flowDebug().info('Debugging Mappings: abstract:', abstract);
+  flowDebug().info('Debugging Mappings: verbose:', svgHolder.attribs);
+  flowDebug().info('Debugging Mappings: unmapped config ids:', unmappedConfigIds);
+  flowDebug().info('Debugging Mappings: unmapped svg ids:', unmappedSvgIds);
 }
 
 function displayTimings(context: any, onChange: any) {
@@ -76,7 +77,7 @@ function displayColors(context: any, onChange: any) {
 }
 
 export function displayColorsInner(colors: any) {
-  console.log('Debugging Colors:', colors);
+  flowDebug().info('Debugging Colors:', colors);
 }
 
 function displaySvg(context: any, onChange: any) {
@@ -86,7 +87,7 @@ function displaySvg(context: any, onChange: any) {
 }
 
 export function displaySvgInner(svgStr: string) {
-  console.log('Debugging svg:', svgStr);
+  flowDebug().info('Debugging svg:', svgStr);
 }
 
 export const DebuggingEditor = ({context, onChange}: StandardEditorProps<number>) => {
