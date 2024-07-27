@@ -1,119 +1,214 @@
-import { PanelConfigCellBespoke, PanelConfigCellBespokeDrive } from 'components/Config';
-import { splitPath } from './FillLevel';
+import { DatapointMode, PanelConfigCell, PanelConfigCellBespoke } from 'components/Config';
+import { BespokeStateHolder, getCellValue} from './SvgUpdater';
+import { MathNode, parse } from 'mathjs'
+import { TimeSeriesData } from './TimeSeries';
 import { getTemplateSrv } from '@grafana/runtime';
-import { BespokeStateHolder } from './SvgUpdater';
 
+const gAllowedNewElementAttributes: Set<string> = new Set<string>([
+  'transform', 'transform-origin', 'visibility']
+);
+
+type NamespacedData =  {
+  utils: Object;
+  data: any;
+  // plus client defined variables
+};
 
 export type CellBespokeHandlerState = {
   element: HTMLElement;
   elementPosition: number;
 };
 
-type ClientState = {
-  panelScope: Object;
-  cellScope: Object;
-  elementScope: CellBespokeHandlerState;
+export type ScopedState = {
+  namespace: string;
+  datapoint: DatapointMode;
+  dataRefs: Set<string>;
+  constants: Map<string, string>;
+  formulas: MathNode[];
+};
+
+export type CellBespokeAttribSetter = {
+  attribName: string;
+  attribFormula: MathNode;
 };
 
 export type CellBespokeHandler = {
   element: HTMLElement;
-  renderFn: Function;
-  clientState: ClientState;
+  clientState: ScopedState;
+  attribSetters: CellBespokeAttribSetter[];
 };
 
-export type CellBespokeDrivers = {
-  dataRefs: string[] | undefined;
-  handlers: CellBespokeHandler[];
-};
+// This function filters out diss-allowed attribute drives
+// - on* attributes are not settable
+// - gAllowedNewElementAttributes can be added
+// - all other attributes must already exist on the element
+function attributeName(element: HTMLElement, name: string) {
+  const name2 = name.trim().toLowerCase();
+  const allowed = (name2.indexOf('on') !== 0) &&
+    (gAllowedNewElementAttributes.has(name2) || element.hasAttribute(name));
+  return allowed ? name : null;
+}
 
-export function bespokeDriveFactory(config: PanelConfigCellBespoke | undefined) {
+export function bespokeStateFactory(namespace: string) {
   return {
-    dataRefs: Array.isArray(config?.dataRefs) ? config?.dataRefs : undefined,
-    handlers: [],
+    namespace: namespace,
+    datapoint: 'last' as DatapointMode,
+    dataRefs: new Set<string>(),
+    constants: new Map<string, string>(),
+    formulas: [],
   };
 }
 
-function pathDSplit(element: HTMLElement) {
-  return splitPath(element.getAttribute('d') || '');
-};
-
-function grafanaVariablesReplace(str: string) {
-  return getTemplateSrv().replace(str);
-};
-
-function getUtils() {
-  return {
-    splitPathDAttrib: pathDSplit,
-    variablesReplace: grafanaVariablesReplace,
-  };
-};
-
-function runClientFunction(element: HTMLElement, fn: Function, ...fnArgs: any[]) {
-  try {
-    return fn(...fnArgs);
-  }
-  catch (err) {
-    console.log('Error occured running bespoke function for',  element, 'error =', err);
-  }
-}
-
-export function bespokeDriveHandlerFactory(element: HTMLElement, config: PanelConfigCellBespokeDrive[], bespokeStateHolder: BespokeStateHolder) {
+export function bespokeDriveHandlerFactory(cellId: string, dataRef: string | undefined, element: HTMLElement, config: PanelConfigCellBespoke, bespokeStateHolder: BespokeStateHolder) {
   // Increment nodeName count
   bespokeStateHolder.elementCounts.set(element.nodeName, (bespokeStateHolder.elementCounts.get(element.nodeName) || 0) + 1);
   const elementPosition = bespokeStateHolder.elementCounts.get(element.nodeName) as number;
 
-  const handlers: CellBespokeHandler[] = [];
-  config.forEach((drive) => {
+  // Get / create namespace state
+  const namespace = config.namespace || cellId;
+  if (!bespokeStateHolder.namespaceState.has(namespace)) {
+    bespokeStateHolder.namespaceState.set(namespace, bespokeStateFactory(namespace));
+  }
+  const state =  bespokeStateHolder.namespaceState.get(namespace) as ScopedState;
+
+  // datapoint is defined on a cell basis but data and formulas are gathered on a namespace basis. As such
+  // the most permissive datapoint across the namespace is used by all.
+  state.datapoint = state.datapoint === 'lastNotNull' ? state.datapoint : config.datapoint || 'last';
+
+  if (dataRef) {
+    state.dataRefs.add(dataRef);
+  }
+  config.dataRefs?.forEach((v) => {
+    state.dataRefs.add(v);
+  });
+  config.formulas?.forEach((v) => {
+    try {
+      state.formulas.push(parse(v as string));
+    }
+    catch (err) {
+      console.log('Error occured parsing bespoke formula [', v, ']', element, 'error =', err);
+    }
+  });
+
+  config.drives?.forEach((drive) => {
     if (((typeof drive.elementName === 'undefined') || (drive.elementName === element.nodeName)) &&
         ((typeof drive.elementPosition === 'undefined') || (drive.elementPosition === elementPosition))) {
-      const elementScope = {
-        element: element.cloneNode(true) as HTMLElement,
-        elementPosition: elementPosition,
-      };
-      const clientState = {
-        panelScope: bespokeStateHolder.panelState,
-        cellScope: bespokeStateHolder.cellState,
-        elementScope: elementScope,
-      }
+
       try {
-        if (drive.primeFn) {
-          // Invoke client prime function
-          runClientFunction(element, Function('state', 'utils', drive.primeFn), {...clientState}, getUtils());
+        // Pull in the clients constants
+        for (const [k, v] of Object.entries(config.constants || {})) {
+          state.constants.set(k, v);
         }
-        if (drive.initFn) {
-          // Invoke client init function
-          runClientFunction(element, Function('state', 'utils', drive.initFn), {...clientState}, getUtils());
+        // Pull in the clients attribute captures
+        for (const [k, v] of Object.entries(drive.attribsGet || {})) {
+          const value = element.getAttribute(String(v));
+          if (typeof value === 'string') {
+            state.constants.set(k, value);
+          }
         }
-        if (drive.renderFn) {
-          handlers.push({
-            element: element,
-            clientState: clientState,
-            renderFn: Function('state', 'utils', 'data', drive.renderFn),
-          })
+        const attribSetters = [];
+        for (const [k, v] of Object.entries(drive.attribsSet || {})) {
+          const attribName = attributeName(element, k);
+          if (attribName) {
+            attribSetters.push({
+              attribName: attribName,
+              attribFormula: parse(v as string)
+            });
+          }
+          else {
+            console.log('attribute drive [', k, '] not allowed on element', element);
+          }
         }
+        bespokeStateHolder.handlers.push({
+          element: element,
+          attribSetters: attribSetters,
+          clientState: state,
+        });
       }
       catch (err) {
         console.log('Error occured creating bespoke functions for',  element, 'error =', err, 'config =', config);
       }
     }
   });
-  return handlers;
 }
 
-export function attribDriverManager(handlers: CellBespokeHandler[], data: any) {
-  const utils = getUtils();
-  handlers.forEach((handler: CellBespokeHandler) => {
-    // Invoke client render function
-    const params = runClientFunction(handler.element, handler.renderFn, {...handler.clientState}, utils, data) || {};
+export function getBespokeData(cellId: string, cellProps: PanelConfigCell, namespacedData: Map<string, NamespacedData>) {
+  const namespace = cellProps.bespoke?.namespace || cellId;
+  if (typeof namespace !== "undefined") {
+    return namespacedData.get(namespace) as any;
+  }
+  return undefined;
+}
 
-    // Assign attributes
-    for (const [k, v] of Object.entries(params.attribs || {})) {
-      handler.element.setAttribute(k, String(v));
-    };
+function grafanaVariablesReplace(str: string) {
+  return getTemplateSrv().replace(str);
+}
 
-    // Assign value
-    if (typeof params.value !== 'undefined') {
-      handler.element.replaceChildren(String(params.value));
+function clientExposedUtils() {
+  return {
+    log: console.log,
+    variablesReplace: grafanaVariablesReplace,
+  }
+}
+
+export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSeriesData) {
+  const namespacedData  = new Map<string, NamespacedData>();
+
+  // Initialize each namespaced store with constants and data
+  cbh.forEach((handler: CellBespokeHandler) => {
+    const namespace = handler.clientState.namespace;
+
+    // Create the store
+    if (!namespacedData.has(namespace)) {
+      const vars = Object.fromEntries([
+        ['utils', clientExposedUtils()],
+        ['data', {}],
+        ...handler.clientState.constants]);
+      namespacedData.set(namespace, vars);
+    }
+    const dataStore = namespacedData.get(namespace) as NamespacedData;
+
+    // Populate store with data
+    const bespokeDataDatapoint = handler.clientState.datapoint;
+    handler.clientState.dataRefs.forEach((dataRef) => {
+      if (typeof dataStore.data[dataRef] === 'undefined') {
+        const drive = {dataRef: dataRef, bespokeDataRef: undefined, datapoint: bespokeDataDatapoint};
+        const dataValue = getCellValue(drive, tsData, null);
+        dataStore.data[dataRef] = dataValue;
+      }
+    });
+  });
+
+  // Invoke the formulas
+  cbh.forEach((handler: CellBespokeHandler) => {
+    const namespace = handler.clientState.namespace;
+    const dataStore = namespacedData.get(namespace) as NamespacedData;
+
+    try {
+      handler.clientState.formulas.forEach((formula) => {
+        formula.evaluate(dataStore);
+      });
+    }
+    catch (err) {
+      console.log('Error occured calculating bespoke formulas for', handler.element, 'error =', err);
     }
   });
+
+  // Invoke the attribute setters
+  cbh.forEach((handler: CellBespokeHandler) => {
+    const namespace = handler.clientState.namespace;
+    const dataStore = namespacedData.get(namespace) as NamespacedData;
+
+    try {
+      handler.attribSetters.forEach((obj) => {
+        const attribValue = obj.attribFormula.evaluate(dataStore);
+        handler.element.setAttribute(obj.attribName, String(attribValue));
+      });
+    }
+    catch (err) {
+      console.log('Error occured calculating bespoke attribute for', handler.element, 'error =', err);
+    }
+  });
+
+  return namespacedData;
 }
