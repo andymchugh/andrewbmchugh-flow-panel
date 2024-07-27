@@ -1,6 +1,6 @@
 {
   "name": "flow",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "Svg flowchart visualization",
   "scripts": {
     "build": "webpack -c ./webpack.config.ts --env production",
@@ -66,6 +66,7 @@
     "@grafana/ui": "10.0.0",
     "dompurify": "^3.0.8",
     "js-yaml-loader": "^1.2.2",
+    "mathjs": "^13.0.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-zoom-pan-pinch": "^3.4.4",

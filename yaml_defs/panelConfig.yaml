@@ -31,7 +31,7 @@ test:
   # Version 1.12.0 onwards: When set test data values are extended with a string-data timeseries.
   testDataStringData: false
 
-  # Version 1.15.0 onwards: When set test the data values are extended with a 'no-time' timeseries.
+  # Version 1.16.0 onwards: When set test the data values are extended with a 'no-time' timeseries.
   testDataNoTime: false
 
 #------------------------------------------------------------------------------
@@ -169,6 +169,10 @@ cells:
     # It can be overriden on an attribute by attribute basis.
     dataRef: "test-data-large-sin"
 
+    # Version 1.16.0 onwards: Optional alternative data source for the cell taken from the bespoke drive
+    # scope. When set it's used in preference to the dataRef value.
+    bespokeDataRef: null
+
     # From version 1.6.0: Optional cell level override. Full write up in the panel-level term definition.
     datapoint: "last"
 
@@ -184,6 +188,10 @@ cells:
       # Optional attribute level override for the associated time-series.
       dataRef: "test-data-large-cos"
   
+      # Version 1.16.0 onwards: Optional alternative data source for the cell taken from the bespoke drive
+      # scope. When set it's used in preference to the dataRef value.
+      bespokeDataRef: null
+    
       # Version 1.6.0 onwards: Optional attribute level override. Requires corresponding attribute level dataRef override.
       datapoint: "last"
 
@@ -233,6 +241,10 @@ cells:
       # Optional attribute level override for the associated time-series.
       dataRef: "test-data-large-cos"
 
+      # Version 1.16.0 onwards: Optional alternative data source for the cell taken from the bespoke drive
+      # scope. When set it's used in preference to the dataRef value.
+      bespokeDataRef: null
+    
       # Version 1.6.0 onwards: Optional attribute level override. Requires corresponding attribute level dataRef override.
       datapoint: "last"
 
@@ -309,6 +321,10 @@ cells:
       # See labelColor
       dataRef: "test-data-large-cos"
 
+      # Version 1.16.0 onwards: Optional alternative data source for the cell taken from the bespoke drive
+      # scope. When set it's used in preference to the dataRef value.
+      bespokeDataRef: null
+    
       # See labelColor
       datapoint: "last"
 
@@ -350,6 +366,10 @@ cells:
       # See labelColor
       dataRef: "test-data-large-cos"
 
+      # Version 1.16.0 onwards: Optional alternative data source for the cell taken from the bespoke drive
+      # scope. When set it's used in preference to the dataRef value.
+      bespokeDataRef: null
+    
       # See labelColor
       datapoint: "last"
 
@@ -396,6 +416,10 @@ cells:
       # Optional attribute level override for the associated time-series.
       dataRef: "test-data-large-cos"
 
+      # Version 1.16.0 onwards: Optional alternative data source for the cell taken from the bespoke drive
+      # scope. When set it's used in preference to the dataRef value.
+      bespokeDataRef: null
+    
       # Optional attribute level override. Requires corresponding attribute level dataRef override.
       datapoint: "last"
 
@@ -426,6 +450,10 @@ cells:
       # Optional attribute level override for the associated time-series.
       dataRef: "test-data-large-cos"
 
+      # Version 1.16.0 onwards: Optional alternative data source for the cell taken from the bespoke drive
+      # scope. When set it's used in preference to the dataRef value.
+      bespokeDataRef: null
+    
       # Optional attribute level override. Requires corresponding attribute level dataRef override.
       datapoint: "last"
 
@@ -443,90 +471,98 @@ cells:
       # of the animation is determined off the sign of the data, unless this flag is true.
       unidirectional: true
 
-    # Version 1.15.0 onwards: The bespoke section allows you to drive 'HTML element attribute values'
-    # and the 'HTML element value' directly via your own javascript functions. When you tag a 'cell'
-    # in your SVG you are actually tagging an 'HTML element tree' containing all sorts of types such
-    # as 'g', 'div', 'rect', etc. By driving the attributes and value directly on these individual
-    # elements you can manage truly bespoke widgets on your panel. Elements in a cell are highly coupled
-    # and all that complexity normally gets managed by the SVG editor. It's important when overriding
-    # these attribute values that the change is applied in a coherent way. i.e. Rather than change the
-    # 'width' and 'height' attributes on a 'rect', instead change the 'transform->scale' and 'transform-origin' 
-    # on the root element of the cell. Doing this ensures everything remains coherent with respect to features
-    # like the fill level drive and the cell label positioning.
+    # Version 1.16.0 onwards: The bespoke section allows you to drive 'HTML element attribute values'
+    # directly via your own 'mathjs' formulas. When you tag a 'cell' in your SVG you are actually tagging
+    # an 'HTML element tree' containing all sorts of types such as 'g', 'div', 'rect', etc. By driving the
+    # attributes directly on these individual elements you can manage truly bespoke widgets on your panel.
+    # Elements in a cell are highly coupled and all that complexity normally gets managed by the SVG editor.
+    # It's important when overriding these attribute values that the change is applied in a coherent way.
+    # i.e. Rather than change the 'width' and 'height' attributes on a 'rect', instead change the
+    # 'transform->scale' and 'transform-origin' on the root element of the cell. Doing this ensures everything
+    # remains coherent with respect to features like the fill level drive and the cell label positioning.
     #
-    # javascript function bodies can be defined at three levels:
-    # - primeFn(state, utils) -> void
-    # - initFn(state, utils) -> void
-    # - renderFn(state, utils, data) -> {attributes, value}
+    # As well as driving element attributes, the values calculated in the 'mathjs' formulas can also be used as
+    # the source data value for the other drives such as label, labelColor, strokeColor, etc. Via this pathway,
+    # all drives can be driven from a client-defined mix of incoming data sources.
     #
-    # where:
-    #   - state = {panelScope, cellScope, elementScope = {element, elementPosition}}
+    # The bespoke drive can be thought of as the following layered process:
+    # - Define a namespace, a collection of cell-ids that will share bespoke values. Then in the namespace:
+    # - Define a set of constants.
+    # - Extract element attribute values into that set of constants.
+    # - Run a set of formulas using the above constants, grafana variables and incoming dataRefs.
+    # - Drive a set of element attributes using the above formula results.
+    # - Source other drives (label, labelColor, etc.) from the bespoke values calculated in the formulas.
     #
-    #     panelScope and cellScope are objects that each of the functions can mutate. The panelScope object is
-    #     shared at the panel level. The cellScope is shared at the cell element-tree level.
-    #
-    #     The elementScope object is unique to each element level. You can mutate it but it will initially contain:
-    #     - element = clone of the element being presented
-    #     - elementPosition = 1-based counter of the element-name in this cell tree.
-    #
-    #   - utils = {splitPathDAttrib, variablesReplace}
-    #
-    #       // Receives an HTML element and if of type 'path', returns a string array of the 'd' attribute. This function
-    #       // is the same one used internally to initially split the path->d for fillLevel clipPath zone computation. It's
-    #       // particularly handy for determining the initial 'move' position for origin selection.
-    #       splitPathDAttrib = function(element) -> string[],
-    #
-    #       // Grafana variables defined in the string in the normal '${myVar}' way are replaced in the result with the actual
-    #       // grafana variable values
-    #       variablesReplace = function(string) -> string,
-    #
-    #   - data = {...}. Each dataRef asked for exists as a field on this object.
+    # All formulas are presented with a state object that contains:
+    # - The constants you've defined and extracted.
+    # - A 'utils' Framework object containing functions:
+    #   - log = function(...) -> void. Forwards through to console.log. For developing and debug use.
+    #   - variablesReplace = function(string) -> string. Grafana variables defined in the string in the normal
+    #     '${myVar}' way are replaced in the result with the actual grafana variable values.
+    # - data : Object containing an item for every dataRef defined in the namespace.
     #
     # The best way to understand this drive is to explore it via a provisioning/dashboardData example such as the
-    # bespokeDrive.svg/bespokeDrive.yaml example. Start with this working example, add console.log(state) in the javascript
-    # to see the incoming state you have in the console, then iterate slowly towards your goal.
+    # bespokeDrive.svg/bespokeDrive.yaml example. Start with this working example, add utils.log(data) in a formula
+    # to see the incoming dataRef values you have in the console, then iterate slowly towards your goal.
+    # See https://mathjs.org/examples/index.html for mathjs formula usage.
+
     bespoke:
+      # Optional namespace for the bespoke values store. It defaults to the cell-id so by setting it you allow values
+      # to be shared across a set of cell-ids.
+      namespace: "myWidget"
+
       # Optional dataRef additions. The cell-level dataRef and all dataRefs listed here will be present on the
       # data object given to the 'renderFn'.
       dataRefs:
         - "test-data-large-sin"
         - "test-data-large-cos"
 
-      # Optional dataRef override. Requires corresponding attribute level dataRefs override to be applied.
+      # Optional datapoint override. Requires corresponding attribute level dataRefs override to be applied. Note that
+      # data is gathered on a namespace basis so where multiple values exist within a namespace the most permissive of
+      # the set is used. i.e. lastNotNull
       datapoint: "last"
 
-      # Array of drives to be applied to the cell tree. Each drive will be presented in array order to each element in
-      # the cell tree, subject to the optional filter specified by 'elementName' and 'elementPosition'.
+      # Optional set of constants that will be available within the bespoke data store. Intended use is where formulas
+      # are shared across widgets and you want to feed in 'template specialisation terms' such as which dataRefs should
+      # be used in the formulas for this widget.
+      constants:
+        # variable-name -> constant value pairs
+        clockDataRef: "test-data-large-sin"
+
+      # Optional array of mathjs formulas. Each formula will be called in array order and values set within the formula
+      # will be available to downstream formulas in this namespace. The formula passed in receives the scope object
+      # described at the top of the bespoke section.
+      formulas:
+        # mathjs formula array
+        - "a = abs(data[clockDataRef])"
+        - "grafanaMyVarValue = concat(utils.variablesReplace('${myVar} '), string(a))"
+        - "utils.log('this is some of my namespace', clockDataRef, boxX, boxWidth, a, grafanaMyVarValue, data)"
+
+      # Optional array of drives to be applied to the cell tree. Each drive will be presented in array order to each element in
+      # the cell tree, subject to the optional filter specified by 'elementName' and 'elementPosition'. The drive allows
+      # you to fetch element attributes at initialization and then set element attributes at render time. 
       drives:
           # Optional name filter. When set the elementName must match for this drive to be called.
-        - elementName: "path"
+        - elementName: "rect"
 
           # Optional position filter. When set the 1-based elementPosition must match for this drive to be called.
           elementPosition: 1
 
-          # Optional function body for the prime function(state, utils) prototype. Called once and first at initialization.
-          # Intended as a way to setup some template specialization where the initFn is being shared.
-          primeFn: |
-            state.cellScope.dataRef = 'test-data-large-cos';
+          # Optional attribute fetch object. The attribute values are stored at panel initialization.
+          attribsGet:
+            # variable-name -> attribute name pairs
+            boxX: "x"
+            boxWidth: "width"
 
-          # Optional function body for the init function(state, utils) prototype. Called once after 'prime' initialization
-          # of this element. Intended as a way to snapshot and initialize base terms based off of the element. 
-          initFn: |
-            state.panelScope.rangeRingOriginX = state.elementScope.element.getAttribute('cx');
-            state.panelScope.rangeRingOriginY = state.elementScope.element.getAttribute('cy');
-
-          # Optional function body for the render function(state, utils, data) prototype. Called at each panel rendering and
-          # returns an object containing optional element attributes and an optional element value. Note only
-          # string values are accepted.
-          renderFn: |
-            const scale = 0.5 + Math.max(0.0, Math.min(1.0, data[state.cellScope.dataRef] / 1000));
-            return {
-              attribs: {
-                transform: `scale(${scale} ${scale})`,
-                'transform-origin': `${state.panelScope.rangeRingOriginX} ${state.panelScope.rangeRingOriginY}`,
-              },
-              value: undefined,
-            };
+          # Optional attribute set object. The attribute values are mathjs formulas. To ensure no javascript can
+          # be injected, the following restrictions exist on which attributes can be set:
+          # - The attributeName cannot start with 'on'.
+          # - The attribute has to either pre-exist on the SVG (after parsing through dompurify) or exist in the set:
+          #   ['transform', transform-origin', 'visibility'].
+          attribsSet:
+            # variable-name -> attribute name pairs
+            x: "boxX"
+            width: "boxWidth"
 
     # The link defines the url to open if the cell is left clicked. Links defined in yaml can be
     # relative or absolute and go through grafana variable substitution. Note that links defined

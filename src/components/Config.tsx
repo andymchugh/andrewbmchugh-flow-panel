@@ -56,9 +56,13 @@ export type FlowValueMapping = {
   valid: boolean;
 };
 
-export type PanelConfigCellLabel = {
+export interface DataRefDrive {
   dataRef: string | undefined;
+  bespokeDataRef: string | undefined;
   datapoint: DatapointMode | undefined;
+};
+
+export type PanelConfigCellLabel = DataRefDrive & {
   separator: LabelSeparator;
   units: string | undefined;
   unitsPostfix: string | undefined;
@@ -67,9 +71,8 @@ export type PanelConfigCellLabel = {
   valueMappings: FlowValueMapping[] | undefined;
 };
 
-export type PanelConfigCellColor = {
-  dataRef: string | undefined;
-  datapoint: DatapointMode | undefined;
+
+export type PanelConfigCellColor = DataRefDrive & {
   gradientMode: ColorGradientMode | undefined;
   thresholdsRef: string | undefined;
   thresholds: ThresholdNumber[] |undefined;
@@ -82,9 +85,7 @@ export type PanelConfigCellColorCompound = {
   colors: PanelConfigCellColor[];
 };
 
-export type PanelConfigCellFillLevel = {
-  dataRef: string | undefined;
-  datapoint: DatapointMode | undefined;
+export type PanelConfigCellFillLevel = DataRefDrive & {
   thresholdLwrFillPercent: number;
   thresholdUprFillPercent: number;
   thresholdOffValue: number | undefined;
@@ -94,9 +95,7 @@ export type PanelConfigCellFillLevel = {
   valid: boolean;
 };
 
-export type PanelConfigCellFlowAnimation = {
-  dataRef: string | undefined;
-  datapoint: DatapointMode | undefined;
+export type PanelConfigCellFlowAnimation = DataRefDrive & {
   thresholdOffValue: number | undefined;
   thresholdLwrValue: number;
   thresholdLwrDurationSecs: number;
@@ -109,20 +108,21 @@ export type PanelConfigCellFlowAnimation = {
 export type PanelConfigCellBespokeDrive = {
   elementName: string | undefined;
   elementPosition: number | undefined;
-  primeFn: string | undefined;
-  initFn: string | undefined;
-  renderFn: string | undefined;
+  attribsGet: Object | undefined;
+  attribsSet: Object | undefined;
 };
 
 export type PanelConfigCellBespoke = {
   datapoint: DatapointMode | undefined;
   dataRefs: string[] | undefined;
+  namespace: string | undefined;
+  constants: Object | undefined;
+  variables: string[] | undefined;
+  formulas: string[] | undefined;
   drives: PanelConfigCellBespokeDrive[];
 };
 
-export type PanelConfigCell = {
-  dataRef: string | undefined;
-  datapoint: DatapointMode | undefined;
+export type PanelConfigCell = DataRefDrive & {
   linkRef: string | undefined;
   link: Link | undefined;
   label: PanelConfigCellLabel | undefined;

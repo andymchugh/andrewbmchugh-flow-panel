@@ -8,6 +8,10 @@ anchorLinks:
       - {color: "green", level: 100}
       - {color: "orange", level: 400}
       - {color: "red", level: 700}
+  - thresholds: &thresholds-bes-override
+      - {color: "green", level: 200}
+      - {color: "orange", level: 400}
+      - {color: "red", level: 600}
 
 #------------------------------------------------------------------------------
 # Panel Config
@@ -24,112 +28,154 @@ cells:
     fillColor:
       thresholds: *thresholds-high
     bespoke:
+      namespace: "box"
+      formulas:
+        - "scale = string(0.5 + max(0.0, min(1.0, data['test-data-large-sin'] / 1000)))"
       drives:
-        # Filter the init drive to capture the rect-top-left-corner for the transform origin
         - elementName: "rect"
-          initFn: |
-            state.cellScope.transformX = Number(state.elementScope.element.getAttribute('x'));
-            state.cellScope.transformY = Number(state.elementScope.element.getAttribute('y'));
-
-        # Filter the render drive to just apply the transform on the outer 'g'
+          attribsGet:
+            boxOriginX: "x"
+            boxOriginY: "y"
         - elementName: "g"
           elementPosition: 1
-          renderFn: |
-            const scale = 0.5 + Math.max(0.0, Math.min(1.0, data['test-data-large-sin'] / 1000));
-            return {
-              attribs: {
-                transform: `scale(${scale})`,
-                'transform-origin': `${state.cellScope.transformX} ${state.cellScope.transformY}`,
-              },
-            };
+          attribsSet:
+            transform: "concat('scale(', scale, ')')"
+            'transform-origin': "concat(boxOriginX, ' ', boxOriginY)"
+  box_variable:
+    bespokeDataRef: "myGrafanaVariable"
+    label:
+      separator: "replace"
+    bespoke:
+      formulas:
+        - "myGrafanaVariable = concat(utils.variablesReplace('${myVar} '), string(boxOriginX))"
+      drives:
+        - elementName: "rect"
+          attribsGet:
+            boxOriginX: "x"
+
+  #----------------------------------------------------------------------------
+  clock_face:
+    bespoke:
+      namespace: "clock"
+      drives:
+        # Capture the clock origin
+        - elementName: "ellipse"
+          attribsGet:
+            clockOriginX: "cx"
+            clockOriginY: "cy"
+
   clock_long_hand:
     dataRef: "test-data-large-sin"
     strokeColor:
       thresholds: *thresholds-high
     bespoke:
+      namespace: "clock"
       dataRefs:
         - "test-data-large-cos"
-      drives:
-        # Decompose the path element to capture the origin of the line for use as the rotation point
-        # Note color thresholds are using large-sin but the roation is using the additional large-cos dataRef
+      constants:
+        handDRef: "test-data-large-cos"
+      formulas: &clockFormulas
+        - "longHandAngle = string(data[handDRef])"
+        - "shortHandAngle = string(data[handDRef] / 12)"
+      drives: &clockLongHandDrives
+        # Note color thresholds are using large-sin but the rotation is using the large-cos dataRef
         - elementName: "path"
-          initFn: |
-            const pathD = utils.splitPathDAttrib(state.elementScope.element);
-            state.panelScope.clockOriginX = pathD.length > 2 ? pathD[1] : 0;
-            state.panelScope.clockOriginY = pathD.length > 2 ? pathD[2] : 0;
-          renderFn: |
-            return {
-              attribs: {
-                transform: `rotate(${data['test-data-large-cos']} ${state.panelScope.clockOriginX} ${state.panelScope.clockOriginY})`,
-              },
-            };
+          attribsSet:
+            transform:  "concat('rotate(', longHandAngle, ' ', clockOriginX, ' ', clockOriginY, ')')"
+
   clock_short_hand:
+    dataRef: "test-data-large-cos"
+    strokeColor:
+      thresholds: *thresholds-high
     bespoke:
-      dataRefs:
-        - "test-data-large-cos"
-      drives:
-        # Use the long-hand origin shared via state.panelScope and rotate at a 12th of the angle
+      namespace: "clock"
+      drives: &clockShortHandDrives
         - elementName: "path"
-          renderFn: |
-            return {
-              attribs: {
-                transform: `rotate(${data['test-data-large-cos'] / 12} ${state.panelScope.clockOriginX} ${state.panelScope.clockOriginY})`,
-              },
-            };
+          attribsSet:
+            transform: "concat('rotate(', shortHandAngle, ' ', clockOriginX, ' ', clockOriginY, ')')"
+
+  clock_face_2:
+    bespoke:
+      namespace: "clock2"
+      drives:
+        # Capture the clock origin
+        - elementName: "ellipse"
+          attribsGet:
+            clockOriginX: "cx"
+            clockOriginY: "cy"
+
+  clock_long_hand_2:
+    dataRef: "test-data-large-sin"
+    strokeColor:
+      thresholds: *thresholds-high
+    bespoke:
+      namespace: "clock2"
+      constants:
+        handDRef: "test-data-large-sin"
+      formulas: *clockFormulas
+      drives: *clockLongHandDrives
+
+  clock_short_hand_2:
+    dataRef: "test-data-large-sin"
+    strokeColor:
+      thresholds: *thresholds-high
+    bespoke:
+      namespace: "clock2"
+      drives:  *clockShortHandDrives
+
+  #----------------------------------------------------------------------------
   connector_double_arrow:
     dataRef: "test-data-large-sin"
     bespoke:
       drives:
-        # Three path elements exist. The first is the line and the 2nd, 3rd are the arror heads. Drive the
-        # arrow head visibility off of data so only one is visible at a time. The filter is just for 'path'
-        # so the function is called three times as the cell-tree is rendered, once for each element.
+        # Three path elements exist. The first is the line and the 2nd, 3rd are the arrow heads. Drive the
+        # arrow head visibility off of data so only one is visible at a time.
         - elementName: "path"
-          renderFn: |
-            const positiveFlow = data['test-data-large-sin'] >= 500;
-            const visible = (state.elementScope.elementPosition === 1) ||
-              ((state.elementScope.elementPosition === 2) && !positiveFlow) ||
-              ((state.elementScope.elementPosition === 3) && positiveFlow);
-            return {
-              attribs: {
-                visibility: visible ? 'visible' : 'hidden',
-              },
-            };
+          elementPosition: 2
+          attribsSet:
+            visibility: "data['test-data-large-sin'] >= 500 ? 'hidden' : 'visible'"
+        - elementName: "path"
+          elementPosition: 3
+          attribsSet:
+            visibility: "data['test-data-large-sin'] < 500 ? 'hidden' : 'visible'"
   range_ring:
     dataRef: "test-data-large-cos"
+    bespokeDataRef: "ringBoundary"
+    label:
+      separator: "replace"
+      units: "ops"
     labelColor:
       thresholds: *thresholds-high
     bespoke:
       dataRefs:
         - "test-data-large-sin"
+      formulas:
+        - "scale = string(0.5 + max(0.0, min(1.0, data['test-data-large-sin'] / 1000)))"
+        - "ringBoundary = round(data['test-data-large-sin'] / 200) * 200"
+        #- "utils.log('log scale and data to console:', scale, ringBoundary, data)"
       drives:
         # Capture the range-ring origin on the inner 'ellipse' element
         - elementName: "ellipse"
-          initFn: |
-            state.cellScope.rangeRingOriginX = state.elementScope.element.getAttribute('cx');
-            state.cellScope.rangeRingOriginY = state.elementScope.element.getAttribute('cy');
+          attribsGet:
+            rangeRingOriginX: "cx"
+            rangeRingOriginY: "cy"
 
         # Scale the range-ring on the outer 'g' around the ellipse origin. Scaling on the outer 'g' ensures
         # everything within such as the label is kept coherently positioned.
         - elementName: "g"
           elementPosition: 1
-          renderFn: |
-            const scale = 0.5 + Math.max(0.0, Math.min(1.0, data['test-data-large-sin'] / 1000));
-            return {
-              attribs: {
-                transform: `scale(${scale} ${scale})`,
-                'transform-origin': `${state.cellScope.rangeRingOriginX} ${state.cellScope.rangeRingOriginY}`,
-              },
-            };
+          attribsSet:
+            transform: "concat('scale(', scale, ' ', scale, ')')"
+            'transform-origin': "concat(rangeRingOriginX, ' ', rangeRingOriginY)"
 
-        # Drive the 'value' of the div element containing the label text to the data value. As draw.io has positioned
-        # this on the circumference, the scaling on the outer 'g' ensures it stays on the circumference.
-        - elementName: "div"
-          renderFn: |
-            if (state.elementScope.element.firstChild?.nodeType === 3) {
-              return {
-                value: Math.round(data['test-data-large-cos']),
-              };
-            }
+  prop_center:
+    bespoke:
+      namespace: "propeller"
+      drives:
+        - elementName: "ellipse"
+          attribsGet:
+            propOriginX: "cx"
+            propOriginY: "cy"
   prop_blade_1:
     dataRef: "test-data-large-cos"
     fillColor:
@@ -141,31 +187,14 @@ cells:
       thresholdUprValue: 1000
       fillDirection: 'bottomToTop'
     bespoke:
+      namespace: "propeller"
       drives:
-        # The prime function provides a way to inject terms into the initFn/renderFn allowing those functions
-        # to be reused with yaml aliases whilst still doing specific things. In this case we inject the same
-        # dataRef on both blades, but you could change them to see the effect.
-        # The initFn is shared across both blades by storing origin information at cellScope. But we could store
-        # this at panelScope and so not need the blade2 initFn.
-        - elementName: "path"
-          elementPosition: 1
-          primeFn: |
-            state.cellScope.dataRef = 'test-data-large-cos';
-          initFn: &propDriveInit |
-            const pathD = utils.splitPathDAttrib(state.elementScope.element);
-            state.cellScope.originX = pathD.length > 2 ? pathD[1] : 0;
-            state.cellScope.originY = pathD.length > 2 ? pathD[2] : 0;
-
         # Rotate the outer 'g' using transform. This ensures the inner clip-path setup for the fillLevel drive remains
         # coherently positioned as the blade rotates.
         - elementName: "g"
           elementPosition: 1
-          renderFn: &propDriveRender |
-            return {
-              attribs: {
-                transform: `rotate(${data[state.cellScope.dataRef]} ${state.cellScope.originX} ${state.cellScope.originY})`,
-              },
-            };
+          attribsSet:
+            transform: &propBladeTransform "concat('rotate(', string(data['test-data-large-cos']), ' ', propOriginX, ' ', propOriginY, ')')"
   prop_blade_2:
     dataRef: "test-data-large-cos"
     fillColor:
@@ -177,30 +206,133 @@ cells:
       thresholdUprValue: 1000
       fillDirection: 'topToBottom'
     bespoke:
+      namespace: "propeller"
       drives:
-        # The second blade drives can be complete duplicates or can diverge based on the needs of the widget. As shown
-        # the initFn and renderFn functions are repeated through yaml alias and the primeFn is repeated but injecting the
-        # same dataRef id for the rotation drive.
-        - elementName: "path"
-          elementPosition: 1
-          primeFn: |
-            state.cellScope.dataRef = 'test-data-large-cos';
-          initFn: *propDriveInit
         - elementName: "g"
           elementPosition: 1
-          renderFn: *propDriveRender
-  cloud:
+          attribsSet:
+            transform: *propBladeTransform
+  #----------------------------------------------------------------------------
+  # This section drives the first box column using a bespokeDatRef overriden
+  # at the drive level (i.e. label, labelColor, strokeColor, etc.)
+  bes_override_label_color:
     dataRef: "test-data-large-cos"
-    fillColor:
-      thresholds: *thresholds-high
+    label:
+      bespokeDataRef: "ringBoundary"
+      separator: "replace"
+      units: "ops"
+    labelColor:
+      bespokeDataRef: "ringBoundary"
+      thresholds: *thresholds-bes-override
     bespoke:
-      drives:
-        # The cloud drive replaces the label text with a bespoke value sourced from a grafana variable concatenated
-        # with data text.
-        - elementName: "div"
-          renderFn: |
-            if (state.elementScope.element.firstChild?.nodeType === 3) {
-              return {
-                value: utils.variablesReplace('${myvar} - ') + Math.round(data['test-data-large-cos']).toString(),
-              };
-            };
+      namespace: "range_ring"
+  bes_override_stroke_color:
+    dataRef: "test-data-large-cos"
+    label:
+      bespokeDataRef: "ringBoundary"
+      separator: "replace"
+      units: "ops"
+      thresholds: *thresholds-bes-override
+    strokeColor:
+      bespokeDataRef: "ringBoundary"
+      thresholds: *thresholds-bes-override
+    bespoke:
+      namespace: "range_ring"
+  bes_override_fill_color:
+    dataRef: "test-data-large-cos"
+    label:
+      bespokeDataRef: "ringBoundary"
+      separator: "replace"
+      units: "ops"
+      thresholds: *thresholds-bes-override
+    fillColor:
+      bespokeDataRef: "ringBoundary"
+      thresholds: *thresholds-bes-override
+    bespoke:
+      namespace: "range_ring"
+  bes_override_fill_level:
+    dataRef: "test-data-large-cos"
+    bespoke:
+      namespace: "range_ring"
+    label:
+      bespokeDataRef: "ringBoundary"
+      separator: "replace"
+      units: "ops"
+      thresholds: *thresholds-bes-override
+    fillColor:
+      bespokeDataRef: "ringBoundary"
+      thresholds: *thresholds-bes-override
+    fillLevel:
+      bespokeDataRef: "ringBoundary"
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 200
+      thresholdUprValue: 800
+  bes_override_flow:
+    dataRef: "test-data-large-cos"
+    bespoke:
+      namespace: "range_ring"
+    flowAnimation:
+      bespokeDataRef: "ringBoundary"
+      thresholdOffValue: 200
+      thresholdLwrValue: 200
+      thresholdLwrDurationSecs: 1
+      thresholdUprValue: 800
+      thresholdUprDurationSecs: 0.1
+  #----------------------------------------------------------------------------
+  # This section drives the second box column using a bespokeDatRef defined at
+  # the cell level
+  bes_override_cell_label_color:
+    bespokeDataRef: "ringBoundary"
+    bespoke:
+      namespace: "range_ring"
+    label:
+      separator: "replace"
+      units: "ops"
+    labelColor:
+      thresholds: *thresholds-bes-override
+  bes_override_cell_stroke_color:
+    bespokeDataRef: "ringBoundary"
+    bespoke:
+      namespace: "range_ring"
+    label:
+      separator: "replace"
+      units: "ops"
+      thresholds: *thresholds-bes-override
+    strokeColor:
+      thresholds: *thresholds-bes-override
+  bes_override_cell_fill_color:
+    bespokeDataRef: "ringBoundary"
+    label:
+      separator: "replace"
+      units: "ops"
+      thresholds: *thresholds-bes-override
+    fillColor:
+      thresholds: *thresholds-bes-override
+    bespoke:
+      namespace: "range_ring"
+  bes_override_cell_fill_level:
+    bespokeDataRef: "ringBoundary"
+    bespoke:
+      namespace: "range_ring"
+    label:
+      separator: "replace"
+      units: "ops"
+      thresholds: *thresholds-bes-override
+    fillColor:
+      thresholds: *thresholds-bes-override
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 200
+      thresholdUprValue: 800
+  bes_override_cell_flow:
+    bespokeDataRef: "ringBoundary"
+    bespoke:
+      namespace: "range_ring"
+    flowAnimation:
+      thresholdOffValue: 200
+      thresholdLwrValue: 200
+      thresholdLwrDurationSecs: 1
+      thresholdUprValue: 800
+      thresholdUprDurationSecs: 0.1

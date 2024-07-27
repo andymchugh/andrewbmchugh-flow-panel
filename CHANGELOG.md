@@ -1,24 +1,44 @@
 # Changelog
 
-## 1.15.0
+## 1.16.0
 
 Single data point dataFrames
 ----------------------------
 Support added for incoming data that doesn't have an associated time array, just a single data-point
 in the array.
 
-Bespoke Attribute and Value Drive 
----------------------------------
-New javascript based drive for SVG element attributes and the SVG element value. This allows
-clients to do bespoke things such as transform their shape elements according to incoming data.
+Bespoke Attribute Drive 
+-----------------------
+New mathjs based drive for SVG element attributes. This allows clients to do bespoke things such as
+transform their shape elements according to incoming data. Multiple incoming data sources can be
+combined in mathjs formulas to derive new values and these values can be used to drive attributes or
+as a source for any of the other fixed drives such as label, labelColor, etc. To ensure javascript
+can't be injected into the plugin the following bespoke attribute restrictions are in place:
+- No attribute values beginning 'on' are drivable.
+- Only attributes 'transform', 'transform-origin', 'visibility' can be added.
+- Any other attribute value can be driven provided the attribute still exists after the svg has parsed
+  through dompurify at initialization.
 
-New config terms in siteConfig and panelConfig:
+New config terms in panelConfig:
 - panelConfig:cells.cell-name.bespoke
+- panelConfig:cells.cell-name.bespokeDataRef
+- panelConfig:cells.cell-name.label.bespokeDataRef
+- panelConfig:cells.cell-name.labelColor.bespokeDataRef
+- panelConfig:cells.cell-name.fillColor.bespokeDataRef
+- panelConfig:cells.cell-name.strokeColor.bespokeDataRef
+- panelConfig:cells.cell-name.flowAnim.bespokeDataRef
+- panelConfig:cells.cell-name.fillLevel.bespokeDataRef
 
 TimeSlider time range compatible with time-shift 
 ------------------------------------------------
 Corrects the way the time-slider time range is initialized so that it now behaves correctly
 when used in conjunction with panel-query-options time-shift.
+
+## 1.15.0
+
+This version was never published but contained an earlier version of 1.16.0 that based the bespoke
+drive off of client defined javascript. That drive in the later version was re-written purely in
+terms of client defined mathjs.
 
 ## 1.14.0
 

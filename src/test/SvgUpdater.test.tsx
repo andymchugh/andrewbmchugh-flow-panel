@@ -4,6 +4,7 @@ import { getFlowAnimationState, valueMapping } from 'components/SvgUpdater'
 test('coherent_min_max', () => {
   let fad: PanelConfigCellFlowAnimation = {
     dataRef: undefined,
+    bespokeDataRef: undefined,
     datapoint:undefined,
     thresholdOffValue: 10,
     thresholdLwrValue: 100,
@@ -47,6 +48,7 @@ test('coherent_min_max', () => {
 test('interpolate', () => {
   let fad: PanelConfigCellFlowAnimation = {
     dataRef: undefined,
+    bespokeDataRef: undefined,
     datapoint:undefined,
     thresholdOffValue: 10,
     thresholdLwrValue: 100,
@@ -68,6 +70,7 @@ test('interpolate', () => {
 test('inverted', () => {
   let fad: PanelConfigCellFlowAnimation = {
     dataRef: undefined,
+    bespokeDataRef: undefined,
     datapoint:undefined,
     thresholdOffValue: 10,
     thresholdLwrValue: 100,
@@ -89,6 +92,7 @@ test('inverted', () => {
 test('unidirectional', () => {
   let fad: PanelConfigCellFlowAnimation = {
     dataRef: undefined,
+    bespokeDataRef: undefined,
     datapoint:undefined,
     thresholdOffValue: 10,
     thresholdLwrValue: 100,
@@ -115,6 +119,7 @@ test('unidirectional', () => {
 test('zero', () => {
   let fad: PanelConfigCellFlowAnimation = {
     dataRef: undefined,
+    bespokeDataRef: undefined,
     datapoint:undefined,
     thresholdOffValue: undefined,
     thresholdLwrValue: 100,

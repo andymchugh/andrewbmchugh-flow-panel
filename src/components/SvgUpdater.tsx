@@ -1,6 +1,7 @@
 import { getValueFormatterIndex, formattedValueToString, GrafanaTheme2 } from '@grafana/data';
 import { 
-  DatapointMode, FlowValueMapping, HighlightFactors,
+  DataRefDrive,
+  FlowValueMapping, HighlightFactors,
   LabelSeparator, Link,
   PanelConfig, PanelConfigCell, PanelConfigCellColor,
   PanelConfigCellColorCompound,
@@ -14,16 +15,16 @@ import { HighlightState } from './Highlighter';
 import {
   CellFillLevelDriver, getClipper, isFillLevelElement } from 'components/FillLevel';
 import { getTemplateSrv } from '@grafana/runtime';
-import { CellBespokeDrivers, attribDriverManager, bespokeDriveHandlerFactory, bespokeDriveFactory } from './bespokeDriver';
+import { attribDriverManager, bespokeDriveHandlerFactory, ScopedState, CellBespokeHandler, getBespokeData } from './bespokeDriver';
 
 // Defines the metadata stored against each drivable svg cell
 export type SvgCell = {
   cellId: string;
+  cellIdShort: string;
   textElements: HTMLElement[];
   strokeElements: HTMLElement[];
   fillElements: HTMLElement[];
   fillClipDrivers: CellFillLevelDriver[];
-  bespokeDrivers: CellBespokeDrivers;
   text: string;
   cellProps: PanelConfigCell;
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
@@ -47,6 +48,7 @@ export type SvgAttribs = {
   elementAttribs: Map<string, SvgElementAttribs>;
   variableValues: Map<string, string>;
   highlightFactors: HighlightFactors;
+  bespokeHandlers: CellBespokeHandler[];
 };
 
 export type SvgHolder = {
@@ -60,9 +62,9 @@ type FlowAnimationState = {
 };
 
 export type BespokeStateHolder = {
-  panelState: Object;
-  cellState: Object;
+  namespaceState: Map<string, ScopedState>;
   elementCounts: Map<string, number>;
+  handlers: CellBespokeHandler[];
 }
 
 function generateLabelPreamble(label: string | null, separator: LabelSeparator | null) {
@@ -146,8 +148,7 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
   }
 
   if (cellData.cellProps.bespoke) {
-    const handlers = bespokeDriveHandlerFactory(el, cellData.cellProps.bespoke.drives, bespokeStateHolder);
-    cellData.bespokeDrivers.handlers.push(...handlers);
+    bespokeDriveHandlerFactory(cellData.cellIdShort, cellData.cellProps.dataRef, el, cellData.cellProps.bespoke, bespokeStateHolder);
   }
 
   if (el.hasChildNodes()) {
@@ -180,19 +181,21 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
 export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig: PanelConfig, siteConfig: SiteConfig):  SvgAttribs {
   let cells = new Map<string, SvgCell>();
   const cellIdPreamble = panelConfig.cellIdPreamble;
-  const panelState = {};
+  const namespaceState = new Map<string, ScopedState>();
+  const bespokeHandlers: CellBespokeHandler[] = [];
+
   panelConfig.cells.forEach((cellProps, cellIdShort) => {
     const cellId = cellIdPreamble + cellIdShort;
     const cellIdMaker = cellIdFactory(cellId + panelConfig.cellIdExtender);
     let el = doc.getElementById(cellId);
     if (el) {
       const cell = {
+        cellIdShort: cellIdShort,
         cellId: cellId,
         strokeElements: [],
         textElements: [],
         fillElements: [],
         fillClipDrivers: [],
-        bespokeDrivers: bespokeDriveFactory(cellProps.bespoke),
         text: '',
         cellProps: cellProps,
         variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(),
@@ -201,10 +204,10 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
 
       const additions: HTMLElement[] = [];
 
-      const bespokeStateHolder = {
-        panelState: panelState,
-        cellState: {},
+      const bespokeStateHolder: BespokeStateHolder = {
+        namespaceState: namespaceState,
         elementCounts: new Map<string, number>(),
+        handlers: bespokeHandlers,
       }
       recurseElements(el, cell, cellIdMaker, additions, bespokeStateHolder);
       // Now the loop of recursions is done, add in the additional elements
@@ -253,6 +256,7 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
     elementAttribs: elementAttribs,
     variableValues: variableValues,
     highlightFactors: panelConfig.highlighter.factors,
+    bespokeHandlers: bespokeHandlers,
   };
 
   // Initialie the color cache and setup the background
@@ -261,18 +265,24 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
   return svgAttribs;
 } 
 
-function getCellValue(datapoint: DatapointMode | undefined, tsName: string, tsData: TimeSeriesData) {
+export function getCellValue(drive: DataRefDrive | undefined, tsData: TimeSeriesData, cellBespokeData: any) {
+  // Return bespoke value if defined
+  if (cellBespokeData && drive?.bespokeDataRef) {
+    return cellBespokeData[drive.bespokeDataRef];
+  }
   let value = null;
-  const ts = tsData.ts.get(tsName);
-  if (ts && (typeof ts.time.valuesIndex === 'number')) {
-    value = ts.values[ts.time.valuesIndex];
+  if (drive?.dataRef) {
+    const ts = tsData.ts.get(drive.dataRef);
+    if (ts && (typeof ts.time.valuesIndex === 'number')) {
+      value = ts.values[ts.time.valuesIndex];
 
-    // lastNotNull results in a walkback till a non null value is found
-    if (datapoint === 'lastNotNull') {
-      for (let i = ts.time.valuesIndex; i >= 0; i--) {
-        value = ts.values[i];
-        if (typeof value === 'number') {
-          break;
+      // lastNotNull results in a walkback till a non null value is found
+      if (drive.datapoint === 'lastNotNull') {
+        for (let i = ts.time.valuesIndex; i >= 0; i--) {
+          value = ts.values[i];
+          if (typeof value === 'number') {
+            break;
+          }
         }
       }
     }
@@ -375,11 +385,11 @@ type SvgDriveBase = {
 // the variables to a threshold seed. If it doesn't exist it returns the passed in
 // default.
 function thresholdSeed(sdb: SvgDriveBase,
-  datapoint: DatapointMode | undefined,
   paramData: PanelConfigCellColor | PanelConfigCellFillLevel | PanelConfigCellFlowAnimation | undefined,
-  defaultSeed: number | string | null) {
-  if (paramData?.dataRef) {
-    const cellValue = getCellValue(datapoint, paramData.dataRef, sdb.tsData);
+  defaultSeed: number | string | null,
+  bespokeData: any) {
+  if (paramData?.dataRef || paramData?.bespokeDataRef) {
+    const cellValue = getCellValue(paramData, sdb.tsData, bespokeData);
     return variableThresholdScaleValue(sdb.variableValues, sdb.cellData, cellValue);
   }
   else {
@@ -389,23 +399,24 @@ function thresholdSeed(sdb: SvgDriveBase,
 
 function getThresholdColor(sdb: SvgDriveBase,
   cellValueSeed: string | number | null,
-  configCellColor: PanelConfigCellColor | undefined) {
-  const datapoint = configCellColor?.datapoint;
-  const colorSeed = thresholdSeed(sdb, datapoint, configCellColor, cellValueSeed);
+  configCellColor: PanelConfigCellColor | undefined,
+  bespokeData: any) {
+  const colorSeed = thresholdSeed(sdb, configCellColor, cellValueSeed, bespokeData);
   const thresholdColor = configCellColor && (colorSeed !== null) ? getColor(configCellColor, colorSeed, sdb.highlight, sdb.highlightFactors) : null;
   return thresholdColor;
 }
 
 function getThresholdColorCompound(sdb: SvgDriveBase,
   cellValueSeed: string | number | null,
-  configCellColorCompound: PanelConfigCellColorCompound) {
+  configCellColorCompound: PanelConfigCellColorCompound,
+  bespokeData: any) {
   const chooseSecond = configCellColorCompound.function === 'min' ?
     (first: number, second: number) => second <= first:
     (first: number, second: number) => second >= first; // default is 'max'
 
   let compound: any = undefined;
   configCellColorCompound.colors.forEach((configCellColor) => {
-    const thresholdColor = getThresholdColor(sdb, cellValueSeed, configCellColor);
+    const thresholdColor = getThresholdColor(sdb, cellValueSeed, configCellColor, bespokeData);
     if (thresholdColor) {
       compound = compound && chooseSecond(thresholdColor.order, compound.order) ? compound : thresholdColor;
     }
@@ -418,8 +429,11 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
   const elementAttribs = svgHolder.attribs.elementAttribs;
   const highlightFactors = svgHolder.attribs.highlightFactors;
 
+  // Bespoke Attribute Drive
+  const namespacedData = attribDriverManager(svgHolder.attribs.bespokeHandlers, tsData);
+
   const cells = svgHolder.attribs.cells;
-  cells.forEach((cellData) => {
+  cells.forEach((cellData, cellId) => {
     const highlight = highlighterSelection && cellData.cellProps.tags?.has(highlighterSelection) ? HighlightState.Highlight : highlighterSelection ? HighlightState.Lowlight : HighlightState.Ambient;
     const sdb: SvgDriveBase = {
       variableValues: variableValues,
@@ -428,35 +442,34 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
       cellData: cellData,
       highlight: highlight,
     };
-    const cellDataRef = cellData.cellProps.dataRef;
-    const cellValue = cellDataRef ? getCellValue(cellData.cellProps.datapoint, cellDataRef, tsData) : null;
+    const cellBespokeData = getBespokeData(cellId, cellData.cellProps, namespacedData);
+    
+    const cellValue = getCellValue(cellData.cellProps, tsData, cellBespokeData);
     const cellValueSeed = variableThresholdScaleValue(variableValues, cellData, cellValue);
 
     const cellLabelData = cellData.cellProps.label;
-    const cellLabelDatapoint = cellLabelData?.datapoint;
-    const cellLabelValue = cellLabelData?.dataRef ? getCellValue(cellLabelDatapoint, cellLabelData.dataRef, tsData) : cellValue;
+    const cellLabelValueInner = getCellValue(cellLabelData, tsData, cellBespokeData);
+    const cellLabelValue = cellLabelValueInner !== null ? cellLabelValueInner : cellValue;
     const cellLabelMappedValue = cellLabelData?.valueMappings ? valueMapping(cellLabelData.valueMappings, cellLabelValue) : null;
     const cellLabel = cellLabelMappedValue || (cellLabelData && (typeof cellLabelValue === 'number') ? formatCellValue(cellLabelData, cellLabelValue) : cellLabelValue);
 
     const cellStrokeColor = cellData.cellProps.strokeColorCompound ?
-      getThresholdColorCompound(sdb, cellValueSeed, cellData.cellProps.strokeColorCompound) :
-      getThresholdColor(sdb, cellValueSeed, cellData.cellProps.strokeColor);
+      getThresholdColorCompound(sdb, cellValueSeed, cellData.cellProps.strokeColorCompound, cellBespokeData) :
+      getThresholdColor(sdb, cellValueSeed, cellData.cellProps.strokeColor, cellBespokeData);
 
     const cellFillColor = cellData.cellProps.fillColorCompound ?
-      getThresholdColorCompound(sdb, cellValueSeed, cellData.cellProps.fillColorCompound) :
-      getThresholdColor(sdb, cellValueSeed, cellData.cellProps.fillColor);
+      getThresholdColorCompound(sdb, cellValueSeed, cellData.cellProps.fillColorCompound, cellBespokeData) :
+      getThresholdColor(sdb, cellValueSeed, cellData.cellProps.fillColor, cellBespokeData);
 
     const cellLabelColor = cellData.cellProps.labelColorCompound ?
-      getThresholdColorCompound(sdb, cellValueSeed, cellData.cellProps.labelColorCompound) :
-      getThresholdColor(sdb, cellValueSeed, cellData.cellProps.labelColor);
+      getThresholdColorCompound(sdb, cellValueSeed, cellData.cellProps.labelColorCompound, cellBespokeData) :
+      getThresholdColor(sdb, cellValueSeed, cellData.cellProps.labelColor, cellBespokeData);
 
     const cellFillLevelData = cellData.cellProps.fillLevel;
-    const cellFillLevelDatapoint = cellFillLevelData?.datapoint;
-    const cellFillLevelSeed = thresholdSeed(sdb, cellFillLevelDatapoint, cellFillLevelData, cellValueSeed);
+    const cellFillLevelSeed = thresholdSeed(sdb, cellFillLevelData, cellValueSeed, cellBespokeData);
 
     const cellFlowAnimData = cellData.cellProps.flowAnimation;
-    const cellFlowAnimDatapoint = cellFlowAnimData?.datapoint;
-    const cellFlowAnimSeed = thresholdSeed(sdb, cellFlowAnimDatapoint, cellFlowAnimData, cellValueSeed);
+    const cellFlowAnimSeed = thresholdSeed(sdb, cellFlowAnimData, cellValueSeed, cellBespokeData);
     const cellFlowAnimState = cellFlowAnimData ? getFlowAnimationState(cellFlowAnimData, animationsEnabled ? cellFlowAnimSeed : null ) : null;
 
     cellData.fillElements.forEach((el: HTMLElement) => {
@@ -490,16 +503,5 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
         setFlowAnimationAttributes(el, cellFlowAnimState);
       });
     }
-    if (cellData.bespokeDrivers) {
-      const bespokeData = cellData.cellProps.bespoke;
-      const bespokeDataDatapoint = bespokeData?.datapoint;
-      const data: any = cellDataRef ? {[cellDataRef]: cellValue} : {};
-      bespokeData?.dataRefs?.forEach((dataRef: string) => {
-        const dataValue = getCellValue(bespokeDataDatapoint, dataRef, tsData);
-        data[dataRef] = dataValue;
-      })
-
-      attribDriverManager(cellData.bespokeDrivers.handlers, data);
-    }
-  })
+  });
 }
