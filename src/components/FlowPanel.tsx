@@ -11,7 +11,7 @@ import { svgInit, svgUpdate, SvgHolder, SvgElementAttribs } from 'components/Svg
 import { seriesExtend, seriesInterpolate , seriesTransform } from 'components/TimeSeries';
 import { TimeSliderFactory } from 'components/TimeSlider';
 import { displayColorsInner, displayDataInner, displayMappingsInner, displaySvgInner } from 'components/DebuggingEditor';
-import { colorLookup, constructUrl, getInstrumenter } from 'components/Utils';
+import { colorLookup, constructUrl, flowDebug, getInstrumenter } from 'components/Utils';
 import { addHook, sanitize } from 'dompurify';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
@@ -205,7 +205,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
         }
       }
       catch (err) {
-        console.log('Error occured accessing variable', variable, ', error =', err);
+        flowDebug().warn('Error occured accessing variable', variable, ', error =', err);
       }
     });
   

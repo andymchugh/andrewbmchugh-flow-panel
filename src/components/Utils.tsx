@@ -14,6 +14,18 @@ const gShapeElements: Set<string> = new Set<string>([
 );
 
 //-----------------------------------------------------------------------------
+// Centralised debug
+//------------------
+
+export function flowDebug() {
+  return {
+    info: console.info,
+    warn: console.warn,
+    error: console.error,
+  };
+}
+
+//-----------------------------------------------------------------------------
 // Shape Elements
 //---------------
 
@@ -59,7 +71,7 @@ export function createUrl(url: string) {
     return url;
   }
   catch(err) {
-    console.log('invalid url', url, 'error:', err);
+    flowDebug().warn('invalid url', url, 'error:', err);
     return undefined;
   }
 }
@@ -191,7 +203,7 @@ export function colorStringToRgb(theme: GrafanaTheme2, colorStr: string) {
       }
     }
     catch(err) {
-      console.log('Unable to transform color to rgb. color =', colorStr, ', err =', err);
+      flowDebug().warn('Unable to transform color to rgb. color =', colorStr, ', err =', err);
     }
   }
   return rgb || colorStr;
@@ -335,7 +347,7 @@ function instrumenterTimer(label: string, fn: Function) {
     const start = performance.now();
     const fnResult = fn(...args);
     const delta = performance.now() - start;
-    console.log(`Debugging time: ${label}: ${delta.toFixed(3)} ms`);
+    flowDebug().info(`Debugging time: ${label}: ${delta.toFixed(3)} ms`);
     return fnResult;
   };
 }

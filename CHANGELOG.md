@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.16.0
+## 1.16.1
 
 Single data point dataFrames
 ----------------------------
