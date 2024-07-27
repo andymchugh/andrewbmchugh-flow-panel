@@ -1,0 +1,257 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - link: &grafana-home
+      url: "https://grafana.com/"
+      params: "time"
+  - thresholds: &thresholds-high
+      - {color: "green", level: 100}
+      - {color: "orange", level: 400}
+      - {color: "red", level: 700}
+  - thresholds: &thresholds-slow
+      - {color: "green", level: 0}
+      - {color: "orange", level: 80}
+      - {color: "red", level: 150}
+
+# -----------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+cells: 
+
+  #----------------------------------------------------------------------------
+  # The clock consists of two hands and a face (surrounding circle). The face is
+  # used to store the rotation origin to use for the hands. All three cells share
+  # the same 'clock' namespace. The hand stroke colors could be driven from bespoke
+  # values, but in this example they are being sourced from the cell dataRef.
+  # The constant 'handDRef' shows how to decouple the source data from the actual
+  # formulas. There is only one clock in this example, but the formulas and drives
+  # could be used by multiple clocks via yaml anchors with different data injected
+  # via these constants.
+  clockFace:
+    bespoke:
+      namespace: "clock"
+      drives:
+        # Capture the clock origin
+        - elementName: "ellipse"
+          attribsGet:
+            clockOriginX: "cx"
+            clockOriginY: "cy"
+
+  clockLongHand:
+    dataRef: "test-data-large-sin"
+    strokeColor:
+      thresholds: *thresholds-high
+    bespoke:
+      namespace: "clock"
+      constants:
+        handDRef: "test-data-large-cos"
+      formulas:
+        - "longHandAngle = string(data[handDRef])"
+        - "shortHandAngle = string(data[handDRef] / 12)"
+      drives:
+        # Note color thresholds are using large-sin but the rotation is using the large-cos dataRef
+        - elementName: "path"
+          attribsSet:
+            transform:  "concat('rotate(', longHandAngle, ' ', clockOriginX, ' ', clockOriginY, ')')"
+
+  clockShortHand:
+    dataRef: "test-data-large-cos"
+    strokeColor:
+      thresholds: *thresholds-high
+    bespoke:
+      namespace: "clock"
+      drives:
+        - elementName: "path"
+          attribsSet:
+            transform: "concat('rotate(', shortHandAngle, ' ', clockOriginX, ' ', clockOriginY, ')')"
+
+  #----------------------------------------------------------------------------
+  # The connector shows how arror direction can be driven using the visibility
+  # attribute on the different path elements. In this example the drive is re-used
+  # for both connectors using a yaml anchor.
+  connector1: &connector
+    dataRef: "test-data-large-sin"
+    bespoke:
+      drives:
+        # Three path elements exist. The first is the line and the 2nd, 3rd are the arrow heads. Drive the
+        # arrow head visibility off of data so only one is visible at a time.
+        - elementName: "path"
+          elementPosition: 2
+          attribsSet:
+            visibility: "data['test-data-large-sin'] >= 500 ? 'hidden' : 'visible'"
+        - elementName: "path"
+          elementPosition: 3
+          attribsSet:
+            visibility: "data['test-data-large-sin'] < 500 ? 'hidden' : 'visible'"
+  connector2: *connector
+  connector3: *connector
+  connector4: *connector
+  connector5: *connector
+
+  #----------------------------------------------------------------------------
+  # The range ring shows how an element can be scaled whilst maintaining the label position.
+  # The 'utils.log()'' formula is commented out, but uncomment it to view the data available
+  # in this scope. This also shows the label value and labelColor being driven from the
+  # ringBoundary variable calculated in the mathjs formula.
+  rangeRing:
+    bespokeDataRef: "ringBoundary"
+    label:
+      separator: "replace"
+      units: "ops"
+    labelColor:
+      thresholds: *thresholds-high
+    bespoke:
+      dataRefs:
+        - "test-data-large-sin"
+      formulas:
+        - "scale = string(0.5 + max(0.0, min(1.0, data['test-data-large-sin'] / 1000)))"
+        - "ringBoundary = round(data['test-data-large-sin'] / 200) * 200"
+        #- "utils.log('log scale and data to console:', scale, ringBoundary, data)"
+      drives:
+        # Capture the range-ring origin on the 'ellipse' element
+        - elementName: "ellipse"
+          attribsGet:
+            rangeRingOriginX: "cx"
+            rangeRingOriginY: "cy"
+
+        # Scale the range-ring on the outer 'g' around the ellipse origin. Scaling on the outer 'g' ensures
+        # everything within such as the label is kept coherently positioned.
+        - elementName: "g"
+          elementPosition: 1
+          attribsSet:
+            transform: "concat('scale(', scale, ' ', scale, ')')"
+            'transform-origin': "concat(rangeRingOriginX, ' ', rangeRingOriginY)"
+
+  #----------------------------------------------------------------------------
+  # The propeller consists of an 'ellipse' hub and two 'path' blades. The hub provides
+  # the rotation origin. By rotating on the outer 'g' it demonstratres how the fill-level
+  # drive is kept coherent with the propeller position.
+  prop_center:
+    bespoke:
+      namespace: "propeller"
+      drives:
+        - elementName: "ellipse"
+          attribsGet:
+            propOriginX: "cx"
+            propOriginY: "cy"
+  prop_blade_1:
+    dataRef: "test-data-large-cos"
+    fillColor:
+      thresholds: *thresholds-high
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 1000
+      fillDirection: 'bottomToTop'
+    bespoke:
+      namespace: "propeller"
+      drives:
+        # Rotate the outer 'g' using transform. This ensures the inner clip-path setup for the fillLevel drive remains
+        # coherently positioned as the blade rotates.
+        - elementName: "g"
+          elementPosition: 1
+          attribsSet:
+            transform: &propBladeTransform "concat('rotate(', string(data['test-data-large-cos']), ' ', propOriginX, ' ', propOriginY, ')')"
+  prop_blade_2:
+    dataRef: "test-data-large-cos"
+    fillColor:
+      thresholds: *thresholds-high
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 1000
+      fillDirection: 'topToBottom'
+    bespoke:
+      namespace: "propeller"
+      drives:
+        - elementName: "g"
+          elementPosition: 1
+          attribsSet:
+            transform: *propBladeTransform
+
+  #----------------------------------------------------------------------------
+  # The four boxes demonstrate fill-level direction. Arranged at the points of a 
+  # clock the fill-levels go in and out in symetry.
+  box9:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 200
+      fillDirection: 'leftToRight'
+    link: *grafana-home
+  box12:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 200
+      fillDirection: 'topToBottom'
+    link: *grafana-home
+  box3:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 200
+      fillDirection: 'rightToLeft'
+    link: *grafana-home
+  box6:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 200
+      fillDirection: 'bottomToTop'
+    link: *grafana-home
+
+  #----------------------------------------------------------------------------
+  # The three vessels show how all shapes, even shapes defined via a 'path' can
+  # have a controllable fill-level.
+  vessel1: &vessel
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "pps"
+    fillColor:
+      thresholds: *thresholds-slow
+    fillLevel:
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 200
+      fillDirection: 'bottomToTop'
+    link: *grafana-home
+  vessel2: *vessel
+  vessel3: *vessel

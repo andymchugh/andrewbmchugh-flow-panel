@@ -36,7 +36,11 @@ The supported visualizations are:
 - label content
 - label color
 - fill color
+- stroke color
 - links
+- connector flow animations
+- fill level
+- bespoke SVG element attribute drives
 
 *Note that tooltips have no inbuilt support in the panel, but can be defined in the SVG and will appear in the panel on-hover courtesy of the underlying framework. To set a tooltip in draw.io, `select widget -> Edit -> Edit Tooltip`; or `select widget -> <ALT><SHFT>T`.*
 
@@ -62,6 +66,12 @@ Create a Flow Panel in your dashboard. The initial setup loads the first example
   - Change the links over to the third example. This shows a selection of interacting queues. The cells have all been given threadHighlighting tags and the Highlighter legend is enabled allowing different sets of data to be highlighted to spot correlations:
     - svg: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg3.svg
     - panelConfig: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig3.yaml
+  - Change the links over to the fourth example. This shows connectors with flow animations. Flow speed is dynamically controlled from the incoming data. Whenever flow animations are defined a pause/play button is visible in the bottom left hand corner of the panel. Move the time-slider back and forth to see the flow rates adjust.
+    - svg: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg4.svg
+    - panelConfig: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig4.yaml
+  - Change the links over to the fifth example. This shows dynamic fill levels and bespoke attribute driving. It shows elements rotating and scaling and labels showing values dynamically calculated from a set of incoming mathjs formulas. Move the time-slider back and forth to see all the drives in action.
+    - svg: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/darkThemeSvg5.svg
+    - panelConfig: https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig5.yaml
 - Test Data Generation:
   - Deselect generation and see the SVG change to unannotated. Reselect and see the color and values come back.
 - Debugging: *Note these steps all need you to open your browser console.*
