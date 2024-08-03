@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.16.2
+
+Animation play/pause button optional
+------------------------------------
+New panel level switch added to allow removal of the animation play/pause control.
+
+Bespoke formulas fix
+--------------------
+Bespoke formulas would only run if the cell also included a bespoke attribute 'get' or 'set'. This
+restriction has been removed so formulas can now be used stand-alone for computing new data terms for
+use in the other drives.
+
 ## 1.16.1
 
 Single data point dataFrames

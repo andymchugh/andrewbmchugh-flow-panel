@@ -57,6 +57,14 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
     defaultValue: true,
   })
   .addBooleanSwitch({
+    path: 'animationControlEnabled',
+    name: 'Animation Control Enabled',
+    description: `This defines whether the pause/play animation control is shown in the
+    bottom left corner of the panel. The button is only visible if animations have also been
+    defined in the yaml data.`,
+    defaultValue: true,
+  })
+  .addBooleanSwitch({
     path: 'highlighterEnabled',
     name: 'Highlighter',
     description: `When enabled a highlighting bar is added below the SVG. Widgets on the
