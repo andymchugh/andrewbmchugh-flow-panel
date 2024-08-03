@@ -183,7 +183,8 @@ cells:
     # The label field defines how the text in the cell will be adjusted based on the
     # time-series value. The time series value is postpended with a separator. If no
     # adjustment is wanted the field should be omitted. Note that multiline label preambles
-    # are not supported.
+    # are not supported. The 'text' label must already exist in the SVG as this drive just
+    # changes its value. It does not create a text element if it is not already present in the cell.
     label:
       # Optional attribute level override for the associated time-series.
       dataRef: "test-data-large-cos"

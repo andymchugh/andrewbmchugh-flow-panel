@@ -34,7 +34,7 @@ export type CellBespokeAttribSetter = {
 };
 
 export type CellBespokeHandler = {
-  element: HTMLElement;
+  element: HTMLElement | undefined;
   clientState: ScopedState;
   attribSetters: CellBespokeAttribSetter[];
 };
@@ -89,6 +89,14 @@ export function bespokeDriveHandlerFactory(cellId: string, dataRef: string | und
     catch (err) {
       flowDebug().warn('Error occured parsing bespoke formula [', v, ']', element, 'error =', err);
     }
+  });
+
+  // Regardless of whether there are any drives, defined constants and formulas need to be
+  // maintained, so at least one entry is required.
+  bespokeStateHolder.handlers.push({
+    element: undefined,
+    attribSetters: [],
+    clientState: state,
   });
 
   config.drives?.forEach((drive) => {
@@ -203,7 +211,7 @@ export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSerie
     try {
       handler.attribSetters.forEach((obj) => {
         const attribValue = obj.attribFormula.evaluate(dataStore);
-        handler.element.setAttribute(obj.attribName, String(attribValue));
+        handler.element?.setAttribute(obj.attribName, String(attribValue));
       });
     }
     catch (err) {

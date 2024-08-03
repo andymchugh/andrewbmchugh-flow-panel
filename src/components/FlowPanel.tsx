@@ -264,7 +264,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   const highlighterEnabled = options.highlighterEnabled &&
     (panelConfig?.highlighter?.tagLegend?.length || 0) > 0;
 
-  const animationControlPosition = panelConfig?.animationsPresent ?
+  const animationControlPosition = options.animationControlEnabled && panelConfig?.animationsPresent ?
     timeSliderEnabled ? AnimationControlPosition.timeSlider :
     highlighterEnabled ? AnimationControlPosition.highlighter : AnimationControlPosition.own : AnimationControlPosition.none;
 
