@@ -108,8 +108,9 @@ function dimensionCoherence(doc: Document) {
 
 function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellIdMaker, additions: HTMLElement[], bespokeStateHolder: BespokeStateHolder): boolean {
   const setAttributes = function(el: HTMLElement) {
-    el.style.whiteSpace = 'pre';
-
+    if ((el.nodeName === 'div') || (el.nodeName === 'text')) {
+      el.style.whiteSpace = 'pre';
+    }
     if (cellData.cellProps.link) {
       el.style.cursor = 'pointer';
       el.setAttribute('cursor', 'pointer');

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.16.3
+
+SVG formating support
+---------------------
+Using SVGs post formatting for better readabilitycould cause label positions to shift.
+This is now fixed by limiting the scope of how style->whitespace is applied dynamically to labels.
+
 ## 1.16.2
 
 Animation play/pause button optional
