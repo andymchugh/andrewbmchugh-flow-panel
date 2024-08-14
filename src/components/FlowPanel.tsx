@@ -48,7 +48,9 @@ function sanitizeSvgStr(svgStr: string) {
   return sanitize(svgStr, {
     PARSER_MEDIA_TYPE: 'application/xhtml+xml',
     ADD_TAGS: ['foreignObject'],
-    ADD_ATTR: ['viewBox'],
+    // dompurify 3.0.8 allows these attribs in lowercase but not camelcase. Until fixed in that layer
+    // we add the attributes to the allowed list.
+    ADD_ATTR: ['viewBox', 'refX', 'refY', 'markerWidth', 'markerHeight', 'markerUnits', 'preserveAspectRatio'],
   });
 }
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.16.4
+
+SVG 'marker' element support
+----------------------------
+This change allows use of all the marker element attributes. Before they were being incorrectly
+stripped due to a bug in the underlying SVG purification. Use of 'markers' came to the fore with
+the availablity of the bespoke drive.
+
 ## 1.16.3
 
 SVG formating support
