@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-0.5 -0.5 301 201">
+    <defs>
+      <marker id="cell-markerArrow" viewBox="0 0 3 3" abcrubbish="true" preserveAspectRatio="xMidYMid meet" markerUnits="strokeWidth" markerWidth="3" markerHeight="3" refX="1.5" refY="1.5" orient="auto">
+          <path d="M1,0 L1,3 L2,1.5 L1,0" style="fill: teal" />
+      </marker>
+    </defs>
+    <g>
+        <line x1="100" y1="100" x2="150" y2="145" style="stroke-width: 3px; stroke: teal; marker-end: url(#cell-markerArrow);" />
+        <line x1="200" y1="100" x2="250" y2="45" style="stroke-width: 3px; stroke: teal; marker-end: url(#cell-markerArrow);" />
+    </g>
+</svg>

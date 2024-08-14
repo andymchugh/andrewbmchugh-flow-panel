@@ -1,0 +1,125 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 23,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 15,
+          "x": 0,
+          "y": 0
+        },
+        "id": 123131,
+        "options": {
+          "code": {
+            "language": "plaintext",
+            "showLineNumbers": false,
+            "showMiniMap": false
+          },
+          "content": "# marker element support\n\nThe marker element can be used to support arrow head positions. It's defined with\nattributes refX, refY, markerHeight, markerWidth, viewBox. But dompurify 3.0.8 strips\nthese attributes off because it expects them to be lowercase. The panel corrects for\nthis and this dashboard shows the arrow head being correctly positioned.\n\nTo double confirm attribute allowance, press SVG in the panel options\nand view the final SVG in the console.\n",
+          "mode": "markdown"
+        },
+        "pluginVersion": "10.0.0",
+        "type": "text"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 9,
+          "x": 15,
+          "y": 0
+        },
+        "id": 123130,
+        "options": {
+          "animationControlEnabled": false,
+          "animationsEnabled": false,
+          "debuggingCtr": {
+            "colorsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 11,
+            "mappingsCtr": 1,
+            "timingsCtr": 0
+          },
+          "highlighterEnabled": false,
+          "panZoomEnabled": false,
+          "panelConfig": "---",
+          "siteConfig": "",
+          "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"-0.5 -0.5 301 201\">\n    <defs>\n      <marker id=\"cell-markerArrow\" viewBox=\"0 0 3 3\" abcrubbish=\"true\" preserveAspectRatio=\"xMidYMid meet\" markerUnits=\"strokeWidth\" markerWidth=\"3\" markerHeight=\"3\" refX=\"1.5\" refY=\"1.5\" orient=\"auto\">\n          <path d=\"M1,0 L1,3 L2,1.5 L1,0\" style=\"fill: teal\" />\n      </marker>\n    </defs>\n    <g>\n        <line x1=\"100\" y1=\"100\" x2=\"150\" y2=\"145\" style=\"stroke-width: 3px; stroke: teal; marker-end: url(#cell-markerArrow);\" />\n        <line x1=\"200\" y1=\"100\" x2=\"250\" y2=\"45\" style=\"stroke-width: 3px; stroke: teal; marker-end: url(#cell-markerArrow);\" />\n    </g>\n</svg>",
+          "testDataEnabled": false,
+          "timeSliderEnabled": false
+        },
+        "title": "Panel Title",
+        "type": "andrewbmchugh-flow-panel"
+      }
+    ],
+    "refresh": "",
+    "schemaVersion": 38,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-3h",
+      "to": "now"
+    },
+    "timepicker": {
+      "hidden": false,
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h",
+        "12h",
+        "24h",
+        "2d",
+        "7d",
+        "30d"
+      ],
+      "type": "timepicker"
+    },
+    "timezone": "browser",
+    "title": "Marker Support",
+    "version": 1,
+    "weekStart": ""
+  }
