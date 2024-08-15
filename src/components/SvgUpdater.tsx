@@ -338,7 +338,7 @@ export function getFlowAnimationState(config: PanelConfigCellFlowAnimation, cell
       durationSecs = config.thresholdUprDurationSecs;
     }
     else {
-      const factor = (absValue - config.thresholdLwrValue) / (config.thresholdUprValue - config.thresholdLwrValue);
+      const factor = Math.pow((absValue - config.thresholdLwrValue) / (config.thresholdUprValue - config.thresholdLwrValue), config.biasPower);
       const periodDelta = (config.thresholdLwrDurationSecs - config.thresholdUprDurationSecs);
       durationSecs = config.thresholdUprDurationSecs + ((1 - factor) * periodDelta);
     }

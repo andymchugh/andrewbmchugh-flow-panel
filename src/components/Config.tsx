@@ -101,6 +101,7 @@ export type PanelConfigCellFlowAnimation = DataRefDrive & {
   thresholdLwrDurationSecs: number;
   thresholdUprValue: number;
   thresholdUprDurationSecs: number;
+  biasPower: number;
   unidirectional: boolean;
   dataCoherent: boolean;
 };
@@ -356,6 +357,8 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
     // Flow animation drives are valid only when all terms are defined
     // coherently
     if (cell.flowAnimation) {
+      cell.flowAnimation.biasPower = typeof cell.flowAnimation.biasPower === 'number' ? cell.flowAnimation.biasPower : 1.0;
+      cell.flowAnimation.biasPower = Math.max(0, cell.flowAnimation.biasPower);
       cell.flowAnimation.dataCoherent = ((typeof cell.flowAnimation.thresholdOffValue === 'undefined') ||
         (typeof cell.flowAnimation.thresholdOffValue === 'number')) &&
         (typeof cell.flowAnimation.thresholdLwrValue === 'number') &&

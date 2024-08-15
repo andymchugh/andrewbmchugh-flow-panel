@@ -11,6 +11,7 @@ test('coherent_min_max', () => {
     thresholdLwrDurationSecs: 10,
     thresholdUprValue: 200,
     thresholdUprDurationSecs: 20,
+    biasPower: 1.0,
     unidirectional: false,
     dataCoherent: false,
   };
@@ -55,6 +56,7 @@ test('interpolate', () => {
     thresholdLwrDurationSecs: 20,
     thresholdUprValue: 200,
     thresholdUprDurationSecs: 10,
+    biasPower: 1.0,
     unidirectional: false,
     dataCoherent: true,
   };
@@ -67,6 +69,29 @@ test('interpolate', () => {
   expect(animState.durationSecs).toEqual(12.5);
 });
 
+test('biased', () => {
+  let fad: PanelConfigCellFlowAnimation = {
+    dataRef: undefined,
+    bespokeDataRef: undefined,
+    datapoint:undefined,
+    thresholdOffValue: 10,
+    thresholdLwrValue: 100,
+    thresholdLwrDurationSecs: 20,
+    thresholdUprValue: 200,
+    thresholdUprDurationSecs: 10,
+    biasPower: 0.5,
+    unidirectional: false,
+    dataCoherent: true,
+  };
+  
+  let animState = getFlowAnimationState(fad, 125);
+  expect(Math.round(animState.durationSecs)).toEqual(15);
+  animState = getFlowAnimationState(fad, 150);
+  expect(Math.round(animState.durationSecs)).toEqual(13);
+  animState = getFlowAnimationState(fad, 175);
+  expect(Math.round(animState.durationSecs)).toEqual(11);
+});
+
 test('inverted', () => {
   let fad: PanelConfigCellFlowAnimation = {
     dataRef: undefined,
@@ -77,6 +102,7 @@ test('inverted', () => {
     thresholdLwrDurationSecs: 10,
     thresholdUprValue: 200,
     thresholdUprDurationSecs: 20,
+    biasPower: 1.0,
     unidirectional: false,
     dataCoherent: true,
   };
@@ -99,6 +125,7 @@ test('unidirectional', () => {
     thresholdLwrDurationSecs: 20,
     thresholdUprValue: 200,
     thresholdUprDurationSecs: 10,
+    biasPower: 1.0,
     unidirectional: false,
     dataCoherent: true,
   };
@@ -126,6 +153,7 @@ test('zero', () => {
     thresholdLwrDurationSecs: 20,
     thresholdUprValue: 200,
     thresholdUprDurationSecs: 10,
+    biasPower: 1.0,
     unidirectional: false,
     dataCoherent: true,
   };
