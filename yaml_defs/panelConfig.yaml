@@ -468,6 +468,12 @@ cells:
       thresholdUprValue: 600
       thresholdUprDurationSecs: 0.1
 
+      # Version 1.16.4 onwards: The optional biasPower applies a curve to how the animation speed ramps in.
+      # The algorithm determines a normalised (0-1) value from the threshold value terms and then raises it
+      # to this power. The power defaults to 1 which results in a linear ramp. Set it below 1 (and above 0)
+      # and the speed ramps in more quickly. Set it above 1 and it will ramp in more slowly.
+      biasPower: 1.0
+
       # Animation speeds (above) are calculated based off of the absolute data value. The direction
       # of the animation is determined off the sign of the data, unless this flag is true.
       unidirectional: true

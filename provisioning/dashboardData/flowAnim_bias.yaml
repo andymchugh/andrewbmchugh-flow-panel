@@ -1,0 +1,48 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - thresholds: &thresholds-slow
+    - {color: "green", level: 0}
+    - {color: "orange", level: 100}
+    - {color: "red", level: 150}
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+cells: 
+  inbox_transactions:
+    dataRef: "test-data-small-cos"
+    label:
+      separator: "colon"
+      units: "ops"
+    labelColor:
+      thresholds: *thresholds-slow
+    flowAnimation:
+      thresholdOffValue: 1
+      thresholdLwrValue: 1
+      thresholdLwrDurationSecs: 1
+      thresholdUprValue: 200
+      thresholdUprDurationSecs: 0.1
+
+  inbox_workers:
+    dataRef: "test-data-small-cos"
+    flowAnimation:
+      thresholdOffValue: 1
+      thresholdLwrValue: 1
+      thresholdLwrDurationSecs: 1
+      thresholdUprValue: 200
+      thresholdUprDurationSecs: 0.1
+      biasPower: 0.3
+
+  start_rate:
+    dataRef: "test-data-small-cos"
+    label:
+      separator: "colon"
+      units: "pps"
+    labelColor:
+      thresholds: *thresholds-slow

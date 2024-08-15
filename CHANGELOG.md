@@ -8,6 +8,14 @@ This change allows use of all the marker element attributes. Before they were be
 stripped due to a bug in the underlying SVG purification. Use of 'markers' came to the fore with
 the availablity of the bespoke drive.
 
+Flow Animation speed bias
+-------------------------
+Adds a new term to the flow animation drive that applies a power curve to the flow rate. Before
+the flow animation speed linearly ramped with data. Now speed ramps in at the rate of your choice.
+
+New config terms in panelConfig:
+- panelConfig:cells.cell-name.flowAnim.biasPower
+
 ## 1.16.3
 
 SVG formating support
