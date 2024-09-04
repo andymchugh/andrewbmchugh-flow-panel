@@ -209,7 +209,9 @@ cells:
       unitsPostfix: "MyUnits"
 
       # The number of decimal points to display. Enter null for auto, 0 for none, etc. If left
-      # undefined it will default to the value specified at the panel level in cellLabelDecimalPoints. 
+      # undefined it will default to the value specified at the panel level in cellLabelDecimalPoints.
+      # Note this is applied via the grafana units formatter. If invalid units are specified the label
+      # is displayed unformatted.
       decimalPoints: 0
 
       # Version 1.11.0 onwards: valueMappings is an array of 'match-criteria -> text' that allows you to
