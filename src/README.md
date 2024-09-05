@@ -89,9 +89,12 @@ Create a Flow Panel in your dashboard. The initial setup loads the first example
     * createJsx: This creates the JSX from the svg document html.
 
 ### Using draw.io to create your SVG
-Any tool can be used to maintain your SVG but [draw.io](https://app.diagrams.net/?p=svgData) is the tool used for all of these examples. draw.io is available online and also as an app download. When launching the online version remember to include the *?p=svgdata* as an argument. This loads the svgdata plugin and ensures your cell IDs will be saved down in your SVG file. Via the app, you get the same by going to *Extras->plugins->Add->svgdata.js*. With the plugin, any ID can be edited in-situ by selecting the cell then *Edit->Edit Data->Double click on the ID value->edit the ID*.
+Any tool can be used to maintain your SVG but [draw.io](https://app.diagrams.net/?p=svgData) is the tool used for all of these examples. draw.io is available online and also as an app download.
+When launching the online version or the desktop app, you must ensure the svgdata plugin is added by going to *Extras->plugins->Add->svgdata.js*. The plugin ensures the cell IDs get saved in the SVG file. Note that prior to September 2024 the online version could be launched with the argument the *?p=svgdata* to automatically enable the plugin. That tail no longer works so you must now add the plugin as just described.
 
-Note that draw.io IDs under the hood get given a preamble of *cell-*. To make this easier the panelConfig yaml allows the preamble to be set so the actual yaml data can reference the IDs as you've entered them. You can see the difference in the Mappings data as it shows your ID as well as the full svg ID.
+The cell IDs can be edited in-situ by selecting the cell then *Edit->Edit Data->Double click on the ID value->edit the ID*.
+
+The draw.io IDs under the hood get given a preamble of *cell-*. To make this easier the panelConfig yaml allows the preamble to be set so the actual yaml data can reference the IDs as you've entered them. You can see the difference in the Mappings data as it shows your ID as well as the full svg ID.
 
 The SVG can be entered directly into the panel or it can be referenced via url.
 
