@@ -286,7 +286,8 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
   function colorBlend(cell: PanelConfigCell, colorStr: ColorDrives, colorCompound: PanelConfigCellColorCompound | undefined) {
     colorDeref(cell, cell[colorStr]);
     if (colorCompound) {
-      (colorCompound.colors || []).forEach((color) => {
+      colorCompound.colors = colorCompound.colors || [];
+      (colorCompound.colors).forEach((color) => {
         colorDeref(cell, color);
       });
       if (cell[colorStr]) {
@@ -295,7 +296,6 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
         cell[colorStr] = undefined;
       }
     }
-
   }
 
   panelConfig.cells.forEach((cell) => {
