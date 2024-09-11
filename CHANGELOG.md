@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.16.x
+
+TimeSlider label
+----------------
+Improvements made to the timeSlider timezone application and label positioning to remove artifacts
+seen when not using browser-time or the 24 hour clock.
+
 ## 1.16.4
 
 SVG 'marker' element support
