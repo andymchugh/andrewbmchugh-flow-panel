@@ -26,7 +26,7 @@ export const TimeSliderFactory = (props: TimeSliderProps) => {
   const range = 1000;
   const setLabel = props.setLabel;
   const labelWidth = 170;
-  const animControlWidth = props.animControl ? 20 : 0;
+  const animControlWidth = props.animControl ? 35 : 0;
   const sliderWidth = props.windowWidth - labelWidth - animControlWidth;
 
   // Resync value export when disabled
@@ -44,7 +44,7 @@ export const TimeSliderFactory = (props: TimeSliderProps) => {
     const sliderScalar = event.target.value / range;
     const time = sliderTime(props.tsData, sliderScalar);
     props.timeSliderScalarRef.current = sliderScalar;
-    props.setLabel(formatter(time).text);
+    props.setLabel(formatter(time, 0, 0, props.timeZone).text);
   }
 
   return (
@@ -53,6 +53,7 @@ export const TimeSliderFactory = (props: TimeSliderProps) => {
         props.styles.wrapper,
         css`
         text-align: left;
+        white-space: nowrap;
         display: flex;
         gap: 5px;
         `
