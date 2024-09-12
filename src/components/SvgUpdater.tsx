@@ -68,7 +68,12 @@ export type BespokeStateHolder = {
 }
 
 function generateLabelPreamble(label: string | null, separator: LabelSeparator | null) {
-  label = (label || '').trim();
+
+  // label space stripping is needed when the svg has been formatted to allow us to change
+  // the whitespace style to 'pre'.
+  label = (label || '').replace(/\s+/g, ' ');
+  label = label.trim();
+
   if (separator === 'cr') {
     return label + '\n';
   }
@@ -106,9 +111,29 @@ function dimensionCoherence(doc: Document) {
   }
 }
 
+function innerMostDiv(el: HTMLElement) {
+  if (el.nodeName === 'div') {
+    if (el.hasChildNodes()) {
+      for (const child of el.childNodes) {
+        const childNode = child as HTMLElement;
+        if (childNode.nodeName === 'div') {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
 function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellIdMaker, additions: HTMLElement[], bespokeStateHolder: BespokeStateHolder): boolean {
   const setAttributes = function(el: HTMLElement) {
-    if ((el.nodeName === 'div') || (el.nodeName === 'text')) {
+
+    // 'pre' is needed to honour the CRs we embed in the label whilst also ensuring text doesn't
+    // wrap if the label extends beyond the bounding box. It's needed on the innermost div and text
+    // elements but if applied on outer divs can result in a right-shifting of the label when the svg
+    // has been formatted.
+    if (cellData.cellProps.label && (innerMostDiv(el) || (el.nodeName === 'text'))) {
       el.style.whiteSpace = 'pre';
     }
     if (cellData.cellProps.link) {

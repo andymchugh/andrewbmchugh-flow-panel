@@ -2,6 +2,12 @@
 
 ## 1.16.x
 
+SVG formatting support improvements
+-----------------------------------
+Formatting of diagrams edited in the latest draw.io (v24.7.8) caused label layout problems; especially
+if the labels were multi-word. This should now be fixed by removing multi-spaces from labels at initialization
+and further limiting the application of whitespace style 'pre'.
+
 TimeSlider label
 ----------------
 Improvements made to the timeSlider timezone application and label positioning to remove artifacts
@@ -27,7 +33,7 @@ New config terms in panelConfig:
 
 SVG formating support
 ---------------------
-Using SVGs post formatting for better readabilitycould cause label positions to shift.
+Using SVGs post formatting for better readability could cause label positions to shift.
 This is now fixed by limiting the scope of how style->whitespace is applied dynamically to labels.
 
 ## 1.16.2
