@@ -137,9 +137,9 @@ Once your familiar with the controls creating your first proper panel boils down
 - Rinse / Repeat. 
 
 ## Feature Exploration
-The API for all the panel features is detailed in the [yaml_defs](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/yaml_defs). The features are also demonstrated in the provisioning dashboards. The associated SVG and yaml files used in those dashboards linked below in the `Data Files` column are a good starting point to explore the feature drives. Note when clicking on the SVG links you initially land on the `Preview` tab. Just switch to the `Code` tab to be able to copy out the SVG.
+The API for all the panel features is detailed in the [yaml_defs](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/yaml_defs). The features are also demonstrated in the provisioning dashboards. The associated SVG and yaml files used in those dashboards, linked below in the `Data Files` column, are a good starting point to explore the feature drives. Note when clicking on the SVG links you initially land on the `Preview` tab. Just switch to the `Code` tab to be able to copy out the SVG.
 
-To explore each feature, copy/paste the SVG and yaml data into your panel. That gives you a working starting point from which to explore as you read the associated API. Note that exploring these features is best done by following the workflow described above in [Environment Setup & Editing Workflow](#environment-setup--editing-workflow). With the majority of them the functionality is best seen by moving the time-slider back and forth.
+To explore each feature, copy/paste the SVG and yaml data into your panel. That gives you a working starting point from which to explore as you read the associated API. Exploring these features is best done by following the workflow described above in [Environment Setup & Editing Workflow](#environment-setup--editing-workflow). With the majority of them the functionality is best seen by moving the time-slider back and forth.
 
 |Feature|Description|Setup|Data Files|
 |-------|-----------|-----|----------|
