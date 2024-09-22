@@ -51,19 +51,19 @@ cells:
       params: null
   absFlowAnimWithTime:
     link:
-      url: "http://localhost:3000/d/c3c52b34-4c6f-4f25-b2b9-b4c8cb31bbe1/flow-animation?orgId=1"
+      url: "http://localhost:3000/d/f1eca269-29e0-42d8-94c0-351cbb76f1c0/flow-animation?orgId=1"
       params: "time"
   absFlowAnimNoTime:
     link:
-      url: "http://localhost:3000/d/c3c52b34-4c6f-4f25-b2b9-b4c8cb31bbe1/flow-animation?orgId=1"
+      url: "http://localhost:3000/d/f1eca269-29e0-42d8-94c0-351cbb76f1c0/flow-animation?orgId=1"
       params: null
   relFlowAnimWithTime:
     link:
-      url: "d/c3c52b34-4c6f-4f25-b2b9-b4c8cb31bbe1/flow-animation?orgId=1"
+      url: "d/f1eca269-29e0-42d8-94c0-351cbb76f1c0/flow-animation?orgId=1"
       params: "time"
   relFlowAnimNoTime:
     link:
-      url: "/d/c3c52b34-4c6f-4f25-b2b9-b4c8cb31bbe1/flow-animation?orgId=1"
+      url: "/d/f1eca269-29e0-42d8-94c0-351cbb76f1c0/flow-animation?orgId=1"
       params: null
   badLinkWithTime:
     link:
@@ -83,7 +83,7 @@ cells:
       params: null
   relativeSiteVar:
     link:
-      url: "/d/c3c52b34-4c6f-4f25-b2b9-b4c8cb31bbe1/flow-${animationSiteVar}?orgId=1"
+      url: "/d/f1eca269-29e0-42d8-94c0-351cbb76f1c0/flow-${animationSiteVar}?orgId=1"
       params: null
   badLinkSiteVar:
     link:
