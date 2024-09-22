@@ -111,6 +111,18 @@ These links take you to yaml files where each of the settings are documented:
 - [panelConfig yaml](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/yaml_defs/panelConfig.yaml)
 - [siteConfig yaml](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/yaml_defs/siteConfig.yaml)
 
+### Environment Setup & Editing Workflow
+This panel lends itself to being developed using three IDEs as a holistic set:
+- Install the draw.io app and add the svgdata plugin by going to *Extras->plugins->Add->svgdata.js*. Using the app rather than the online version makes it much easier to load and save from/to your local disk.
+- Create a github repo for your svg and yaml files. This gives many things but the really big one is providing a central hub from where the files can be loaded and edited.
+- Install VSCode for viewing and editing the above repo. It offers yaml syntax highlighting and gives a place to copy out the svg for pasting into the panel.
+- With the above setup, follow an iterative workflow of:
+  - draw.io: Edit the svg -> save
+  - vscode: Copy the svg -> paste into the grafana panel
+  - vscode: Edit the panelConfig yaml -> Copy the yaml -> paste the yaml into the grafana panel
+  - repeat
+With this workflow all three editors (draw.io/vscode/grafana) remain open and just act as specialised windows. Although you could edit yaml or the svg directly in the grafana panel, you'll find it much simpler to copy/paste into the panel and use the gihub repo as the underlying main version.
+
 ### First Panel
 Once your familiar with the controls creating your first proper panel boils down to this process:
 - In draw.io, create an SVG and edit the cell IDs to meaningful names. Keep it minimal in the first instance.
