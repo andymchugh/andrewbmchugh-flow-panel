@@ -140,8 +140,6 @@ Once your familiar with the controls creating your first proper panel boils down
 The API for all the panel features is detailed in the [yaml_defs](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/yaml_defs). As well as the API, these features are also demonstrated in the provisioning dashboards that come with this repo. On the whole the dashboard json will only work within one version of grafana but with this panel 99% of the definition is just contained within the panel svg and yaml files, and those are always back-compatible so will work with all versions of the panel plugin and grafana.
 
 To explore each feature, copy/paste the SVG and yaml data into your panel. That gives you a working starting point from which to explore the drives detailed in the API. Note that exploring these features is best done by following the workflow described above in [Environment Setup & Editing Workflow](#environment-setup--editing-workflow). With the majority of them the functionality is best seen by moving the time-slider back and forth.
-- background color
-- bespoke drive
 
 |Feature|Description|Setup|Data Files|
 |-------|-----------|-----|----------|
