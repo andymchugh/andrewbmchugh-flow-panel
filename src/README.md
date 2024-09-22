@@ -112,7 +112,7 @@ These links take you to yaml files where each of the settings are documented:
 - [siteConfig yaml](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/yaml_defs/siteConfig.yaml)
 
 ### Environment Setup & Editing Workflow
-This panel lends itself to being developed using three IDEs as a holistic set:
+This panel lends itself to being developed using three IDEs together as a holistic set:
 - Install the draw.io app and add the svgdata plugin by going to *Extras->plugins->Add->svgdata.js*. Using the app rather than the online version makes it much easier to load and save from/to your local disk.
 - Create a github repo for your svg and yaml files. This gives many things but the really big one is providing a central hub from where the files can be loaded and edited.
 - Install VSCode for viewing and editing the above repo. It offers yaml syntax highlighting and gives a place to copy out the svg for pasting into the panel.
