@@ -162,8 +162,8 @@ This panel demonstrates the bespoke drive in the following ways:
 - Bottom Left Range Ring - scales with data around the center with aligned label again driven from a bespokeDataRef as shown by the value aliasing. label.
 - Middle Clocks - Hands rotate around the centre demonstrating namespacing alongside normal stroke color drives. The second clock leverages the same formulas as the first clock but with different data, courtesy of dataRef name setup in the per-clock constants.
 - Middle Bottom Arrow - Shows head (aka direction) configurability based off of data.
-- Left 'column of rects' - Shows all the normal drives being drive from bespokeDataRefs as defined at the drive level.
-- Right 'column of rects' - Shows all the normal drives being drive from bespokeDataRefs as defined at the cell level.
+- Left 'column of rects' - Shows all the normal drives being driven from bespokeDataRefs as defined at the drive level.
+- Right 'column of rects' - Shows all the normal drives being driven from bespokeDataRefs as defined at the cell level.
 - Right Propeller - Shows two paths, one for each blade, rotating around a set origin, both with coherent fillLevel drives.
 
 ## Want to make changes?
