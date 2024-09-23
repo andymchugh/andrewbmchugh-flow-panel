@@ -167,6 +167,18 @@ This panel demonstrates the bespoke drive in the following ways:
 - Right 'column of rects' - Shows all the normal drives being driven from bespokeDataRefs as defined at the cell level.
 - Right Propeller - Shows two paths, one for each blade, rotating around a set origin, both with coherent fillLevel drives.
 
+## FAQ
+- When I edit the SVG and resave nothing works anymore?
+  - This is most likely caused by not having the svgData plugin loaded in draw.io which results in all the IDs being stripped off the SVG. If unsure look at the difference between the two.
+- My label isn't being driven even though 'Debug Mappings' says it's correctly mapped?
+  - This is most likely caused by having a multi-line label in the SVG. Multi-line isn't drivable. Your labels can be multi-word but can't contain <CRs>.
+- I've added a rect and it maps correctly to yaml but the label doesn't get driven?
+  - It's not enough to just add a rect You must also double click in it and type some text to add a label. Then the label is drivable.
+- My flow animation looks great in draw.io but doesn't work in the panel?
+  - This is most likely due to the way you saved the SVG. Flow animations have to be 'exported as svg' from draw.io, they can't just be 'saved as svg'.
+- My widget renders well in draw.io but is missing detail in the panel or just not there?
+  - This is most likely due to the way you saved the SVG. More complex widgets have to be 'exported as svg' from draw.io, they can't just be 'saved as svg'.
+
 ## Want to make changes?
 Go to the [Grafana Getting Started](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/grafana-getting-started.md) guide to get going with downloading a fork and setting up your test environment.
 Once up you'll find dashboards available (sourced from the provisioning directory) that act as demonstrators for the functionality.
