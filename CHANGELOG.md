@@ -15,11 +15,13 @@ seen when not using browser-time or the 24 hour clock.
 
 Getting Started Docs Improvements
 ---------------------------------
-Two new sections have been added to the docs:
+Three new sections have been added to the docs:
 
 [Environment Setup & Editing Workflow](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/src/README.md#environment-setup--editing-workflow)
 
 [Feature Exploration](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/src/README.md#feature-exploration)
+
+[Troubleshooting FAQ](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/src/README.md#troubleshooting-faq)
 
 ## 1.16.4
 
