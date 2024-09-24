@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.16.x
+## 1.16.5
 
 SVG formatting support improvements
 -----------------------------------
