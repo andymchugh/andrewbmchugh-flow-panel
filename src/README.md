@@ -3,7 +3,7 @@
 SVG flowchart visualization
 
 ![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?logo=grafana&query=$.version&url=https://grafana.com/api/plugins/andrewbmchugh-flow-panel&label=Marketplace&prefix=v&color=F47A20)
-[![Downloads](https://img.shields.io/badge/dynamic/json?logo=grafana&color=F47A20&label=downloads&query=%24.items%5B%3F%28%40.slug%20%3D%3D%20%22andrewbmchugh-flow-panel%22%29%5D.downloads&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins)](https://grafana.com/grafana/plugins/andrewbmchugh-flow-panel)
+![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?logo=grafana&query=$.downloads&url=https://grafana.com/api/plugins/andrewbmchugh-flow-panel&label=Downloads&color=F47A20)
 [![License](https://img.shields.io/github/license/andymchugh/andrewbmchugh-flow-panel)](LICENSE)
 
 The Flow plugin provides side-by-side metric visualization on SVG diagrams. You provide the SVG diagram along with configuration on how you want the diagram to behave. The panel then combines these with your time-series data to bring your diagram to life.
