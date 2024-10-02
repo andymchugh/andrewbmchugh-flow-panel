@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.16.6
+
+YAML maxAliasCount
+------------------
+The yaml loader recursive alias count has been increased from the library default by 100x
+to allow for larger more complex configuration whilst not exposing the dashboard to unreasonable
+load.
+
+Downloads badge fix
+-------------------
+Downloads badge corrected following recent github changes.
+
 ## 1.16.5
 
 SVG formatting support improvements
