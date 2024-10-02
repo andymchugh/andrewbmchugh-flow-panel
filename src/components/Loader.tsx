@@ -44,12 +44,16 @@ export async function loadSvg(source: string, fn: (svgStr: string) => void, fnVa
 // - Serialised yaml
 // - A url to the serialised yaml
 export async function loadYaml(source: (Object | string), fn: (yaml: Object) => void, fnVars: (svgStr: string) => void) {
+  // The default maxAliasCount of 100 gets hit with more complex yaml docs.
+  // We don't want to allow unlimited (-1) or even configurable as that allows people
+  // to configure unreasonable dashboards. Instead we amp up the limit by 100x.
+  const yamlOptions = {maxAliasCount: 10000};
   try {
     if (typeof source === 'object') {
       fn(source);
     }
     else if (!isUrl(source)) {
-      fn(YAML.parse(source || ''));
+      fn(YAML.parse(source || '', yamlOptions));
     }
     else {
       let interpolations: VariableInterpolation[] = [];
@@ -60,7 +64,7 @@ export async function loadYaml(source: (Object | string), fn: (yaml: Object) => 
         throw(response);
       }
       const responseText = await response.text();
-      const responseYaml = YAML.parse(responseText);
+      const responseYaml = YAML.parse(responseText, yamlOptions);
       fn(responseYaml);
     }
   } catch(err) {
