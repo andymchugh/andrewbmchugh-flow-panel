@@ -134,7 +134,8 @@ Once your familiar with the controls creating your first proper panel boils down
 - Press 'Debugging Data' to see your query time-series coming through to the panel.
 - Change your panel config dataRef to map the cell ID to your time-series name.
 - Use the time-slider to see your value being correctly echoed in the SVG.
-- Rinse / Repeat. 
+- Rinse / Repeat.
+- Remember to switch of 'Test Data Generation' when finished so your panel doesn't suffer the overhead.
 
 ## Feature Exploration
 The API for all the panel features is detailed in the [yaml_defs](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/yaml_defs). The features are also demonstrated in the provisioning dashboards. The associated SVG and yaml files used in those dashboards, linked below in the `Data Files` column, are a good starting point to explore the feature drives. Note when clicking on the SVG links you initially land on the `Preview` tab. Just switch to the `Code` tab to be able to copy out the SVG.
