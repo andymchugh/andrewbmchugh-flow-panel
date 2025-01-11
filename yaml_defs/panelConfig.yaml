@@ -121,6 +121,22 @@ background:
   darkThemeColor: "yellow"
   lightThemeColor: "green"
 
+# Version 1.17.0 onwards: This defines color mappings for themes. Colors defined in the cell drives
+# can be mapped to theme specific overrides. Diagrams created with draw.io 26.0 onwards contain
+# both light and dark theme color definitions which means the static parts of the diagram will automatically
+# respond to the theme. These mappings ensure the dynamic part of the diagram displays with the most aesthetic
+# contrast. Like all colors, they can be defined in all the normal ways of name, hex, hsl, etc. The applied lookup order
+# for the colors is: panel cells -> panel cellColorMappings -> site cellColorMappings -> site colors.
+cellColorMappings:
+  darkTheme:
+    red: "light-red"
+    orange: "light-orange"
+    green: "light-green"
+  lightTheme:
+    red: "red"
+    orange: "orange"
+    green: "green"
+
 # Version 1.6.0 onwards: This defines which datapoint will be chosen from the time-series.
 # If your datasource supports graphite functions 'keepLastValue' and 'transformNull', using those
 # functions in combination with 'last' gives the most precise control. If you don't have them available,

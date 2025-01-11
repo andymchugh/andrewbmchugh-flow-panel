@@ -158,7 +158,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
 
   useEffect(() => {
     if (svgStr && panelConfig && siteConfig) {
-      configInit(siteConfig, panelConfig);
+      configInit(siteConfig, panelConfig, grafanaTheme.current.isDark);
 
       const svgDoc = new DOMParser().parseFromString(sanitizeSvgStr(svgStr), "text/xml");
       const svgAttribs = svgInit(svgDoc, grafanaTheme.current, panelConfig, siteConfig);

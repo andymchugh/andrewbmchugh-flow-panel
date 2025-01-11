@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.17.0
+
+Light / Dark Theme Support with draw.io 26.0
+--------------------------------------------
+draw.io 26.0 introduced light / dark theme support where all colors can be defined as tuples
+in the diagram. This version of draw.io requires this version of the panel plugin due to the
+change in how the color attributes are applied.
+
+As well as making the plugin compatible with this draw.io version, it also fully exposes the theme
+support ensuring the SVG theme is kept in line with the selected grafana theme. As non-driven colors
+will now respond to theme selection, new colorMapping config terms have been added to allow you to
+define theme dependent colors. i.e. red in a dark theme can be mapped to light-red; whilst in a light
+theme it could be mapped to dark-red; etc.
+
+New config terms in panelConfig:
+- panelConfig:cellColorMappings
+New config terms in siteConfig:
+- siteConfig:cellColorMappings
+
 ## 1.16.6
 
 YAML maxAliasCount
