@@ -2,11 +2,9 @@ import { PanelPlugin } from '@grafana/data';
 import { FlowOptions } from './types';
 import { FlowPanel } from './components/FlowPanel';
 import { DebuggingEditor } from './components/DebuggingEditor';
-import {config} from '@grafana/runtime';
 
 export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((builder) => {
-  const dark = config?.theme2?.isDark ?? true;
-  const svgName = dark ? 'darkThemeSvg1.svg' : 'lightThemeSvg1.svg';
+  const svgName = 'ambiThemeSvg1.svg';
 
   return builder
   .addTextInput({

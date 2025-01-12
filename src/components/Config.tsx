@@ -160,6 +160,11 @@ type LinkWindow = {
   sameTab: boolean;
 };
 
+type CellColorMappings = {
+  darkTheme: Map<string, string>;
+  lightTheme: Map<string, string>;
+};
+
 export type SiteConfig = {
   zoomPanPinch: ZoomPanPinch;
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
@@ -167,6 +172,7 @@ export type SiteConfig = {
   linkVariables: Map<string, string>;
   links: Map<string, Link>;
   colors: Map<string, string>;
+  cellColorMappings: CellColorMappings;
   thresholds: Map<string, ThresholdNumber[]>;
   thresholdPatterns: Map<string, ThresholdPattern[]>;
   valueMappings: Map<string, FlowValueMapping[]>;
@@ -186,6 +192,7 @@ export type PanelConfig = {
   cellIdExtender: string;
   cellLabelDecimalPoints: number | undefined;
   cells: Map<string, PanelConfigCell>;
+  cellColorMappings: CellColorMappings;
   highlighter: PanelConfigHighlighter;
 };
 
@@ -221,6 +228,10 @@ export function panelConfigFactory(config: any) {
     linkWindow: config.linkWindow,
     linkVariables: new Map<string, string>(Object.entries(config.linkVariables || {})),
     background: config.background || {},
+    cellColorMappings: {
+      darkTheme: new Map<string, string>(Object.entries(config.cellColorMappings?.darkTheme || {})),
+      lightTheme: new Map<string, string>(Object.entries(config.cellColorMappings?.lightTheme || {})),
+    },
     variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(Object.entries(config.variableThresholdScalars || {})),
     gradientMode: config.gradientMode || 'none',
     datapoint: config.datapoint || 'last',
@@ -240,6 +251,10 @@ export function siteConfigFactory(config: any) {
     linkVariables: new Map<string, string>(Object.entries(config.linkVariables || {})),
     links: new Map<string, Link>(Object.entries(config.links || {})),
     colors: new Map<string, string>(Object.entries(config.colors || {})),
+    cellColorMappings: {
+      darkTheme: new Map<string, string>(Object.entries(config.cellColorMappings?.darkTheme || {})),
+      lightTheme: new Map<string, string>(Object.entries(config.cellColorMappings?.lightTheme || {})),
+    },
     variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(Object.entries(config.variableThresholdScalars || {})),
     thresholds: new Map<string, ThresholdNumber[]>(Object.entries(config.thresholds || {})),
     thresholdPatterns: new Map<string, ThresholdPattern[]>(Object.entries(config.thresholdPatterns || {})),
@@ -247,15 +262,17 @@ export function siteConfigFactory(config: any) {
   } as SiteConfig;
 }
 
-function siteConfigDereference(siteConfig: SiteConfig) {
-  siteConfig.thresholds.forEach((thresholds) => {
-    thresholds.forEach(function(threshold: ThresholdNumber | ThresholdPattern) {
-      threshold.color = siteConfig.colors.get(threshold.color) || threshold.color;
-    });
-  });
-}
+function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig, isDark: boolean) {
+  const siteColorMappings = isDark? siteConfig.cellColorMappings.darkTheme : siteConfig.cellColorMappings.lightTheme;
+  const panelColorMappings = isDark? panelConfig.cellColorMappings.darkTheme : panelConfig.cellColorMappings.lightTheme;
 
-function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig) {
+  function resolveColor(color: string) {
+    color = panelColorMappings.get(color) || color;
+    color = siteColorMappings.get(color) || color;
+    color = siteConfig.colors.get(color) || color;
+    return color;
+  }
+
   function colorDeref(cell: PanelConfigCell, color: PanelConfigCellColor | undefined) {
     if (color) {
       color.gradientMode = color.gradientMode || panelConfig.gradientMode;
@@ -264,7 +281,7 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
       }
       if (color.thresholds) {
         color.thresholds.forEach(function(threshold, index) {
-          threshold.color = siteConfig.colors.get(threshold.color) || threshold.color;
+          threshold.color = resolveColor(threshold.color);
           threshold.order = typeof threshold.order === 'number' ? threshold.order : index;
         });
       }
@@ -273,7 +290,7 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
       }
       if (color.thresholdPatterns) {
         color.thresholdPatterns.forEach(function(threshold, index) {
-          threshold.color = siteConfig.colors.get(threshold.color) || threshold.color;
+          threshold.color = resolveColor(threshold.color);
           threshold.order = typeof threshold.order === 'number' ? threshold.order : index;
           threshold.regexp = typeof threshold.pattern === 'object' ? threshold.regexp : new RegExp(threshold.pattern);
         });
@@ -385,7 +402,6 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
   panelConfig.zoomPanPinch = {...siteConfig.zoomPanPinch, ...panelConfig.zoomPanPinch};
 }
 
-export function configInit(siteConfig: SiteConfig, panelConfig: PanelConfig) {
-  siteConfigDereference(siteConfig);
-  panelConfigDereference(siteConfig, panelConfig);
+export function configInit(siteConfig: SiteConfig, panelConfig: PanelConfig, isDark: boolean) {
+  panelConfigDereference(siteConfig, panelConfig, isDark);
 }

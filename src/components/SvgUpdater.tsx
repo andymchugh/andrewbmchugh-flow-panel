@@ -37,6 +37,8 @@ export type SvgElementAttribs = {
   strokeColor: string | null;
   fillColor: string | null;
   styleColor: string | null;
+  styleFillColor: string | null;
+  styleStrokeColor: string | null;
 };
 
 
@@ -259,6 +261,8 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
           strokeColor: el.getAttribute('stroke'),
           fillColor: el.getAttribute('fill'),
           styleColor: el.style?.color,
+          styleStrokeColor: el.style?.stroke,
+          styleFillColor: el.style?.fill
         });
       });
     });
@@ -273,6 +277,10 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
   // Ensure the viewBox and dimension attributes are coherent. Without this the resulting
   // image won't scale and center corrently
   const dimensions = dimensionCoherence(doc);
+
+  // Set the SVG theme to match grafana. This ensures undriven aspects of the drawing
+  // are rendered in the correct light-dark colors.
+  doc.documentElement.style.colorScheme = grafanaTheme.isDark ? 'dark' : 'light';
 
   const svgAttribs = {
     width: dimensions.width,
@@ -378,19 +386,37 @@ export function getFlowAnimationState(config: PanelConfigCellFlowAnimation, cell
   }
 }
 
-function setStrokeAttribute(el: Element, color: string | null | undefined) {
+function setStrokeAttribute(el: HTMLElement, color: string | null | undefined, elAttribs: SvgElementAttribs | undefined) {
+  // Drive color via the theme agnostic attribute
   if (color) {
+    el.style.stroke = "";
     el.setAttribute('stroke', color);
-  } else {
-    el.removeAttribute('stroke');
+  }
+  else {
+    el.style.stroke = elAttribs?.styleStrokeColor || "";
+    if (elAttribs?.strokeColor) {
+      el.setAttribute('stroke', elAttribs.strokeColor);
+    }
+    else {
+      el.removeAttribute('stroke');
+    }
   }
 }
 
-function setFillAttribute(el: Element, color: string | null | undefined) {
+function setFillAttribute(el: HTMLElement, color: string | null | undefined, elAttribs: SvgElementAttribs | undefined) {
+  // Drive color via the theme agnostic attribute
   if (color) {
+    el.style.fill = "";
     el.setAttribute('fill', color);
-  } else {
-    el.removeAttribute('fill');
+  }
+  else {
+    el.style.fill = elAttribs?.styleFillColor || "";
+    if (elAttribs?.fillColor) {
+      el.setAttribute('fill', elAttribs.fillColor);
+    }
+    else {
+      el.removeAttribute('fill');
+    }
   }
 }
 
@@ -508,15 +534,15 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     });
     if (cellData.cellProps.strokeColor || cellData.cellProps.strokeColorCompound) {
       cellData.strokeElements.forEach((el: HTMLElement) => {
-        setStrokeAttribute(el, cellStrokeColor?.color || elementAttribs.get(el.id)?.strokeColor);
+        setStrokeAttribute(el, cellStrokeColor?.color, elementAttribs.get(el.id));
       });
     }
     if (cellData.cellProps.fillColor || cellData.cellProps.fillColorCompound) {
       cellData.fillElements.forEach((el: HTMLElement) => {
-        setFillAttribute(el, cellFillColor?.color || elementAttribs.get(el.id)?.fillColor);
+        setFillAttribute(el, cellFillColor?.color, elementAttribs.get(el.id));
       });
       cellData.textElements.forEach((el: HTMLElement) => {
-        setFillAttribute(el, cellFillColor?.color || elementAttribs.get(el.id)?.fillColor);
+        setFillAttribute(el, cellFillColor?.color, elementAttribs.get(el.id));
       });
     }
     if (cellFillLevelData) {
