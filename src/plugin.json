@@ -4,7 +4,15 @@
   "name": "Flow",
   "id": "andrewbmchugh-flow-panel",
   "info": {
-    "keywords": ["panel"],
+    "keywords": [
+      "panel",
+      "flow",
+      "workflow",
+      "flowchart",
+      "draw.io",
+      "diagram",
+      "network"
+    ],
     "description": "Svg flowchart visualization",
     "author": {
       "name": "Andrewbmchugh"
