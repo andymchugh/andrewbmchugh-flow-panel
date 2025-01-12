@@ -5,8 +5,8 @@
 Light / Dark Theme Support with draw.io 26.0
 --------------------------------------------
 draw.io 26.0 introduced light / dark theme support where all colors can be defined as tuples
-in the diagram. This version of draw.io requires this version of the panel plugin due to the
-change in how the color attributes are applied.
+in the SVG. This version of draw.io requires this version of the panel plugin due to the
+change in how the dynamic color attributes need to be applied.
 
 As well as making the plugin compatible with this draw.io version, it also fully exposes the theme
 support ensuring the SVG theme is kept in line with the selected grafana theme. As non-driven colors

@@ -11,7 +11,8 @@
       "flowchart",
       "draw.io",
       "diagram",
-      "network"
+      "network",
+      "svg"
     ],
     "description": "Svg flowchart visualization",
     "author": {
