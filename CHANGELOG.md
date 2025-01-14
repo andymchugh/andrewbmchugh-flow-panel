@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.17.1
+
+Documentation & Tags
+--------------------
+Documentation tweaks in support of 1.17.0 for colorMappings.
+
 ## 1.17.0
 
 Light / Dark Theme Support with draw.io 26.0
