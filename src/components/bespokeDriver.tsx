@@ -60,11 +60,7 @@ export function bespokeStateFactory(namespace: string) {
   };
 }
 
-export function bespokeDriveHandlerFactory(cellId: string, dataRef: string | undefined, element: HTMLElement, config: PanelConfigCellBespoke, bespokeStateHolder: BespokeStateHolder) {
-  // Increment nodeName count
-  bespokeStateHolder.elementCounts.set(element.nodeName, (bespokeStateHolder.elementCounts.get(element.nodeName) || 0) + 1);
-  const elementPosition = bespokeStateHolder.elementCounts.get(element.nodeName) as number;
-
+export function bespokeDriveHandlerFactory(cellId: string, dataRef: string | undefined, element: HTMLElement, config: PanelConfigCellBespoke, bespokeStateHolder: BespokeStateHolder, elementPosition: number) {
   // Get / create namespace state
   const namespace = config.namespace || cellId;
   if (!bespokeStateHolder.namespaceState.has(namespace)) {

@@ -424,6 +424,20 @@ cells:
       # Array of fillColor
       colors: ...
 
+    # Version 1.17.1 onwards: This defines the element filter for fillColor. A cell-id defines
+    # the root of an svg element tree that will likely contain many elements such as 'g', 'div',
+    # 'rect', 'path', etc. When fillColor is applied to this element tree it applies to all
+    # appropriate elements within the tree. This is fine for simple shapes but some shapes are
+    # represented with many elements that combine to create a background with forground detail.
+    # FillColor applied uniformly on these complex shapes would result in the loss of the
+    # foreground detail. This filter, specified with an array of patterns, allows you to control
+    # which elements should be driven. If 'name' or 'position' aren't specified they default to
+    # the capture-all pattern '.*'. i.e.
+    # [{name: 'rect'}] - This will drive all 'rect' elements in the tree.
+    # [{name: 'rect'}, {name: 'path', position: '(1|3)'}] - This will drive all 'rect' elements and the first and third 'path' elements.
+    fillColorElementFilter:
+      - {name: '.*', position: '.*'}
+
     # Version 1.13.0 onwards: The fillLevel field defines the percentage-fill
     # of the cell shape. For simple shapes such as 'rect' or 'ellipse', the bounding
     # box is known so the min/max fill percentages will perfectly align. For complex

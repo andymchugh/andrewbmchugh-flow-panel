@@ -6,11 +6,13 @@ import {
   PanelConfig, PanelConfigCell, PanelConfigCellColor,
   PanelConfigCellColorCompound,
   PanelConfigCellFillLevel, PanelConfigCellFlowAnimation, PanelConfigCellLabel,
+  PanelConfigElementFilter,
   SiteConfig, VariableThresholdScalars } from 'components/Config';
 import { TimeSeriesData } from 'components/TimeSeries';
 import {
   cellIdFactory, CellIdMaker, getColor, primeColorCache,
-  variableThresholdScalarsInit, variableThresholdScaleValue, isShapeElement } from 'components/Utils';
+  variableThresholdScalarsInit, variableThresholdScaleValue, isShapeElement, 
+  regExpMatch} from 'components/Utils';
 import { HighlightState } from './Highlighter';
 import {
   CellFillLevelDriver, getClipper, isFillLevelElement } from 'components/FillLevel';
@@ -128,6 +130,19 @@ function innerMostDiv(el: HTMLElement) {
   return false;
 }
 
+function isFillColorElement(filters: PanelConfigElementFilter[] | undefined, elementName: string, elementPosition: number) {
+  if (filters) {
+    for (let i = 0; i < filters.length; i++) {
+      const filter = filters[i];
+      if (regExpMatch(filter.name, elementName) && regExpMatch(filter.position, elementPosition.toString())) {
+        return true;
+      }
+    }
+    return false;
+  }
+  return true;
+}
+
 function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellIdMaker, additions: HTMLElement[], bespokeStateHolder: BespokeStateHolder): boolean {
   const setAttributes = function(el: HTMLElement) {
 
@@ -148,6 +163,10 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
     }
   }
 
+  // Increment nodeName count
+  bespokeStateHolder.elementCounts.set(el.nodeName, (bespokeStateHolder.elementCounts.get(el.nodeName) || 0) + 1);
+  const elementPosition = bespokeStateHolder.elementCounts.get(el.nodeName) as number;
+
   if (isShapeElement(el)) {
     // Stroke color drive
     if (cellData.cellProps.strokeColor || cellData.cellProps.strokeColorCompound) {
@@ -155,7 +174,10 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
     }
   }
 
-  if (isFillLevelElement(el)) {
+  // Apply the element tree filter to determine if this can be part of the fillColor element set
+  const fillColorElement = isFillColorElement(cellData.cellProps.fillColorElementFilter, el.nodeName, elementPosition);
+
+  if (fillColorElement && isFillLevelElement(el)) {
     // The fill-level drive is achieved by cloning the original widget and then applying a
     // rectangular clip-path to the original. The clone ensures the full shape is shown whilst
     // the original gets dynamically clipped.
@@ -176,7 +198,7 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
   }
 
   if (cellData.cellProps.bespoke) {
-    bespokeDriveHandlerFactory(cellData.cellIdShort, cellData.cellProps.dataRef, el, cellData.cellProps.bespoke, bespokeStateHolder);
+    bespokeDriveHandlerFactory(cellData.cellIdShort, cellData.cellProps.dataRef, el, cellData.cellProps.bespoke, bespokeStateHolder, elementPosition);
   }
 
   if (el.hasChildNodes()) {
@@ -197,7 +219,9 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
   }
   else {
     if (el.nodeType === 1) {
-      cellData.textElements.push(el);
+      if (fillColorElement) {
+        cellData.textElements.push(el);
+      }
       setAttributes(el);
     }
     // return true for leaf node text elements

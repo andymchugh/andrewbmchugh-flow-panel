@@ -80,6 +80,11 @@ export type PanelConfigCellColor = DataRefDrive & {
   thresholdPatterns: ThresholdPattern[] | undefined;
 };
 
+export type PanelConfigElementFilter = {
+  name: string;
+  position: string;
+};
+
 export type PanelConfigCellColorCompound = {
   function: CompoundFunction;
   colors: PanelConfigCellColor[];
@@ -131,6 +136,7 @@ export type PanelConfigCell = DataRefDrive & {
   labelColorCompound: PanelConfigCellColorCompound | undefined;
   strokeColor: PanelConfigCellColor | undefined;
   strokeColorCompound: PanelConfigCellColorCompound | undefined;
+  fillColorElementFilter: PanelConfigElementFilter[] | undefined;
   fillColor: PanelConfigCellColor | undefined;
   fillColorCompound: PanelConfigCellColorCompound | undefined;
   fillLevel: PanelConfigCellFillLevel | undefined;
@@ -320,6 +326,13 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
       cell.datapoint = panelConfig.datapoint;
     }
 
+    // Colors
+    if (cell.fillColorElementFilter && Array.isArray(cell.fillColorElementFilter)) {
+      cell.fillColorElementFilter.forEach((filter) => {
+        filter.name = filter.name?.toString() || '.*';
+        filter.position = filter.position?.toString() || '.*';
+      })
+    }
     colorBlend(cell, 'labelColor', cell.labelColorCompound);
     colorBlend(cell, 'strokeColor', cell.strokeColorCompound);
     colorBlend(cell, 'fillColor', cell.fillColorCompound);
