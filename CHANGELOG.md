@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.17.1
+
+FillColor drive filter to support shapes with forground detail
+--------------------------------------------------------------
+Complex shapes represented my more than one element (path, rect, etc.) sometimes need
+fillColor to be applied to just a subset of the elements that make up the shape. The
+draw.io 'L3 switch' is one such example that's represented using two 'rect' elements and
+two 'path' elements. Applying fillColor to all elements results in a loss of the foreground
+detail. This change introduces a new yaml term that allows you to filter the application
+of fillColor to make these complex shapes drivable.
+
+New config terms in panelConfig:
+- panelConfig:fillColorElementFilter
+
 ## 1.17.0
 
 Light / Dark Theme Support with draw.io 26.0

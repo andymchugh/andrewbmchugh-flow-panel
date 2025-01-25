@@ -1,0 +1,93 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - link: &grafana-home
+      url: "https://grafana.com/"
+      params: "time"
+  - fillColor: &fillColor
+      thresholds:
+        - {color: "green", level: 0}
+        - {color: "orange", level: 500}
+        - {color: "red", level: 1000}
+  - fillLevel: &fillLevel
+      thresholdLwrFillPercent: 0
+      thresholdUprFillPercent: 100
+      thresholdLwrValue: 0
+      thresholdUprValue: 1000
+      fillDirection: 'bottomToTop'
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+
+# The cells in this example are arranged in 2 rows with 6 columns and named based
+# on their position.
+# The first row is configured to use fill colors on the background.
+# The second row is configured to use fill colors on the forground.
+# The third row shows compatibility with fill level.
+cells: 
+  r1c1: &drive1r1
+    dataRef: "test-data-large-sin"
+    fillColorElementFilter: [{name: "rect"}]
+    fillColor: *fillColor
+    link: *grafana-home
+  r1c2: *drive1r1
+  r1c3: *drive1r1
+  r1c4: &drive1r2
+    dataRef: "test-data-large-sin"
+    fillColorElementFilter: [{name: "path", position: "3"}]
+    fillColor: *fillColor
+    link: *grafana-home
+  r1c5: *drive1r2
+  r1c6:
+    dataRef: "test-data-large-sin"
+    fillColorElementFilter: [{name: "path"}]
+    fillColor: *fillColor
+    link: *grafana-home
+  r1c7: *drive1r1
+  r2c1: &drive1r2
+    dataRef: "test-data-large-sin"
+    fillColorElementFilter: [{name: "path", position: "2"}]
+    fillColor: *fillColor
+    link: *grafana-home
+  r2c2: *drive1r2
+  r2c3: *drive1r2
+  r2c4: &drive2r2
+    dataRef: "test-data-large-sin"
+    fillColorElementFilter: [{name: "path", position: "2"}]
+    fillColor: *fillColor
+    link: *grafana-home
+  r2c5: *drive2r2
+  r2c6:
+    dataRef: "test-data-large-sin"
+    fillColorElementFilter: [{name: "rect"}]
+    fillColor: *fillColor
+    link: *grafana-home
+  r2c7: *drive1r2
+  r3c1: &drive1r3
+    dataRef: "test-data-large-sin"
+    fillColorElementFilter: [{name: "rect"}]
+    fillColor: *fillColor
+    fillLevel: *fillLevel
+    link: *grafana-home
+  r3c2: *drive1r3
+  r3c3: *drive1r3
+  r3c4: &drive2r3
+    dataRef: "test-data-large-sin"
+    fillColorElementFilter: [{name: "path", position: "(1|2)"}]
+    fillColor: *fillColor
+    fillLevel: *fillLevel
+    link: *grafana-home
+  r3c5: *drive2r3
+  r3c6: &drive3r3
+    dataRef: "test-data-large-sin"
+    fillColorElementFilter: [{name: "rect"}]
+    fillColor: *fillColor
+    fillLevel: *fillLevel
+    link: *grafana-home
+  r3c7: *drive3r3
