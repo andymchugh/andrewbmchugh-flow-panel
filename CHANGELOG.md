@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.17.1
+## 1.17.2
 
 FillColor drive filter to support shapes with forground detail
 --------------------------------------------------------------

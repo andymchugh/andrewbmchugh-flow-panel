@@ -424,7 +424,7 @@ cells:
       # Array of fillColor
       colors: ...
 
-    # Version 1.17.1 onwards: This defines the element filter for fillColor. A cell-id defines
+    # Version 1.17.2 onwards: This defines the element filter for fillColor. A cell-id defines
     # the root of an svg element tree that will likely contain many elements such as 'g', 'div',
     # 'rect', 'path', etc. When fillColor is applied to this element tree it applies to all
     # appropriate elements within the tree. This is fine for simple shapes but some shapes are
