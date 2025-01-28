@@ -39,6 +39,7 @@ tagConfig:
 linkVariables:
   urlPanelWebsiteBase: "https://github.com/andymchugh/andrewbmchugh-flow-panel"
   urlPanelWebsiteSurname: "mchugh"
+  demoCellName: "https://github.com/andymchugh/andrewbmchugh-flow-panel/tree/main/${cell.name}"
 
 cells: 
   grafana:
@@ -93,5 +94,13 @@ cells:
     dataRef: "andy"
     link:
       url: "https://github.com/${cell.dataRef}${urlSiteWebsiteSurname}/${cell.name}b${urlSiteWebsiteSurname}-flow-panel"
+      params: null
+  src:
+    link:
+      url: "${demoCellName}"
+      params: null
+  examples:
+    link:
+      url: "${demoCellName}"
       params: null
 

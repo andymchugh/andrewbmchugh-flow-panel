@@ -56,7 +56,7 @@ linkWindow:
 # Alongside these bespoke variables there are two reserved variables driven from the cell yaml of:
 # ${cell.name}
 # ${cell.dataRef}
-# Substitution order is: reserved-vars -> siteConfig-vars -> panelConfig-vars -> grafana-vars
+# Substitution order is: siteConfig-vars -> panelConfig-vars -> reserved-vars -> grafana-vars
 linkVariables:
   urlBasePlugin: "https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/"
   urlBaseGrafana: "https://app.diagrams.net/"

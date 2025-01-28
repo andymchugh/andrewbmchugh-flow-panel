@@ -83,22 +83,23 @@ function tokenStr(key: string) {
 export function constructUrl(link: Link, attribs: SvgElementAttribs, linkVariables: Map<string, string>) {
   // Blend reserved tokens with variables
   const linkVars = new Map([
+    ...linkVariables,
     ['cell.name', attribs.name],
     ['cell.dataRef', attribs.dataRef || tokenStr('cell.dataRef')],
-    ...linkVariables]);
+  ]);
 
   // Substitute tokens
+  let url = link.url
   linkVars.forEach((value: string, key: string) => {
     const token = tokenStr(key);
-    link.url = link.url.split(token).join(value);
+    url = url.split(token).join(value);
   });
 
   // Generate url
-  link.url = createUrl(link.url) || "";
+  url = createUrl(url) || "";
 
   // Append window args
-  if (link.url.length) {
-    let url = link.url;
+  if (url.length) {
     if (link.params === 'time') {
       const urlParams = new URLSearchParams(window.location.search);
       const from = urlParams.get('from');

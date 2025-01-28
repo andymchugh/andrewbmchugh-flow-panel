@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.17.3
+
+Fix url links variable substitution
+-----------------------------------
+This corrects a few bugs with variable substitutions in links. The link variables can now contain references
+to the reserved names (cell.name and cell.dataRef).
+
 ## 1.17.2
 
 FillColor drive filter to support shapes with forground detail
