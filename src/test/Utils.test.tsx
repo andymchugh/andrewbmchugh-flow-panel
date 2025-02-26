@@ -16,11 +16,11 @@ test('cellIdFactory', () => {
     expect(cellIdFn()).toEqual('myid_abcd_1');
     expect(cellIdFn()).toEqual('myid_abcd_2');
 
-    const cellIdFn2 = cellIdFactory('myid_abcd_');
+    const cellIdFn2 = cellIdFactory('myid2_abcd_');
     expect(cellIdFn()).toEqual('myid_abcd_3');
-    expect(cellIdFn2()).toEqual('myid_abcd_0');
-    expect(cellIdFn2()).toEqual('myid_abcd_1');
-    expect(cellIdFn()).toEqual('myid_abcd_4');
+    expect(cellIdFn2()).toEqual('myid2_abcd_4');
+    expect(cellIdFn2()).toEqual('myid2_abcd_5');
+    expect(cellIdFn()).toEqual('myid_abcd_6');
 });
 
 //-----------------------------------------------------------------------------
