@@ -13,7 +13,7 @@ const gShapeElements: Set<string> = new Set<string>([
   'ellipse', 'circle', 'path', 'rect', 'line', 'polyline', 'polygon']
 );
 
-var gIdCallCount = 0;
+let gIdCallCount = 0;
 
 //-----------------------------------------------------------------------------
 // Centralised debug
