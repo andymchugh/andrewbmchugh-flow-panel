@@ -13,6 +13,8 @@ const gShapeElements: Set<string> = new Set<string>([
   'ellipse', 'circle', 'path', 'rect', 'line', 'polyline', 'polygon']
 );
 
+var gIdCallCount = 0;
+
 //-----------------------------------------------------------------------------
 // Centralised debug
 //------------------
@@ -36,11 +38,11 @@ export function isShapeElement(el: HTMLElement) {
 //-----------------------------------------------------------------------------
 // Cell IDs
 //-----------------
-// Used to create unique cell Ids from a given root
+// Used to create unique cell Ids from a given root. The number offset is global
+// to ensure uniqueness for clip-path urls which have a more global scope.
 export function cellIdFactory(base: string): CellIdMaker {
-  let callCount = 0;
   return function() {
-    return base + (callCount++).toString();
+    return base + (gIdCallCount++).toString();
   }
 }
 

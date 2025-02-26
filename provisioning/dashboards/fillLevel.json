@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 38,
+  "id": 20,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -28,8 +28,8 @@
         "uid": "grafana"
       },
       "gridPos": {
-        "h": 19,
-        "w": 8,
+        "h": 9,
+        "w": 24,
         "x": 0,
         "y": 0
       },
@@ -52,13 +52,14 @@
         "uid": "grafana"
       },
       "gridPos": {
-        "h": 19,
-        "w": 16,
-        "x": 8,
-        "y": 0
+        "h": 14,
+        "w": 12,
+        "x": 0,
+        "y": 9
       },
       "id": 14,
       "options": {
+        "animationControlEnabled": true,
         "animationsEnabled": true,
         "debuggingCtr": {
           "colorsCtr": 0,
@@ -75,6 +76,8 @@
         "testDataEnabled": true,
         "timeSliderEnabled": true
       },
+      "repeat": "repeat",
+      "repeatDirection": "h",
       "type": "andrewbmchugh-flow-panel"
     }
   ],
@@ -83,7 +86,44 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "repeat",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "pane1",
+            "value": "pane1"
+          },
+          {
+            "selected": false,
+            "text": "pane2",
+            "value": "pane2"
+          }
+        ],
+        "query": "pane1,pane2",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
   },
   "time": {
     "from": "now-12h",

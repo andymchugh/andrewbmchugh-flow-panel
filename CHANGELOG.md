@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.17.4
+
+Fix Fill-Level Drive on Repeating Panels
+----------------------------------------
+This fixes a bug with fill-level drives on 'repeating grafana panels'. Before the fill-level from one
+panel drove the fill-level on all the repeats. With the fix they are now independent.
+
 ## 1.17.3
 
 Fix url links variable substitution
@@ -9,8 +16,8 @@ to the reserved names (cell.name and cell.dataRef).
 
 ## 1.17.2
 
-FillColor drive filter to support shapes with forground detail
---------------------------------------------------------------
+FillColor drive filter to support shapes with foreground detail
+---------------------------------------------------------------
 Complex shapes represented my more than one element (path, rect, etc.) sometimes need
 fillColor to be applied to just a subset of the elements that make up the shape. The
 draw.io 'L3 switch' is one such example that's represented using two 'rect' elements and
