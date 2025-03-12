@@ -1,16 +1,22 @@
-import { DatapointMode, PanelConfigCell, PanelConfigCellBespoke } from 'components/Config';
+import { DatapointMode, PanelConfigCell } from 'components/Config';
 import { BespokeStateHolder, getCellValue} from './SvgUpdater';
 import { MathNode, parse } from 'mathjs'
 import { TimeSeriesData } from './TimeSeries';
 import { getTemplateSrv } from '@grafana/runtime';
 import { flowDebug } from './Utils';
+import { highlightState, HighlightState } from './Highlighter';
 
 const gAllowedNewElementAttributes: Set<string> = new Set<string>([
-  'transform', 'transform-origin', 'visibility']
+  'transform', 'transform-origin', 'visibility', 'opacity', 'fill-opacity']
 );
 
+type Utils = {
+  highlighterSelection: string,
+  highlighterState: string,
+};
+
 type NamespacedData =  {
-  utils: Object;
+  utils: Utils;
   data: any;
   // plus client defined variables
 };
@@ -35,6 +41,7 @@ export type CellBespokeAttribSetter = {
 
 export type CellBespokeHandler = {
   element: HTMLElement | undefined;
+  tags: Set<string> | undefined;
   clientState: ScopedState;
   attribSetters: CellBespokeAttribSetter[];
 };
@@ -60,7 +67,16 @@ export function bespokeStateFactory(namespace: string) {
   };
 }
 
-export function bespokeDriveHandlerFactory(cellId: string, dataRef: string | undefined, element: HTMLElement, config: PanelConfigCellBespoke, bespokeStateHolder: BespokeStateHolder, elementPosition: number) {
+export function bespokeDriveHandlerFactory(level: number, cellId: string, cellProps: PanelConfigCell, element: HTMLElement, bespokeStateHolder: BespokeStateHolder, elementPosition: number) {
+
+  // Bypass if drive not defined on this cell
+  if (!cellProps.bespoke) {
+    return;
+  }
+  const dataRef = cellProps.dataRef;
+  const config = cellProps.bespoke;
+  const tags = cellProps.tags;
+
   // Get / create namespace state
   const namespace = config.namespace || cellId;
   if (!bespokeStateHolder.namespaceState.has(namespace)) {
@@ -72,28 +88,31 @@ export function bespokeDriveHandlerFactory(cellId: string, dataRef: string | und
   // the most permissive datapoint across the namespace is used by all.
   state.datapoint = state.datapoint === 'lastNotNull' ? state.datapoint : config.datapoint || 'last';
 
-  if (dataRef) {
-    state.dataRefs.add(dataRef);
-  }
-  config.dataRefs?.forEach((v) => {
-    state.dataRefs.add(v);
-  });
-  config.formulas?.forEach((v) => {
-    try {
-      state.formulas.push(parse(v as string));
-    }
-    catch (err) {
-      flowDebug().warn('Error occured parsing bespoke formula [', v, ']', element, 'error =', err);
-    }
-  });
-
   // Regardless of whether there are any drives, defined constants and formulas need to be
   // maintained, so at least one entry is required.
-  bespokeStateHolder.handlers.push({
-    element: undefined,
-    attribSetters: [],
-    clientState: state,
-  });
+  if (level === 1) {
+    if (dataRef) {
+      state.dataRefs.add(dataRef);
+    }
+    config.dataRefs?.forEach((v) => {
+      state.dataRefs.add(v);
+    });
+    config.formulas?.forEach((v) => {
+      try {
+        state.formulas.push(parse(v as string));
+      }
+      catch (err) {
+        flowDebug().warn('Error occured parsing bespoke formula [', v, ']', element, 'error =', err);
+      }
+    });
+
+    bespokeStateHolder.handlers.push({
+      element: undefined,
+      tags: undefined,
+      attribSetters: [],
+      clientState: state,
+    });
+  }
 
   config.drives?.forEach((drive) => {
     if (((typeof drive.elementName === 'undefined') || (drive.elementName === element.nodeName)) &&
@@ -124,8 +143,10 @@ export function bespokeDriveHandlerFactory(cellId: string, dataRef: string | und
             flowDebug().warn('attribute drive [', k, '] not allowed on element', element);
           }
         }
+
         bespokeStateHolder.handlers.push({
           element: element,
+          tags: tags,
           attribSetters: attribSetters,
           clientState: state,
         });
@@ -149,14 +170,16 @@ function grafanaVariablesReplace(str: string) {
   return getTemplateSrv().replace(str);
 }
 
-function clientExposedUtils() {
+function clientExposedUtils(highlighterSelection: string) {
   return {
     log: flowDebug().info,
     variablesReplace: grafanaVariablesReplace,
+    highlighterSelection: highlighterSelection,
+    highlighterState: 'Ambient',
   }
 }
 
-export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSeriesData) {
+export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSeriesData, highlighterSelection: string | undefined) {
   const namespacedData  = new Map<string, NamespacedData>();
 
   // Initialize each namespaced store with constants and data
@@ -166,7 +189,7 @@ export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSerie
     // Create the store
     if (!namespacedData.has(namespace)) {
       const vars = Object.fromEntries([
-        ['utils', clientExposedUtils()],
+        ['utils', clientExposedUtils(highlighterSelection || '')],
         ['data', {}],
         ...handler.clientState.constants]);
       namespacedData.set(namespace, vars);
@@ -185,17 +208,21 @@ export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSerie
   });
 
   // Invoke the formulas
+  const namespaceUpdated = new Set<string>();
   cbh.forEach((handler: CellBespokeHandler) => {
     const namespace = handler.clientState.namespace;
     const dataStore = namespacedData.get(namespace) as NamespacedData;
 
-    try {
-      handler.clientState.formulas.forEach((formula) => {
-        formula.evaluate(dataStore);
-      });
-    }
-    catch (err) {
-      flowDebug().warn('Error occured calculating bespoke formulas for', handler.element, 'error =', err);
+    if (!namespaceUpdated.has(namespace)) {
+      try {
+        handler.clientState.formulas.forEach((formula) => {
+          formula.evaluate(dataStore);
+        });
+      }
+      catch (err) {
+        flowDebug().warn('Error occured calculating bespoke formulas for', handler.element, 'error =', err);
+      }
+      namespaceUpdated.add(namespace);
     }
   });
 
@@ -203,6 +230,10 @@ export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSerie
   cbh.forEach((handler: CellBespokeHandler) => {
     const namespace = handler.clientState.namespace;
     const dataStore = namespacedData.get(namespace) as NamespacedData;
+    const highlight = highlightState(highlighterSelection, handler.tags)
+
+    // Update the cell specific utils terms
+    dataStore.utils.highlighterState = HighlightState[highlight];
 
     try {
       handler.attribSetters.forEach((obj) => {

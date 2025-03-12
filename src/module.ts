@@ -70,6 +70,12 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
     a thread of information to the front.`,
     defaultValue: true,
   })
+  .addTextInput({
+    path: 'highlighterSelection',
+    name: 'Highlighter Selection',
+    description: `The initial highlighter tag selection. If empty it will default to the panelConfig value.`,
+    defaultValue: '',
+  })
   .addBooleanSwitch({
     path: 'timeSliderEnabled',
     name: 'Time Slider',

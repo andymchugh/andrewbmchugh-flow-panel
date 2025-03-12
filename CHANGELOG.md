@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.17.5
+
+Pass Highlighter bar settings through to the bespoke drive
+----------------------------------------------------------
+This change makes the 'highlighterSelection' and 'highlighterState' available to the bespoke
+drive math.js formulas in the utils object. Providing access to this information allows users
+to drive attributes such as visibility off of the highlighter setting. It also adds attributes
+'opacity' and 'fill-opacity' to the list of attributes the bespoke drive is allowed to add to
+the svg.
+
+This version also corrects some inefficiencies in bespoke formula evaluation repeats.
+
 ## 1.17.4
 
 Fix Fill-Level Drive on Repeating Panels

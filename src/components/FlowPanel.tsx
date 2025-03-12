@@ -5,7 +5,7 @@ import { getTemplateSrv } from '@grafana/runtime';
 import { GrafanaTheme2, PanelProps, toDataFrame } from '@grafana/data';
 import { FlowOptions, DebuggingCtrs } from '../types';
 import { configInit, panelConfigFactory, PanelConfig, siteConfigFactory, SiteConfig } from 'components/Config';
-import { HighlightState, HighlighterFactory } from 'components/Highlighter';
+import { HighlightState, HighlighterFactory, highlighterInitialState } from 'components/Highlighter';
 import { loadSvg, loadYaml } from 'components/Loader';
 import { svgInit, svgUpdate, SvgHolder, SvgElementAttribs } from 'components/SvgUpdater';
 import { seriesExtend, seriesInterpolate , seriesTransform } from 'components/TimeSeries';
@@ -168,10 +168,10 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
       };
       clickHandlerRef.current = clickHandlerFactory(svgAttribs.elementAttribs, panelConfig.linkVariables);
 
-      setHighlighterSelection(undefined);
+      setHighlighterSelection(highlighterInitialState(options.highlighterSelection, panelConfig.highlighter));
       setInitialized(true);
     }
-  }, [initialized, svgStr, panelConfig, siteConfig]);
+  }, [initialized, svgStr, panelConfig, siteConfig, options.highlighterSelection]);
   
   //---------------------------------------------------------------------------
   // Interpolate time-series data

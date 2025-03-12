@@ -18,6 +18,11 @@ export interface HighlighterProps {
   selection: string | undefined;
 };
 
+export function highlighterInitialState(optionsSelection: string, config: PanelConfigHighlighter) {
+  const selection = optionsSelection.trim();
+  return config.tagDrivable.has(selection) ? selection : undefined;
+}
+
 function legendItems(config: PanelConfigHighlighter, selection: string | undefined) {
   return config.tagLegend.map((label: string) => {
     return {
@@ -27,6 +32,11 @@ function legendItems(config: PanelConfigHighlighter, selection: string | undefin
       color: label === selection ? config.color : undefined,
     }
   });
+}
+
+export function highlightState(highlighterSelection: string | undefined, tags: Set<string> | undefined) {
+  return highlighterSelection && tags?.has(highlighterSelection) ? HighlightState.Highlight :
+    highlighterSelection ? HighlightState.Lowlight : HighlightState.Ambient;
 }
 
 export const HighlighterFactory = (props: HighlighterProps) => {

@@ -14,6 +14,7 @@ export interface FlowOptions {
   animationsEnabled: boolean;
   animationControlEnabled: boolean;
   highlighterEnabled: boolean;
+  highlighterSelection: string;
   timeSliderEnabled: boolean;
   debuggingCtr: DebuggingCtrs;
   testDataEnabled: boolean;
