@@ -1,0 +1,261 @@
+---
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - threshold: &threshold_inflow
+    - {color: "semi-dark-green", level: 0}
+    - {color: "orange", level: 125}
+    - {color: "red", level: 175}
+  - threshold: &threshold_depth
+    - {color: "semi-dark-green", level: 0}
+    - {color: "orange", level: 500}
+    - {color: "red", level: 1000}
+  - threshold: &threshold_latency
+    - {color: "semi-dark-green", level: 0}
+    - {color: "orange", level: 50}
+    - {color: "red", level: 150}
+  - threshold: &threshold_active
+    - {color: "semi-dark-green", level: 0}
+    - {color: "orange", level: 400}
+    - {color: "red", level: 800}
+
+#------------------------------------------------------------------------------
+# Highlighting
+
+tagConfig:
+  legend: ["Bespoke:", "man", "woman", "|", "Queue Technology:", "rabbitMQ", "kafka", "|", "Flow Attribs:", "inflow", "depth", "latency", "active", "|"]
+  color: "yellow"
+  highlightRgbFactor: 5.0
+  lowlightAlphaFactor: 0.3
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+
+cells:
+  #----------------------------------------------------------------------------
+  # The man and woman image visibility is driven if the highlighter is set to
+  # one or the other. This leverages the passed in terms:
+  # utils.highlighterSelection
+  # utils.highlighterState
+  man:
+    tags: ["man"]
+    bespoke: &bespokeVisibility
+      formulas:
+        - "visibilityEnable = max(equalText(utils.highlighterSelection, ['man', 'woman']))"
+      drives:
+        - elementName: "g"
+          elementPosition: 1
+          attribsSet:
+            visibility: "visibilityEnable and equalText(utils.highlighterState, 'Lowlight') ? 'hidden' : 'visible'"
+  woman:
+    tags: ["woman"]
+    bespoke: *bespokeVisibility
+
+  #----------------------------------------------------------------------------
+  user_throttle_inflow:
+    dataRef: "test-data-small-cos"
+    label:
+      separator: "replace"
+      units: "ops"
+    labelColor:
+      thresholds: *threshold_inflow
+    tags: ["inflow", "rabbitMQ"]
+  user_throttle_depth:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "colon"
+      units: "short"
+    labelColor:
+      thresholds: *threshold_depth
+    tags: ["depth", "rabbitMQ"]
+  user_throttle_latency:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "colon"
+      units: "s"
+    labelColor:
+      thresholds: *threshold_latency
+    tags: ["latency", "rabbitMQ"]
+  user_throttle_active:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "colon"
+      units: "short"
+    labelColor:
+      thresholds: *threshold_active
+    tags: ["active", "rabbitMQ"]
+
+  #----------------------------------------------------------------------------
+  ingest_inflow:
+    dataRef: "test-data-small-cos"
+    label:
+      separator: "replace"
+      units: "ops"
+    labelColor:
+      thresholds: *threshold_inflow
+    tags: ["inflow", "kafka"]
+  ingest_depth:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "colon"
+      units: "short"
+    labelColor:
+      thresholds: *threshold_depth
+    tags: ["depth", "kafka"]
+  ingest_latency:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "colon"
+      units: "s"
+    labelColor:
+      thresholds: *threshold_latency
+    tags: ["latency", "kafka"]
+  ingest_active:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "colon"
+      units: "short"
+    labelColor:
+      thresholds: *threshold_active
+    tags: ["active", "kafka"]
+
+  #----------------------------------------------------------------------------
+  backfill_inflow:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "ops"
+    labelColor:
+      thresholds: *threshold_inflow
+    tags: ["inflow", "kafka"]
+  backfill_depth:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "colon"
+      units: "short"
+    labelColor:
+      thresholds: *threshold_depth
+    tags: ["depth", "kafka"]
+  backfill_latency:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "colon"
+      units: "s"
+    labelColor:
+      thresholds: *threshold_latency
+    tags: ["latency", "kafka"]
+  backfill_active:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "colon"
+      units: "short"
+    labelColor:
+      thresholds: *threshold_active
+    tags: ["active", "kafka"]
+
+  #----------------------------------------------------------------------------
+  transform_inflow:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "replace"
+      units: "ops"
+    labelColor:
+      thresholds: *threshold_inflow
+    tags: ["inflow", "rabbitMQ"]
+  transform_depth:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "colon"
+      units: "short"
+    labelColor:
+      thresholds: *threshold_depth
+    tags: ["depth", "rabbitMQ"]
+  transform_latency:
+    dataRef: "test-data-small-cos"
+    label:
+      separator: "colon"
+      units: "s"
+    labelColor:
+      thresholds: *threshold_latency
+    tags: ["latency", "rabbitMQ"]
+  transform_active:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "colon"
+      units: "short"
+    labelColor:
+      thresholds: *threshold_active
+    tags: ["active", "rabbitMQ"]
+
+  #----------------------------------------------------------------------------
+  load_inflow:
+    dataRef: "test-data-small-cos"
+    label:
+      separator: "replace"
+      units: "ops"
+    labelColor:
+      thresholds: *threshold_inflow
+    tags: ["inflow", "rabbitMQ"]
+  load_depth:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "colon"
+      units: "short"
+    labelColor:
+      thresholds: *threshold_depth
+    tags: ["depth", "rabbitMQ"]
+  load_latency:
+    dataRef: "test-data-small-sin"
+    label:
+      separator: "colon"
+      units: "s"
+    labelColor:
+      thresholds: *threshold_latency
+    tags: ["latency", "rabbitMQ"]
+  load_active:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "colon"
+      units: "short"
+    labelColor:
+      thresholds: *threshold_active
+    tags: ["active", "rabbitMQ"]
+
+  #----------------------------------------------------------------------------
+  priority_inflow:
+    dataRef: "test-data-small-cos"
+    label:
+      separator: "replace"
+      units: "ops"
+    labelColor:
+      thresholds: *threshold_inflow
+    tags: ["inflow", "kafka"]
+  priority_depth:
+    dataRef: "test-data-large-cos"
+    label:
+      separator: "colon"
+      units: "short"
+    labelColor:
+      thresholds: *threshold_depth
+    tags: ["depth", "kafka"]
+  priority_latency:
+    dataRef: "test-data-small-cos"
+    label:
+      separator: "colon"
+      units: "s"
+    labelColor:
+      thresholds: *threshold_latency
+    tags: ["latency", "kafka"]
+  priority_active:
+    dataRef: "test-data-large-sin"
+    label:
+      separator: "colon"
+      units: "short"
+    labelColor:
+      thresholds: *threshold_active
+    tags: ["active", "kafka"]

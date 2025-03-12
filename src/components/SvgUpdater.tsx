@@ -13,7 +13,7 @@ import {
   cellIdFactory, CellIdMaker, getColor, primeColorCache,
   variableThresholdScalarsInit, variableThresholdScaleValue, isShapeElement, 
   regExpMatch} from 'components/Utils';
-import { HighlightState } from './Highlighter';
+import { highlightState, HighlightState } from './Highlighter';
 import {
   CellFillLevelDriver, getClipper, isFillLevelElement } from 'components/FillLevel';
 import { getTemplateSrv } from '@grafana/runtime';
@@ -143,7 +143,7 @@ function isFillColorElement(filters: PanelConfigElementFilter[] | undefined, ele
   return true;
 }
 
-function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellIdMaker, additions: HTMLElement[], bespokeStateHolder: BespokeStateHolder): boolean {
+function recurseElements(level: number, el: HTMLElement, cellData: SvgCell, cellIdMaker: CellIdMaker, additions: HTMLElement[], bespokeStateHolder: BespokeStateHolder): boolean {
   const setAttributes = function(el: HTMLElement) {
 
     // 'pre' is needed to honour the CRs we embed in the label whilst also ensuring text doesn't
@@ -197,14 +197,13 @@ function recurseElements(el: HTMLElement, cellData: SvgCell, cellIdMaker: CellId
     }
   }
 
-  if (cellData.cellProps.bespoke) {
-    bespokeDriveHandlerFactory(cellData.cellIdShort, cellData.cellProps.dataRef, el, cellData.cellProps.bespoke, bespokeStateHolder, elementPosition);
-  }
+  // Setup the bespoke drive
+  bespokeDriveHandlerFactory(level, cellData.cellIdShort, cellData.cellProps, el, bespokeStateHolder, elementPosition);
 
   if (el.hasChildNodes()) {
     for (let child of el.childNodes) {
       const childNode = child as HTMLElement;
-      const leaf = recurseElements(childNode, cellData, cellIdMaker, additions, bespokeStateHolder);
+      const leaf = recurseElements(level + 1, childNode, cellData, cellIdMaker, additions, bespokeStateHolder);
       setAttributes(el);
       if (leaf && (el.childNodes.length === 1) && (el.nodeName !== 'title')) {
     
@@ -261,7 +260,7 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
         elementCounts: new Map<string, number>(),
         handlers: bespokeHandlers,
       }
-      recurseElements(el, cell, cellIdMaker, additions, bespokeStateHolder);
+      recurseElements(1, el, cell, cellIdMaker, additions, bespokeStateHolder);
       // Now the loop of recursions is done, add in the additional elements
       for (let addition of additions) {
         el.prepend(addition);
@@ -506,11 +505,11 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
   const highlightFactors = svgHolder.attribs.highlightFactors;
 
   // Bespoke Attribute Drive
-  const namespacedData = attribDriverManager(svgHolder.attribs.bespokeHandlers, tsData);
+  const namespacedData = attribDriverManager(svgHolder.attribs.bespokeHandlers, tsData, highlighterSelection);
 
   const cells = svgHolder.attribs.cells;
   cells.forEach((cellData, cellId) => {
-    const highlight = highlighterSelection && cellData.cellProps.tags?.has(highlighterSelection) ? HighlightState.Highlight : highlighterSelection ? HighlightState.Lowlight : HighlightState.Ambient;
+    const highlight = highlightState(highlighterSelection, cellData.cellProps.tags)
     const sdb: SvgDriveBase = {
       variableValues: variableValues,
       tsData: tsData,

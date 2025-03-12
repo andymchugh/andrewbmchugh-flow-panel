@@ -98,7 +98,7 @@ tagConfig:
   # This defines the legend color to apply to the tag when the tag is selected. If not defined
   # it defaults to yellow.
   color: "yellow"
-  
+
   # This defines the rgb factor to apply to a readouts color when the readout is highlighted. Note the
   # rgb ratios are always maintained so this will result in this factor being capped. If not defined
   # it defaults to 5.0.
@@ -538,6 +538,9 @@ cells:
     #   - log = function(...) -> void. Forwards through to console.info. For developing and debug use.
     #   - variablesReplace = function(string) -> string. Grafana variables defined in the string in the normal
     #     '${myVar}' way are replaced in the result with the actual grafana variable values.
+    #   - highlighterSelection = string. Name of the tag selected. Empty string if nothing selected. ( Version 1.17.5 onwards)
+    #   - highlighterState = string. Cells highlighter state. Values are 'Ambient', 'Lowlight', 'Highlight'. This is
+    #     only available for use within drives.attribsSet mathjs formulas. (Version 1.17.5 onwards)
     # - data : Object containing an item for every dataRef defined in the namespace.
     #
     # The best way to understand this drive is to explore it via a provisioning/dashboardData example such as the
@@ -597,7 +600,7 @@ cells:
           # be injected, the following restrictions exist on which attributes can be set:
           # - The attributeName cannot start with 'on'.
           # - The attribute has to either pre-exist on the SVG (after parsing through dompurify) or exist in the set:
-          #   ['transform', transform-origin', 'visibility'].
+          #   ['transform', transform-origin', 'visibility', 'opacity', 'fill-opacity'].
           attribsSet:
             # variable-name -> attribute name pairs
             x: "boxX"
