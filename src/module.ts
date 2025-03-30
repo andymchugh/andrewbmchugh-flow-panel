@@ -79,9 +79,30 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
   .addBooleanSwitch({
     path: 'timeSliderEnabled',
     name: 'Time Slider',
-    description: `When enabled a time-slider is added to the bottom of
-    the panel to support visualization of any time point in the time range.`,
+    description: `When selected a time-slider is added to the bottom of
+    the panel to support visualization of any time point in the time range.
+    Even when not selected the panel can still respond to other panels time-sliders
+    if a sharing mode is selected below.`,
     defaultValue: true,
+  })
+  .addRadio({
+    path: 'timeSliderMode',
+    name: 'Time Slider Mode',
+    description: `This defines how the time-slider will respond to the dashboard
+    environment. 'Local' means the time-slider is isolated from other panels.
+    'Time' means it will synchronize with the time value of other time-sliders or
+    shared-crosshairs on timeSeries panels. 'Position' means the same as 'Time' but
+    it synchronizes using the timeSlider position. The difference between 'Time'
+    and 'Position' becomes meaningful when you have a mix of panels with different
+    query time-shifts.`,
+    settings: {
+      options: [
+        { value: 'local', label: 'Local' },
+        { value: 'time', label: 'Time' },
+        { value: 'position', label: 'Position' },
+      ],
+    },
+    defaultValue: 'local',
   })
   .addBooleanSwitch({
     path: 'testDataEnabled',

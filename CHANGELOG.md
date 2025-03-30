@@ -1,5 +1,37 @@
 # Changelog
 
+## 1.18
+
+TimeSlider hookup with the shared tooltip/cursor
+------------------------------------------------
+To celebrate the panels 1st year anniversary which coincides with it reaching 1M downloads,
+this change adds a new panel option for the TimeSlider Mode. It has three values:
+- Local    - This is the existing behavior where the timeSlider applies to just this panel.
+             It's the default mode so there is no change of behavior when upgrading.
+- Time     - In this mode the timeSlider 'time' value is shared. It synchronises with other
+             shared timeSliders as well as timeSeries panel shared-crosshairs.
+- Position - This mode is the same as 'Time' but the shared value is the slider 'position'
+             rather than 'time'.
+'Time' mode makes sense where all the panels are displaying a similar time-range. In this mode
+the 'Time' value will accurately reflect across all panels. 'Position' mode comes into its own
+where you have Flow panels with different time-offsets. i.e. one showing today and one showing
+the same day from one week ago. These kind of offsets are settable at the top of the Grafana
+query pane. By sharing the slider position rather than time you get a meaningful way to
+traverse the time-range in both panels, but note the actual time reflection will be more
+approximate as each panel has a unique time-range based off of the returned query data.
+
+Note that a panel can participate in this sharing even when its timeSlider is deselected. As such
+you can have a suite of Flow Panels laid out on your dashboard with just a single timeSlider
+to control all the panels.
+
+The mode selection is not affected by the dashboard 'Graph Tooltip' selection. These multi-panel
+updates have a performance cost so by keeping selection independent you can have Flow panels
+colaborate whilst not suffering the overhead of all the timeSeries panels joining in; and vice versa.
+
+Logo Modification
+-----------------
+Colors tweaked to improve legibility.
+
 ## 1.17.5
 
 Pass Highlighter bar settings through to the bespoke drive

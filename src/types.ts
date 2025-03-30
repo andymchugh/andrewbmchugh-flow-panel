@@ -6,6 +6,8 @@ export type DebuggingCtrs = {
   displaySvgCtr: number;
 };
 
+export type TimeSliderMode = 'local' | 'time' | 'position';
+
 export interface FlowOptions {
   svg: string;
   panelConfig: string;
@@ -16,6 +18,7 @@ export interface FlowOptions {
   highlighterEnabled: boolean;
   highlighterSelection: string;
   timeSliderEnabled: boolean;
+  timeSliderMode: TimeSliderMode;
   debuggingCtr: DebuggingCtrs;
   testDataEnabled: boolean;
 };

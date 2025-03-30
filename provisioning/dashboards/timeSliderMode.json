@@ -1,0 +1,484 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 1,
+    "id": 29,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 14,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "id": 9,
+        "options": {
+          "code": {
+            "language": "plaintext",
+            "showLineNumbers": false,
+            "showMiniMap": false
+          },
+          "content": "# Decimal Points\n\nThis dashboard demonstrates the timeSlider modes:\n- Local = isolated\n- Position = timeSlider position synchronises\n- Time = timeSlider time setting synchronises\n\nThis dashboard is showing everything mixed together but normally either a time or position mode would be chosen.\nPosition will have less accurate time synchronisation but allows Flow panels with large time-offsets to be\nmeaningfully compared.\n\nNote how panels with the timeSlider deselected can still be driven via other timeSliders.\n\nTo explore:\n- Check how the Local panel only responds to its own timeSlider.\n- Check how the time-series panel shared-cursor drives all the time/position panels correctly\n- Check how the time/position panel timeSliders drive all the others and the time-series shared cursor.\n- Check how the time-series shared-cursor is removed when the timeSlider reaches max, but remains if left in any other position.\n- Check how the panels with deselected timeSliders still respond according to their mode.",
+          "mode": "markdown"
+        },
+        "pluginVersion": "10.0.0",
+        "title": "Panel Title",
+        "type": "text"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 14,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "id": 3,
+        "options": {
+          "animationControlEnabled": true,
+          "animationsEnabled": true,
+          "debuggingCtr": {
+            "colorsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 0,
+            "mappingsCtr": 0,
+            "timingsCtr": 0
+          },
+          "highlighterEnabled": true,
+          "highlighterSelection": "",
+          "panZoomEnabled": true,
+          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig1.yaml",
+          "siteConfig": "",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/ambiThemeSvg1.svg",
+          "testDataEnabled": true,
+          "timeSliderEnabled": true,
+          "timeSliderGlobal": false,
+          "timeSliderMode": "local",
+          "timeSliderScope": "position"
+        },
+        "title": "Mode = Local",
+        "type": "andrewbmchugh-flow-panel"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 14
+        },
+        "id": 4,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "title": "Panel Title",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 12,
+          "y": 14
+        },
+        "id": 1,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "timeShift": "4h",
+        "title": "Panel Title",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 12,
+          "x": 0,
+          "y": 20
+        },
+        "id": 5,
+        "options": {
+          "animationControlEnabled": true,
+          "animationsEnabled": true,
+          "debuggingCtr": {
+            "colorsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 0,
+            "mappingsCtr": 0,
+            "timingsCtr": 0
+          },
+          "highlighterEnabled": true,
+          "highlighterSelection": "",
+          "panZoomEnabled": false,
+          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig1.yaml",
+          "siteConfig": "",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/ambiThemeSvg1.svg",
+          "testDataEnabled": true,
+          "timeSliderEnabled": true,
+          "timeSliderGlobal": false,
+          "timeSliderMode": "time",
+          "timeSliderScope": "position"
+        },
+        "title": "Mode = Time",
+        "type": "andrewbmchugh-flow-panel"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 12,
+          "x": 12,
+          "y": 20
+        },
+        "id": 7,
+        "options": {
+          "animationControlEnabled": true,
+          "animationsEnabled": true,
+          "debuggingCtr": {
+            "colorsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 0,
+            "mappingsCtr": 0,
+            "timingsCtr": 0
+          },
+          "highlighterEnabled": true,
+          "highlighterSelection": "",
+          "panZoomEnabled": false,
+          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig1.yaml",
+          "siteConfig": "",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/ambiThemeSvg1.svg",
+          "testDataEnabled": true,
+          "timeSliderEnabled": true,
+          "timeSliderGlobal": false,
+          "timeSliderMode": "time",
+          "timeSliderScope": "position"
+        },
+        "timeShift": "4h",
+        "title": "Mode = Time",
+        "type": "andrewbmchugh-flow-panel"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 12,
+          "x": 0,
+          "y": 27
+        },
+        "id": 6,
+        "options": {
+          "animationControlEnabled": true,
+          "animationsEnabled": true,
+          "debuggingCtr": {
+            "colorsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 0,
+            "mappingsCtr": 0,
+            "timingsCtr": 0
+          },
+          "highlighterEnabled": true,
+          "highlighterSelection": "",
+          "panZoomEnabled": false,
+          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig1.yaml",
+          "siteConfig": "",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/ambiThemeSvg1.svg",
+          "testDataEnabled": true,
+          "timeSliderEnabled": true,
+          "timeSliderGlobal": false,
+          "timeSliderMode": "position",
+          "timeSliderScope": "position"
+        },
+        "title": "Mode = Position",
+        "type": "andrewbmchugh-flow-panel"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 12,
+          "x": 12,
+          "y": 27
+        },
+        "id": 8,
+        "options": {
+          "animationControlEnabled": true,
+          "animationsEnabled": true,
+          "debuggingCtr": {
+            "colorsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 0,
+            "mappingsCtr": 0,
+            "timingsCtr": 0
+          },
+          "highlighterEnabled": true,
+          "highlighterSelection": "",
+          "panZoomEnabled": false,
+          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig1.yaml",
+          "siteConfig": "",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/ambiThemeSvg1.svg",
+          "testDataEnabled": true,
+          "timeSliderEnabled": true,
+          "timeSliderGlobal": false,
+          "timeSliderMode": "position",
+          "timeSliderScope": "position"
+        },
+        "timeShift": "4h",
+        "title": "Mode = Position",
+        "type": "andrewbmchugh-flow-panel"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 34
+        },
+        "id": 2,
+        "options": {
+          "animationControlEnabled": true,
+          "animationsEnabled": true,
+          "debuggingCtr": {
+            "colorsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 0,
+            "mappingsCtr": 0,
+            "timingsCtr": 0
+          },
+          "highlighterEnabled": true,
+          "highlighterSelection": "",
+          "panZoomEnabled": false,
+          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig1.yaml",
+          "siteConfig": "",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/ambiThemeSvg1.svg",
+          "testDataEnabled": true,
+          "timeSliderEnabled": false,
+          "timeSliderGlobal": false,
+          "timeSliderMode": "time",
+          "timeSliderScope": "time"
+        },
+        "title": "Mode = Time",
+        "type": "andrewbmchugh-flow-panel"
+      },
+      {
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 12,
+          "y": 34
+        },
+        "id": 10,
+        "options": {
+          "animationControlEnabled": true,
+          "animationsEnabled": true,
+          "debuggingCtr": {
+            "colorsCtr": 0,
+            "dataCtr": 0,
+            "displaySvgCtr": 0,
+            "mappingsCtr": 0,
+            "timingsCtr": 0
+          },
+          "highlighterEnabled": true,
+          "highlighterSelection": "",
+          "panZoomEnabled": false,
+          "panelConfig": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig1.yaml",
+          "siteConfig": "",
+          "svg": "https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/ambiThemeSvg1.svg",
+          "testDataEnabled": true,
+          "timeSliderEnabled": false,
+          "timeSliderGlobal": false,
+          "timeSliderMode": "position",
+          "timeSliderScope": "position"
+        },
+        "timeShift": "4h",
+        "title": "Mode = Position",
+        "type": "andrewbmchugh-flow-panel"
+      }
+    ],
+    "refresh": "",
+    "schemaVersion": 38,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-12h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Time Slider Mode",
+    "version": 1,
+    "weekStart": ""
+  }
