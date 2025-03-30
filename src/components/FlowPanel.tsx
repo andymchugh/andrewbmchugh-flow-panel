@@ -94,7 +94,7 @@ function clickHandlerFactory(elementAttribs: Map<string, SvgElementAttribs>, lin
 }
 
 
-export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZone }) => {
+export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZone, eventBus }) => {
   //---------------------------------------------------------------------------
   // State for 'load -> init -> update' startup phasing
 
@@ -301,12 +301,14 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
     animControl: animationControlPosition === AnimationControlPosition.timeSlider ? animationControl : null,
     styles: styles,
     enabled: options.timeSliderEnabled,
+    mode: options.timeSliderMode,
     label: timeSliderLabel,
     setLabel: setTimeSliderLabel,
     timeSliderScalarRef: timeSliderScalarRef,
     tsData: tsData,
     windowWidth: width,
     timeZone: timeZone,
+    eventBus: eventBus,
   });
 
   //---------------------------------------------------------------------------
