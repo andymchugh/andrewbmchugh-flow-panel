@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.18.1
+
+TimeSlider hookup with the shared tooltip/cursor http fix
+---------------------------------------------------------
+Remove use of function introduced in 1.18.1 that was only available on https and localhost.
+It wasn't available on http.
+
 ## 1.18
 
 TimeSlider hookup with the shared tooltip/cursor
