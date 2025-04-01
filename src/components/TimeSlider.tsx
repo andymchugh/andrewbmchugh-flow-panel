@@ -33,6 +33,8 @@ type DataHoverPayloadFlowPanel = DataHoverPayload & {
   };
 };
 
+let gPanelIdCallCount = 0;
+
 export const sliderTime = (tsData: any, sliderScalar: number) => {
   const time = Math.ceil(tsData.timeMin + (tsData.timeRange * sliderScalar));
   return time;
@@ -120,7 +122,7 @@ export const TimeSliderFactory = (props: TimeSliderProps) => {
 
   const stateRef = useRef<TimeSliderState>({
     formatter: getValueFormatterIndex()['dateTimeAsLocal'],
-    panelId: crypto.randomUUID(),
+    panelId: 'panel' + (gPanelIdCallCount++).toString(),
     range: 1000,
   });
 
