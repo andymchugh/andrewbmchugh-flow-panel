@@ -47,10 +47,11 @@ addHook('afterSanitizeAttributes', function(el) {
 function sanitizeSvgStr(svgStr: string) {
   return sanitize(svgStr, {
     PARSER_MEDIA_TYPE: 'application/xhtml+xml',
-    ADD_TAGS: ['foreignObject'],
-    // dompurify 3.0.8 allows these attribs in lowercase but not camelcase. Until fixed in that layer
-    // we add the attributes to the allowed list.
-    ADD_ATTR: ['viewBox', 'refX', 'refY', 'markerWidth', 'markerHeight', 'markerUnits', 'preserveAspectRatio'],
+    ADD_TAGS: ['foreignObject', 'linearGradient', 'radialGradient'],
+    // dompurify 3.0.8 allows these attribs and the above gradient tags in lowercase but not camelcase.
+    // Until fixed in that layer we add these to the allowed list.
+    ADD_ATTR: ['viewBox', 'refX', 'refY', 'markerWidth', 'markerHeight', 'markerUnits', 'preserveAspectRatio',
+      'gradientUnits', 'gradientTransform'],
   });
 }
 

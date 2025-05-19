@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.18.2
+
+Gradient Support
+----------------
+Allow use of the following svg terms:
+- tags: linearGradient, radialGradient
+- attributes: gradientUnits, gradientTransform
+
+The latest draw.io version (27.0.5) has started using these on certain exported widgets
+such as the 'hard disk' icon.
+
 ## 1.18.1
 
 TimeSlider hookup with the shared tooltip/cursor http fix
