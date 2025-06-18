@@ -16,7 +16,7 @@ function extractInterpolations(interpolations: VariableInterpolation[]) {
 // The source can be:
 // - Serialised svg string
 // - A url to the serialised svg
-export async function loadSvg(source: string, fn: (svgStr: string) => void, fnVars: (svgStr: string) => void) {
+export async function loadSvg(source: string, headers: string, fn: (svgStr: string) => void, fnVars: (svgStr: string) => void) {
   try {
     if (!isUrl(source)) {
       fn(source.substring(source.search('<svg')));
@@ -25,7 +25,19 @@ export async function loadSvg(source: string, fn: (svgStr: string) => void, fnVa
       let interpolations: VariableInterpolation[] = [];
       const source2 = getTemplateSrv().replace(source, undefined, undefined, interpolations);
       fnVars(extractInterpolations(interpolations));
-      const response = await fetch(source2);
+
+      let response: Response;
+      if (headers) {
+        response = await fetch(source2, {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Token ' + headers,
+          }
+        });
+      } else {
+        response = await fetch(source2);
+      }
+
       if (!response.ok) {
         throw(response);
       }
@@ -43,7 +55,7 @@ export async function loadSvg(source: string, fn: (svgStr: string) => void, fnVa
 // - The actual object
 // - Serialised yaml
 // - A url to the serialised yaml
-export async function loadYaml(source: (Object | string), fn: (yaml: Object) => void, fnVars: (svgStr: string) => void) {
+export async function loadYaml(source: (Object | string), headers: string, fn: (yaml: Object) => void, fnVars: (svgStr: string) => void) {
   // The default maxAliasCount of 100 gets hit with more complex yaml docs.
   // We don't want to allow unlimited (-1) or even configurable as that allows people
   // to configure unreasonable dashboards. Instead we amp up the limit by 100x.
@@ -59,7 +71,19 @@ export async function loadYaml(source: (Object | string), fn: (yaml: Object) => 
       let interpolations: VariableInterpolation[] = [];
       const source2 = getTemplateSrv().replace(source, undefined, undefined, interpolations);
       fnVars(extractInterpolations(interpolations));
-      const response = await fetch(source2);
+
+      let response: Response;
+      if (headers) {
+        response = await fetch(source2, {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Token ' + headers,
+          }
+        });
+      } else {
+        response = await fetch(source2);
+      }
+
       if (!response.ok) {
         throw(response);
       }
@@ -72,5 +96,3 @@ export async function loadYaml(source: (Object | string), fn: (yaml: Object) => 
     fn({});
   }
 }
-
-

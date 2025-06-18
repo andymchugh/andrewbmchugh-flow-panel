@@ -2,6 +2,7 @@ import { PanelPlugin } from '@grafana/data';
 import { FlowOptions } from './types';
 import { FlowPanel } from './components/FlowPanel';
 import { DebuggingEditor } from './components/DebuggingEditor';
+import { PasswordEditor } from './components/PasswordEditor';
 
 export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((builder) => {
   const svgName = 'ambiThemeSvg1.svg';
@@ -15,6 +16,18 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
     settings: {
       useTextarea: true,
       rows: 2,
+    },
+  })
+  .addCustomEditor({
+    id: 'svgHeaders',
+    path: 'svgHeaders',
+    name: 'SVG HTTP Authorization Token',
+    description: `Optional HTTP authorization token used when fetching the SVG element.`,
+    defaultValue: '',
+    editor: PasswordEditor,
+    settings: {
+      useTextarea: true,
+      rows: 1,
     },
   })
   .addTextInput({
@@ -35,6 +48,18 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
     settings: {
       useTextarea: true,
       rows: 2,
+    },
+  })
+  .addCustomEditor({
+    id: 'panelConfigHeaders',
+    path: 'panelConfigHeaders',
+    name: 'Panel and Site Config HTTP Authorization Token',
+    description: `Optional HTTP authorization token used when fetching the panel config and/or site config.`,
+    defaultValue: '',
+    editor: PasswordEditor,
+    settings: {
+      useTextarea: true,
+      rows: 1,
     },
   })
   .addBooleanSwitch({

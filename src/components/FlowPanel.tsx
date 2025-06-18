@@ -132,10 +132,10 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
     setSvgStr(undefined);
     setPanelConfig(undefined);
     setSiteConfig(undefined);
-    loadSvg(options.svg, setSvgStr, setVariableIdsSvg);
-    loadYaml(options.siteConfig, (config) => {setSiteConfig(siteConfigFactory(config))}, setVariableIdsSite);
-    loadYaml(options.panelConfig, (config) => {setPanelConfig(panelConfigFactory(config))}, setVariableIdsPanel);
-  }, [options.svg, options.panelConfig, options.siteConfig, actDynamicUrlCtr]);
+    loadSvg(options.svg, options.svgHeaders, setSvgStr, setVariableIdsSvg);
+    loadYaml(options.siteConfig, options.panelConfigHeaders, (config) => {setSiteConfig(siteConfigFactory(config))}, setVariableIdsSite);
+    loadYaml(options.panelConfig, options.panelConfigHeaders, (config) => {setPanelConfig(panelConfigFactory(config))}, setVariableIdsPanel);
+  }, [options.svg, options.svgHeaders, options.panelConfig, options.panelConfigHeaders, options.siteConfig, actDynamicUrlCtr]);
 
   //---------------------------------------------------------------------------
   // Monitor for url changes
