@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.18.3
+
+Time Slider Time String
+-----------------------
+The time-string on the time-slider has been changed to always display time
+using a 24 hour clock. This keeps it in common with the grafana time selector
+and the grafana time series panel x axis display. Before it used a browser format
+which meant with some language settings the string displayed using a 12 hour clock.
+
 ## 1.18.2
 
 Gradient Support

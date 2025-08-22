@@ -116,12 +116,12 @@ const getHoverEvent = (props: TimeSliderProps, state: TimeSliderState, time: num
 
 export const TimeSliderFactory = (props: TimeSliderProps) => {
   const setLabel = props.setLabel;
-  const labelWidth = 170;
+  const labelWidth = 150;
   const animControlWidth = props.animControl ? 35 : 0;
   const sliderWidth = props.windowWidth - labelWidth - animControlWidth;
 
   const stateRef = useRef<TimeSliderState>({
-    formatter: getValueFormatterIndex()['dateTimeAsLocal'],
+    formatter: getValueFormatterIndex()['dateTimeAsSystem'],
     panelId: 'panel' + (gPanelIdCallCount++).toString(),
     range: 1000,
   });
