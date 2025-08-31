@@ -292,13 +292,13 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
   });
 
   // Create the variable-scalar override set. Both Panel and Site declare the data the same way
-  // so we initialise with panel first with fallback rules in site
+  // so we initialize with panel first with fallback rules in site
   const variableValues = new Map<string, string>();
   variableThresholdScalarsInit(variableValues, cells, panelConfig.variableThresholdScalars);
   variableThresholdScalarsInit(variableValues, cells, siteConfig.variableThresholdScalars);
   
   // Ensure the viewBox and dimension attributes are coherent. Without this the resulting
-  // image won't scale and center corrently
+  // image won't scale and center currently
   const dimensions = dimensionCoherence(doc);
 
   // Set the SVG theme to match grafana. This ensures undriven aspects of the drawing
@@ -316,7 +316,7 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
     bespokeHandlers: bespokeHandlers,
   };
 
-  // Initialie the color cache and setup the background
+  // Initialize the color cache and setup the background
   primeColorCache(grafanaTheme, svgAttribs, panelConfig.background);
 
   return svgAttribs;

@@ -46,7 +46,7 @@ export type CellBespokeHandler = {
   attribSetters: CellBespokeAttribSetter[];
 };
 
-// This function filters out diss-allowed attribute drives
+// This function filters out disallowed attribute drives
 // - on* attributes are not settable
 // - gAllowedNewElementAttributes can be added
 // - all other attributes must already exist on the element
@@ -102,7 +102,7 @@ export function bespokeDriveHandlerFactory(level: number, cellId: string, cellPr
         state.formulas.push(parse(v as string));
       }
       catch (err) {
-        flowDebug().warn('Error occured parsing bespoke formula [', v, ']', element, 'error =', err);
+        flowDebug().warn('Error occurred parsing bespoke formula [', v, ']', element, 'error =', err);
       }
     });
 
@@ -152,7 +152,7 @@ export function bespokeDriveHandlerFactory(level: number, cellId: string, cellPr
         });
       }
       catch (err) {
-        flowDebug().warn('Error occured creating bespoke functions for',  element, 'error =', err, 'config =', config);
+        flowDebug().warn('Error occurred creating bespoke functions for',  element, 'error =', err, 'config =', config);
       }
     }
   });
@@ -220,7 +220,7 @@ export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSerie
         });
       }
       catch (err) {
-        flowDebug().warn('Error occured calculating bespoke formulas for', handler.element, 'error =', err);
+        flowDebug().warn('Error occurred calculating bespoke formulas for', handler.element, 'error =', err);
       }
       namespaceUpdated.add(namespace);
     }
@@ -242,7 +242,7 @@ export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSerie
       });
     }
     catch (err) {
-      flowDebug().warn('Error occured calculating bespoke attribute for', handler.element, 'error =', err);
+      flowDebug().warn('Error occurred calculating bespoke attribute for', handler.element, 'error =', err);
     }
   });
 

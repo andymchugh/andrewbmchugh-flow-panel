@@ -2,6 +2,7 @@ import { PanelPlugin } from '@grafana/data';
 import { FlowOptions } from './types';
 import { FlowPanel } from './components/FlowPanel';
 import { DebuggingEditor } from './components/DebuggingEditor';
+import { YamlEditor } from 'components/YamlEditor';
 
 export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((builder) => {
   const svgName = 'ambiThemeSvg1.svg';
@@ -17,25 +18,21 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
       rows: 2,
     },
   })
-  .addTextInput({
+  .addCustomEditor({
+    id: 'panelConfig',
     path: 'panelConfig',
     name: 'Panel Config',
     description: `YAML file containing the panel config.`,
+    editor: YamlEditor,
     defaultValue: 'https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig1.yaml',
-    settings: {
-      useTextarea: true,
-      rows: 2,
-    },
   })
-  .addTextInput({
+  .addCustomEditor({
+    id: 'siteConfig',
     path: 'siteConfig',
     name: 'Site Config',
     description: `YAML file containing the site config.`,
     defaultValue: '',
-    settings: {
-      useTextarea: true,
-      rows: 2,
-    },
+    editor: YamlEditor,
   })
   .addBooleanSwitch({
     path: 'panZoomEnabled',

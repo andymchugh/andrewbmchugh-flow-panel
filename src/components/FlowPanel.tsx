@@ -101,6 +101,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
 
   const [svgStr, setSvgStr] = useState<string | undefined>();
   const [panelConfig, setPanelConfig] = useState<PanelConfig | undefined>(undefined);
+  const panelConfigError = useRef<string | undefined>('');
   const [siteConfig, setSiteConfig] = useState<SiteConfig | undefined>(undefined);
   const [initialized, setInitialized] = useState<boolean>(false);
   const [highlighterSelection, setHighlighterSelection] = useState<string|undefined>(undefined);
@@ -115,7 +116,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
 
   //---------------------------------------------------------------------------
   // Dynamic URL Terms: If we load from url we record any variable substitutions
-  // that occured so we can force a re-initialize if any of those variables change
+  // that occurred so we can force a re-initialize if any of those variables change
   // value.
 
   const [variableIdsSvg, setVariableIdsSvg] = useState<string>('');
@@ -128,13 +129,14 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
 
   useEffect(() => {
     svgHolderRef.current = undefined;
+    panelConfigError.current = '';
     setInitialized(false);
     setSvgStr(undefined);
     setPanelConfig(undefined);
     setSiteConfig(undefined);
     loadSvg(options.svg, setSvgStr, setVariableIdsSvg);
-    loadYaml(options.siteConfig, (config) => {setSiteConfig(siteConfigFactory(config))}, setVariableIdsSite);
-    loadYaml(options.panelConfig, (config) => {setPanelConfig(panelConfigFactory(config))}, setVariableIdsPanel);
+    loadYaml(options.siteConfig, panelConfigError, (config) => {setSiteConfig(siteConfigFactory(config))}, setVariableIdsSite);
+    loadYaml(options.panelConfig, panelConfigError, (config) => {setPanelConfig(panelConfigFactory(config))}, setVariableIdsPanel);
   }, [options.svg, options.panelConfig, options.siteConfig, actDynamicUrlCtr]);
 
   //---------------------------------------------------------------------------
@@ -155,7 +157,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   }
 
   //---------------------------------------------------------------------------
-  // Initialise DOM and config
+  // Initialize DOM and config
 
   useEffect(() => {
     if (svgStr && panelConfig && siteConfig) {
@@ -208,7 +210,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
         }
       }
       catch (err) {
-        flowDebug().warn('Error occured accessing variable', variable, ', error =', err);
+        flowDebug().warn('Error occurred accessing variable', variable, ', error =', err);
       }
     });
   

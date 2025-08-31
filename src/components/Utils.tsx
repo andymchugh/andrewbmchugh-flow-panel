@@ -16,7 +16,7 @@ const gShapeElements: Set<string> = new Set<string>([
 let gIdCallCount = 0;
 
 //-----------------------------------------------------------------------------
-// Centralised debug
+// Centralized debug
 //------------------
 
 export function flowDebug() {

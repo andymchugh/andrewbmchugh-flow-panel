@@ -11,6 +11,7 @@ export type TimeSliderMode = 'local' | 'time' | 'position';
 export interface FlowOptions {
   svg: string;
   panelConfig: string;
+  panelConfigError: string;
   siteConfig: string;
   panZoomEnabled: boolean;
   animationsEnabled: boolean;
