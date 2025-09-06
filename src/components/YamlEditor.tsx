@@ -8,7 +8,6 @@ export const YamlEditor = (props: any) => {
   const styles = useStyles2(getStyles);
   let resizeObs: any, global_editor: any
 
-
   function handleEditorDidMount(editor: any, monaco: any) {
     editor._domElement.style.overflow='auto'
     editor._domElement.style.resize='vertical'
@@ -20,6 +19,11 @@ export const YamlEditor = (props: any) => {
     resizeObs.observe(editor._domElement)
   }
 
+  function handleEditorWillUnmout( ) {
+    resizeObs.disconnect(global_editor._domElement)
+    global_editor.dispose()
+  }
+
   return (
     <div>
       <CodeEditor
@@ -27,11 +31,12 @@ export const YamlEditor = (props: any) => {
         language='yaml'
         height={100}
         onEditorDidMount={handleEditorDidMount}
+        onEditorWillUnmount={handleEditorWillUnmout}
         containerStyles={styles.codeEditorContainer}
         showMiniMap={false}
         showLineNumbers={false}
         readOnly={false}
-        onChange={props.onChange}
+        onBlur={props.onChange}
         monacoOptions={{ 
           automaticLayout: true
         }}
