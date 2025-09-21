@@ -18,6 +18,7 @@ export type ThresholdNumber = {
   color: string;
   level: number;
   order: number;
+  blinkColor: string;
 };
 
 export type ThresholdPattern = {
@@ -25,6 +26,7 @@ export type ThresholdPattern = {
   pattern: string;
   regexp: RegExp;
   order: number;
+  blinkColor: string;
 };
 
 
@@ -78,6 +80,7 @@ export type PanelConfigCellColor = DataRefDrive & {
   thresholds: ThresholdNumber[] |undefined;
   thresholdPatternsRef: string | undefined;
   thresholdPatterns: ThresholdPattern[] | undefined;
+  blinkDurationSecs: number;
 };
 
 export type PanelConfigElementFilter = {
@@ -289,6 +292,7 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
         color.thresholds.forEach(function(threshold, index) {
           threshold.color = resolveColor(threshold.color);
           threshold.order = typeof threshold.order === 'number' ? threshold.order : index;
+          threshold.blinkColor = resolveColor(threshold.blinkColor);
         });
       }
       if (!color.thresholdPatterns && color.thresholdPatternsRef) {
@@ -299,6 +303,7 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
           threshold.color = resolveColor(threshold.color);
           threshold.order = typeof threshold.order === 'number' ? threshold.order : index;
           threshold.regexp = typeof threshold.pattern === 'object' ? threshold.regexp : new RegExp(threshold.pattern);
+          threshold.blinkColor = resolveColor(threshold.blinkColor);
         });
       }
       if (typeof color.datapoint === 'undefined') {

@@ -1,0 +1,100 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": 27,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 14,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "animationControlEnabled": true,
+        "animationsEnabled": true,
+        "debuggingCtr": {
+          "colorsCtr": 0,
+          "dataCtr": 0,
+          "displaySvgCtr": 0,
+          "mappingsCtr": 0,
+          "timingsCtr": 0
+        },
+        "highlighterEnabled": true,
+        "highlighterSelection": "",
+        "panZoomEnabled": true,
+        "panelConfig": "---\n\n#------------------------------------------------------------------------------\n# YAML Aliases to simplify maintenance\n\nanchorLinks:\n  - link: &grafana-home\n      url: \"https://grafana.com/\"\n      params: \"time\"\n  - threshold_three_status: &threshold_three_status\n        - {color: \"green\", level: 0}\n        - color: \"orange\"\n          level: 500\n          blinkColor: \"yellow\"\n        - color: \"red\"\n          level: 800\n          blinkColor: \"white\"\n\n#------------------------------------------------------------------------------\n# Panel Config\n\ncellIdPreamble: \"cell-\"\ncells: \n  box1:\n    dataRef: \"test-data-large-sin\"\n    label:\n      separator: \"cr\"\n      units: \"none\"\n      decimalPoints: 0\n    labelColor:\n      gradientMode: \"normal\"\n      thresholds: *threshold_three_status\n      blinkDurationSecs: 1\n\n    # fillColor:\n    #   gradientMode: \"normal\"\n    #   thresholds: *threshold_three_status\n    #   blinkDurationSecs: 1.5\n\n    # link: *grafana-home\n    # strokeColor:\n    #   thresholds: *threshold_three_status\n    #   blinkDurationSecs: 0.8\n\n  box-3:\n    dataRef: \"test-data-large-sin\"\n    fillColor:\n      gradientMode: \"normal\"\n      thresholds: *threshold_three_status\n      blinkDurationSecs: 1\n\n  box-5:\n    dataRef: \"test-data-large-sin\"\n    strokeColor:\n      thresholds: *threshold_three_status\n      blinkDurationSecs: 0.8\n    fillColor:\n      gradientMode: \"normal\"\n      thresholds: *threshold_three_status",
+        "siteConfig": "- myvars:\n  dummy: dummy2",
+        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"background: transparent; background-color: transparent; color-scheme: light dark;\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" width=\"513px\" height=\"81px\" viewBox=\"-0.5 -0.5 513 81\"><defs/><g><g data-cell-id=\"0\"><g data-cell-id=\"1\"><g data-cell-id=\"box1\"><g id=\"cell-box1\" content=\"&lt;UserObject label=&quot;Label&quot;/&gt;\" data-label=\"Label\"><g><rect x=\"2\" y=\"10\" width=\"120\" height=\"60\" rx=\"9\" ry=\"9\" fill=\"#ffffff\" stroke=\"#000000\" stroke-width=\"4\" pointer-events=\"all\" style=\"fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));\"/></g><g><g><switch><foreignObject style=\"overflow: visible; text-align: left;\" pointer-events=\"none\" width=\"100%\" height=\"100%\" requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"display: flex; align-items: unsafe center; justify-content: unsafe center; width: 118px; height: 1px; padding-top: 40px; margin-left: 3px;\"><div style=\"box-sizing: border-box; font-size: 0; text-align: center; color: #000000; \"><div style=\"display: inline-block; font-size: 12px; font-family: Helvetica; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; \">Label</div></div></div></foreignObject><text x=\"62\" y=\"44\" fill=\"light-dark(#000000, #ffffff)\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Label</text></switch></g></g></g></g><g data-cell-id=\"box2-container\"><g id=\"cell-box2-container\" content=\"&lt;object label=&quot;&quot; tooltip=&quot;box-2-container-tooltip&quot;/&gt;\" data-label=\"\" data-tooltip=\"box-2-container-tooltip\"><g/></g><g data-cell-id=\"box-3\"><g id=\"cell-box-3\" content=\"&lt;object label=&quot;&quot;/&gt;\" data-label=\"\"><g><ellipse cx=\"452\" cy=\"40\" rx=\"60\" ry=\"40\" fill=\"#ffffff\" stroke=\"#000000\" pointer-events=\"all\" style=\"fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));\"/></g></g></g><g data-cell-id=\"box-4\"><g id=\"cell-box-4\" content=\"&lt;UserObject label=&quot;&quot;/&gt;\" data-label=\"\"><g><path d=\"M 452 10 L 482 40 L 452 70 L 422 40 Z\" fill=\"#ffffff\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));\"/></g></g></g></g><g data-cell-id=\"box-5\"><g id=\"cell-box-5\" content=\"&lt;UserObject label=&quot;Label&quot;/&gt;\" data-label=\"Label\"><g><rect x=\"202\" y=\"10\" width=\"120\" height=\"60\" rx=\"9\" ry=\"9\" fill=\"#ffffff\" stroke=\"#000000\" stroke-width=\"4\" pointer-events=\"all\" style=\"fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));\"/></g><g><g><switch><foreignObject style=\"overflow: visible; text-align: left;\" pointer-events=\"none\" width=\"100%\" height=\"100%\" requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"display: flex; align-items: unsafe center; justify-content: unsafe center; width: 118px; height: 1px; padding-top: 40px; margin-left: 203px;\"><div style=\"box-sizing: border-box; font-size: 0; text-align: center; color: #000000; \"><div style=\"display: inline-block; font-size: 12px; font-family: Helvetica; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; \">Label</div></div></div></foreignObject><text x=\"262\" y=\"44\" fill=\"light-dark(#000000, #ffffff)\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Label</text></switch></g></g></g></g></g></g></g></svg>",
+        "testDataEnabled": true,
+        "timeSliderEnabled": true,
+        "timeSliderMode": "local"
+      },
+      "pluginVersion": "1.18.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "title": "Blinking Color by thresholds",
+      "type": "andrewbmchugh-flow-panel"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 41,
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "test blinking colors by thresholds",
+  "uid": "479cac8c-17a3-450b-82bd-522203c93d14",
+  "version": 2
+}

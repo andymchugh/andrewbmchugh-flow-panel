@@ -10,7 +10,7 @@ import {
   SiteConfig, VariableThresholdScalars } from 'components/Config';
 import { TimeSeriesData } from 'components/TimeSeries';
 import {
-  cellIdFactory, CellIdMaker, getColor, primeColorCache,
+  cellIdFactory, CellIdMaker, getColor, getBlinkColor, primeColorCache,
   variableThresholdScalarsInit, variableThresholdScaleValue, isShapeElement, 
   regExpMatch} from 'components/Utils';
 import { highlightState, HighlightState } from './Highlighter';
@@ -30,6 +30,7 @@ export type SvgCell = {
   text: string;
   cellProps: PanelConfigCell;
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
+  style: HTMLElement;
 };
 
 export type SvgElementAttribs = {
@@ -249,6 +250,7 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
         fillClipDrivers: [],
         text: '',
         cellProps: cellProps,
+        style: doc.createElement("style"),
         variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(),
       };
       cells.set(cellIdShort, cell);
@@ -265,6 +267,9 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
       for (let addition of additions) {
         el.prepend(addition);
       }
+      // insert style element for label blink animation
+      cell.style.setAttribute("id", cellId)
+      el.insertAdjacentElement('afterbegin', cell.style)
     }
   });
   
@@ -448,6 +453,26 @@ function setFlowAnimationAttributes(el: HTMLElement, state: FlowAnimationState) 
   el.style.animationDirection = state.direction;
 }
 
+function setBlinkElement(el: HTMLElement, attributeName: string, color: any, blinkColor: string|undefined, blinkDuration: number) {
+  for (const child of el.childNodes) {
+    const childNode = child as HTMLElement;
+    if( childNode.nodeName === "animate" && childNode.id.startsWith(el.id)) {
+      el.removeChild(childNode)
+      break
+    }
+  }
+  if( blinkColor !== undefined ) {
+    const anim = window.document.createElement('animate');
+    anim.setAttribute('id', el.id + '#animate');
+    anim.setAttribute('attributeName', attributeName);
+    anim.setAttribute('values', color + ';' + blinkColor);
+    anim.setAttribute('dur', `${blinkDuration}s`);
+    anim.setAttribute('calcMode', 'discrete');
+    anim.setAttribute('repeatCount', 'indefinite');
+    el.appendChild(anim)
+  }
+}
+
 type SvgDriveBase = {
   variableValues: Map<string, string>,
   tsData: TimeSeriesData,
@@ -481,6 +506,15 @@ function getThresholdColor(sdb: SvgDriveBase,
   return thresholdColor;
 }
 
+function getThresholdBlinkColor(sdb: SvgDriveBase,
+  cellValueSeed: string | number | null,
+  configCellColor: PanelConfigCellColor | undefined,
+  bespokeData: any) {
+  const colorSeed = thresholdSeed(sdb, configCellColor, cellValueSeed, bespokeData);
+  const thresholdColor = configCellColor && (colorSeed !== null) ? getBlinkColor(configCellColor, colorSeed, sdb.highlight, sdb.highlightFactors) : null;
+  return thresholdColor;
+}
+
 function getThresholdColorCompound(sdb: SvgDriveBase,
   cellValueSeed: string | number | null,
   configCellColorCompound: PanelConfigCellColorCompound,
@@ -494,6 +528,24 @@ function getThresholdColorCompound(sdb: SvgDriveBase,
     const thresholdColor = getThresholdColor(sdb, cellValueSeed, configCellColor, bespokeData);
     if (thresholdColor) {
       compound = compound && chooseSecond(thresholdColor.order, compound.order) ? compound : thresholdColor;
+    }
+  })
+  return compound;
+}
+
+function getThresholdBlinkColorCompound(sdb: SvgDriveBase,
+  cellValueSeed: string | number | null,
+  configCellColorCompound: PanelConfigCellColorCompound,
+  bespokeData: any) {
+  const chooseSecond = configCellColorCompound.function === 'min' ?
+    (first: number, second: number) => second <= first:
+    (first: number, second: number) => second >= first; // default is 'max'
+
+  let compound: any = undefined;
+  configCellColorCompound.colors.forEach((configCellColor) => {
+    const thresholdBlinkColor = getThresholdBlinkColor(sdb, cellValueSeed, configCellColor, bespokeData);
+    if (thresholdBlinkColor) {
+      compound = compound && chooseSecond(thresholdBlinkColor.order, compound.order) ? compound : thresholdBlinkColor;
     }
   })
   return compound;
@@ -546,9 +598,28 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     const cellFlowAnimData = cellData.cellProps.flowAnimation;
     const cellFlowAnimSeed = thresholdSeed(sdb, cellFlowAnimData, cellValueSeed, cellBespokeData);
     const cellFlowAnimState = cellFlowAnimData ? getFlowAnimationState(cellFlowAnimData, animationsEnabled ? cellFlowAnimSeed : null ) : null;
+    let labelBlinkDuration = 0, labelBlinkColor = null
+    if (cellData.cellProps.labelColor || cellData.cellProps.labelColorCompound) {
+      labelBlinkDuration = cellData.cellProps.labelColor?.blinkDurationSecs ? cellData.cellProps.labelColor.blinkDurationSecs : 0;
+      labelBlinkColor = cellData.cellProps.labelColorCompound ?
+        getThresholdBlinkColorCompound(sdb, cellValueSeed, cellData.cellProps.labelColorCompound, cellBespokeData) :
+        getThresholdBlinkColor(sdb, cellValueSeed, cellData.cellProps.labelColor, cellBespokeData);
+  
+      if (labelBlinkDuration > 0 && labelBlinkColor !== null){
+        cellData.style.innerHTML = `
+@keyframes blinking_${cellId} { 50% { color: ${ labelBlinkColor?.color || cellLabelColor?.color || '' }} }
+.blink_${cellId} { animation: blinking_${cellId} ${labelBlinkDuration}s cubic-bezier(1,-0.27,0,1.36) infinite ;}
+`
+        }
+      }
 
-    cellData.fillElements.forEach((el: HTMLElement) => {
+      cellData.fillElements.forEach((el: HTMLElement) => {
       if (cellData.cellProps.labelColor || cellData.cellProps.labelColorCompound) {
+        if (labelBlinkDuration > 0 && labelBlinkColor !== null){
+          el.classList.add(`blink_${cellId}`)
+        } else {
+          el.classList.remove(`blink_${cellId}`)
+        }
         el.style.color = cellLabelColor?.color || elementAttribs.get(el.id)?.styleColor || '';
       }
       if (cellLabelData) {
@@ -556,15 +627,34 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
       }
     });
     if (cellData.cellProps.strokeColor || cellData.cellProps.strokeColorCompound) {
+      const blinkDuration = cellData.cellProps.strokeColor?.blinkDurationSecs ? cellData.cellProps.strokeColor.blinkDurationSecs : 0;
+      const blinkColor = cellData.cellProps.strokeColorCompound ?
+        getThresholdBlinkColorCompound(sdb, cellValueSeed, cellData.cellProps.strokeColorCompound, cellBespokeData) :
+        getThresholdBlinkColor(sdb, cellValueSeed, cellData.cellProps.strokeColor, cellBespokeData);
+
       cellData.strokeElements.forEach((el: HTMLElement) => {
+        if (blinkDuration > 0 && blinkColor !== null){
+          setBlinkElement(el, 'stroke', cellStrokeColor?.color, blinkColor?.color, blinkDuration)
+        }
         setStrokeAttribute(el, cellStrokeColor?.color, elementAttribs.get(el.id));
       });
     }
     if (cellData.cellProps.fillColor || cellData.cellProps.fillColorCompound) {
+      const blinkDuration = cellData.cellProps.fillColor?.blinkDurationSecs ? cellData.cellProps.fillColor.blinkDurationSecs : 0;
+      const blinkColor = cellData.cellProps.fillColorCompound ?
+        getThresholdBlinkColorCompound(sdb, cellValueSeed, cellData.cellProps.fillColorCompound, cellBespokeData) :
+        getThresholdBlinkColor(sdb, cellValueSeed, cellData.cellProps.fillColor, cellBespokeData);
+
       cellData.fillElements.forEach((el: HTMLElement) => {
+        if (blinkDuration > 0 && blinkColor !== null){
+          setBlinkElement(el, 'fill', cellFillColor?.color, blinkColor?.color, blinkDuration)
+        }
         setFillAttribute(el, cellFillColor?.color, elementAttribs.get(el.id));
       });
       cellData.textElements.forEach((el: HTMLElement) => {
+        if (blinkDuration > 0 && blinkColor !== null){
+          setBlinkElement(el, 'fill', cellFillColor?.color, blinkColor?.color, blinkDuration)
+        }
         setFillAttribute(el, cellFillColor?.color, elementAttribs.get(el.id));
       });
     }
