@@ -305,6 +305,19 @@ export function getColorFromPattern(thresholds: ThresholdPattern[], value: strin
   return null;
 }
 
+export function getBlinkColorFromPattern(thresholds: ThresholdPattern[], value: string, highlight: HighlightState, highlightFactors: HighlightFactors) {
+  for (let i = 0; i < thresholds.length; i++) {
+    const threshold = thresholds[i];
+    if (value.match(threshold.regexp)) {
+      return {
+        color: colorLookup(threshold.blinkColor, highlight, highlightFactors),
+        order: threshold.order,
+      }
+    }
+  }
+  return null;
+}
+
 export function getColorFromNumber(gradientMode: ColorGradientMode | undefined, thresholds: ThresholdNumber[], value: number, highlight: HighlightState, highlightFactors: HighlightFactors) {
   let threshold = thresholds[0];
   for (let i = 1; i < thresholds.length; i++) {
@@ -335,12 +348,42 @@ export function getColorFromNumber(gradientMode: ColorGradientMode | undefined, 
   }
 }
 
+export function getBlinkColorFromNumber(gradientMode: ColorGradientMode | undefined, thresholds: ThresholdNumber[], value: number, highlight: HighlightState, highlightFactors: HighlightFactors) {
+  let threshold = thresholds[0];
+  for (let i = 1; i < thresholds.length; i++) {
+    threshold = thresholds[i];
+    if (value < threshold.level) {
+      const thresholdLwr = thresholds[i - 1];
+        // The only other mode is 'none'
+        return {
+          color: colorLookup(thresholdLwr.blinkColor, highlight, highlightFactors),
+          order: thresholdLwr.order,
+        }
+      }
+  }
+  return {
+    color: colorLookup(threshold.blinkColor, highlight, highlightFactors),
+    order: threshold.order,
+  }
+}
+
 export function getColor(cellColorData: PanelConfigCellColor, value: number | string, highlight: HighlightState, highlightFactors: HighlightFactors) {
   if (cellColorData.thresholdPatterns && cellColorData.thresholdPatterns.length > 0) {
     return getColorFromPattern(cellColorData.thresholdPatterns, value.toString(), highlight, highlightFactors);
   }
   else if ((typeof value === 'number') && cellColorData.thresholds && (cellColorData.thresholds.length > 0)) {
     return getColorFromNumber(cellColorData.gradientMode, cellColorData.thresholds, value, highlight, highlightFactors);
+  }
+  return null;
+}
+
+
+export function getBlinkColor(cellColorData: PanelConfigCellColor, value: number | string, highlight: HighlightState, highlightFactors: HighlightFactors) {
+  if (cellColorData.thresholdPatterns && cellColorData.thresholdPatterns.length > 0) {
+    return getBlinkColorFromPattern(cellColorData.thresholdPatterns, value.toString(), highlight, highlightFactors);
+  }
+  else if ((typeof value === 'number') && cellColorData.thresholds && (cellColorData.thresholds.length > 0)) {
+    return getBlinkColorFromNumber(cellColorData.gradientMode, cellColorData.thresholds, value, highlight, highlightFactors);
   }
   return null;
 }
