@@ -290,10 +290,12 @@ cells:
       # - longhex: i.e. 'f00000'
       # - rgb: i.e. 'rgb(255, 0, 0)
       # - hsl: i.e. 'hsl(0, 100%, 50%)'
+      #
+      # version 1.18.6: add optional attributes blinkColor; use same features than for color but for a blinking color
       thresholds:
         - {color: "green", level: 0, order: null}
-        - {color: "orange", level: 500, order: null}
-        - {color: "red", level: 1000, order: null}
+        - {color: "orange", level: 500, order: null, blinkColor: "yellow"}
+        - {color: "red", level: 1000, order: null, blinkColor: "white"}
 
       # This defines an ID to a thresholds set defined in the siteConfig. If you want to share a
       # thresholds set just within the panelConfig you should instead use a yaml anchor/alias.
@@ -323,6 +325,10 @@ cells:
       # yaml anchor/alias. The above 'thresholdPatterns' field takes precedence. Only if undefined will
       # thresholdPatternsRef be checked.
       thresholdPatternsRef: "depth"
+
+      # Version 1.18.6 onwards: add blink feature for the label: will change label color every interval 
+      # duration with normal level color to blinkColor.
+      blinkDurationSecs: 0.8
 
     # Version 1.14.0 onwards: This defines an array of 'labelColor' alongside an
     # aggregation function on how the color should be chosen from the array. If 'labelColor'
@@ -355,6 +361,8 @@ cells:
         - {color: "semi-dark-green", level: 0}
         - {color: "orange", level: 400}
         - {color: "red", level: 800}
+      # Version 1.18.6 onwards: optional blinkColor for threshold and blinkDurationSecs
+      # blinkDurationSecs: 1s
 
       # See labelColor
       thresholdsRef: "depth"
@@ -413,6 +421,9 @@ cells:
 
       # Version 1.14.0 onwards: See labelColor
       thresholdPatternsRef: "depth"
+
+      # Version 1.18.6 onwards: optional blinkColor for threshold and blinkDurationSecs
+      # blinkDurationSecs: 1s
 
     # Version 1.14.0 onwards: This defines an array of 'fillColor' alongside an
     # aggregation function on how the color should be chosen from the array. If 'fillColor'
