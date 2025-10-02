@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.19.0
+
+Miscellaneous Fixes
+-------------------
+- Grafana variables in links are now correctly substituted.
+
 ## 1.18.5
 
 Time Slider Time String
