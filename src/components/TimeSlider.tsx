@@ -81,7 +81,7 @@ const externalDriverPosition = (props: TimeSliderProps, state: TimeSliderState, 
 }
 
 const externalDriver = (props: TimeSliderProps, state: TimeSliderState, payload: any) => {
-  // Confirm validity and relevence
+  // Confirm validity and relevance
   if ((typeof payload === 'object') && (payload.flowPanel?.id !== state.panelId)) {
     const sliderPos = (props.mode === 'time') ? externalDriverTime(props, state, payload) :
       (props.mode === 'position') ? externalDriverPosition(props, state, payload) : null;

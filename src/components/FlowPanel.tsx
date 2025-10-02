@@ -115,7 +115,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
 
   //---------------------------------------------------------------------------
   // Dynamic URL Terms: If we load from url we record any variable substitutions
-  // that occured so we can force a re-initialize if any of those variables change
+  // that occurred so we can force a re-initialize if any of those variables change
   // value.
 
   const [variableIdsSvg, setVariableIdsSvg] = useState<string>('');
@@ -208,7 +208,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
         }
       }
       catch (err) {
-        flowDebug().warn('Error occured accessing variable', variable, ', error =', err);
+        flowDebug().warn('Error occurred accessing variable', variable, ', error =', err);
       }
     });
   
