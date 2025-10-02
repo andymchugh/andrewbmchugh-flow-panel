@@ -103,4 +103,7 @@ cells:
     link:
       url: "${demoCellName}"
       params: null
-
+  grafanaVariable:
+    link:
+      url: "https://github.com/andymchugh/andrewbmchugh-flow-panel/tree/main/${grafanaVariable}"
+      params: "time"

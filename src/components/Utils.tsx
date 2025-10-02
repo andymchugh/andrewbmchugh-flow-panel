@@ -2,6 +2,7 @@ import { GrafanaTheme2, colorManipulator } from '@grafana/data';
 import { SvgAttribs, SvgCell, SvgElementAttribs } from 'components/SvgUpdater'
 import { Background, ColorGradientMode, HighlightFactors, Link, PanelConfigCellColor, ThresholdNumber, ThresholdPattern, VariableThresholdScalars } from 'components/Config';
 import { HighlightState } from './Highlighter';
+import { TemplateSrv } from '@grafana/runtime';
 
 
 export type CellIdMaker = () => string;
@@ -82,7 +83,7 @@ function tokenStr(key: string) {
   return '\$\{'.concat(key, '\}');
 }
 
-export function constructUrl(link: Link, attribs: SvgElementAttribs, linkVariables: Map<string, string>) {
+export function constructUrl(link: Link, attribs: SvgElementAttribs, linkVariables: Map<string, string>, templateSrv: TemplateSrv) {
   // Blend reserved tokens with variables
   const linkVars = new Map([
     ...linkVariables,
@@ -98,7 +99,7 @@ export function constructUrl(link: Link, attribs: SvgElementAttribs, linkVariabl
   });
 
   // Generate url
-  url = createUrl(url) || "";
+  url = createUrl(templateSrv.replace(url)) || "";
 
   // Append window args
   if (url.length) {
