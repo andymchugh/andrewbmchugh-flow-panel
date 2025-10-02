@@ -298,7 +298,7 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
   variableThresholdScalarsInit(variableValues, cells, siteConfig.variableThresholdScalars);
   
   // Ensure the viewBox and dimension attributes are coherent. Without this the resulting
-  // image won't scale and center corrently
+  // image won't scale and center correctly
   const dimensions = dimensionCoherence(doc);
 
   // Set the SVG theme to match grafana. This ensures undriven aspects of the drawing
