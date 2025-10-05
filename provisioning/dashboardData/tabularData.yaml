@@ -1,0 +1,65 @@
+---
+# This panelConfig is intended for use with Svg1.
+
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
+
+anchorLinks:
+  - link: &grafana-home
+      url: "https://grafana.com/"
+      params: "time"
+
+#------------------------------------------------------------------------------
+# Panel Config
+
+gradientMode: "hue"
+cellIdPreamble: "cell-"
+dataRefTransform:
+  namespaced: true
+  queries:
+    A: {tabularKeyColumn: "name"}
+
+cells: 
+  drawio:
+    link:
+      url: "https://app.diagrams.net/?p=svgdata"
+  docs:
+    link:
+      url: "https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/README.md"
+  inbox_depth:
+    dataRef: "B.B-series"
+    label:
+      separator: "cr"
+      units: "ops"
+    labelColor:
+      thresholds:
+        - {color: "green", level: 0}
+        - {color: "orange", level: 50}
+    link: *grafana-home
+  db_transactions:
+    dataRef: "A.weight_height.csv.size"
+    label:
+      separator: "replace"
+      units: "none"
+    labelColor:
+      thresholds:
+        - {color: "green", level: 0}
+        - {color: "orange", level: 400000}
+    link: *grafana-home
+  start_rate:
+    dataRef: "A.browser_marketshare.csv.mediaType"
+    label:
+      separator: "replace"
+      units: "none"
+    link: *grafana-home
+  active_workers:
+    dataRef: "B.B-series"
+    label:
+      separator: "cr"
+      units: "none"
+      decimalPoints: 0
+    labelColor:
+      thresholds:
+        - {color: "#888888", level: 0}
+        - {color: "light-blue", level: 50}
+    link: *grafana-home
