@@ -2,9 +2,19 @@
 
 ## 1.19.0
 
-Miscellaneous Fixes
--------------------
-- Grafana variables in links are now correctly substituted.
+Tabular Data and Namespaced Data Support
+----------------------------------------
+New panel config term "dataRefTransform" introduced. This provides two features:
+- You can namespace a dataRef with the queryName (i.e. A.myTimeSeries). Doing this allows
+  you to separate overlapping timeseries names returned by the different queries
+  (i.e. A.myTimeSeries vs B.myTimeSeries).
+- You can specify a row identifier column for the 'not-timeseries' tabular data usecase.
+  This provides a way to address any cell in a returned data-table as its own dataRef.
+
+Grafana variables in links
+--------------------------
+Grafana variables in links are now correctly substituted. This fixes a bug introduced
+around 1.17.
 
 ## 1.18.5
 

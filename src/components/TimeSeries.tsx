@@ -1,6 +1,6 @@
 import { FieldType, getFieldDisplayName } from '@grafana/data';
 import { sliderTime } from 'components/TimeSlider';
-import { TestConfig } from './Config';
+import { DataRefTransform, DataRefTransformQuery, TestConfig } from './Config';
 
 export type TimeSeries = {
   time: {
@@ -66,35 +66,70 @@ export function seriesExtend(tsData: TimeSeriesData, testConfig: TestConfig | un
   }
 }
 
+function transformTabular(frame: any, keyColumnName: string, applyNamespace: (name: string) => string, tsNamed: Record<string, any>) {
+  let keyColumnIndex = undefined;
+  for (let i = 0; i < frame.fields.length; i++) {
+    if (keyColumnName === getFieldDisplayName(frame.fields[i], frame)) {
+      keyColumnIndex = i;
+      break;
+    }
+  }
+  if (typeof keyColumnIndex === 'number') {
+    const keyColumn = frame.fields[keyColumnIndex];
+    frame.fields.forEach((ts: any) => {
+      if (ts !== keyColumn) {
+        const fieldName = getFieldDisplayName(ts, frame);
+        for (let i = 0; i < ts.values.length; i++) {
+          const name = applyNamespace(keyColumn.values[i] + '.' + fieldName);
+          const values = [ts.values[i]];
+          tsNamed[name] = {values: values, time: null};
+        }
+      }
+    })
+  }
+}
+
 // This transforms the data so we have name-indexable sets of time and value.
 // i.e.:
 // - series: [fields: [{name, values}]] => Map<string, TimeSeries>
-export function seriesTransform(series: any[], panelTimeMin: number, panelTimeMax: number): TimeSeriesData {
+export function seriesTransform(series: any[], panelTimeMin: number, panelTimeMax: number, dataRefTransform: DataRefTransform | undefined): TimeSeriesData {
   const timeSeries = new Map<string, TimeSeries>();
   let timeMin: number | undefined = undefined;
   let timeMax: number | undefined = undefined;
 
+  const drt = dataRefTransform || {namespaced: false, queries: new Map<string, DataRefTransformQuery>()};
+
   series.forEach((frame: any) => {
+    function applyNamespace(name: string) {
+      return drt.namespaced ? (frame.refId || 'GBL') + '.' + name : name;
+    }
+
     if (('fields' in frame) && Array.isArray(frame.fields)) {
       let tsTime: null | {valuesIndex: null | number, values: any} = null;
       let tsNamed: Record<string, any> = {};
   
-      frame.fields.forEach(function(ts: any) {
-        if ((tsTime === null) && (ts.type === FieldType.time)) {
-          // The index is stored alongside the ts because it has potential to be shared
-          // and if so, only has to be calculated once.
-          tsTime = {valuesIndex: null, values: ts.values};
-          if (tsTime.values.length > 0) {
-            const maxInd = tsTime.values.length - 1;
-            timeMin = Math.min(timeMin ?? tsTime.values[0], tsTime.values[0]);
-            timeMax = Math.max(timeMax ?? tsTime.values[maxInd], tsTime.values[maxInd]);
+      const keyColumnName = frame.refId && drt.queries.get(frame.refId)?.tabularKeyColumn;
+      if (keyColumnName) {
+        transformTabular(frame, keyColumnName, applyNamespace, tsNamed);
+      }
+      else {
+        frame.fields.forEach(function(ts: any) {
+          if ((tsTime === null) && (ts.type === FieldType.time)) {
+            // The index is stored alongside the ts because it has potential to be shared
+            // and if so, only has to be calculated once.
+            tsTime = {valuesIndex: null, values: ts.values};
+            if (tsTime.values.length > 0) {
+              const maxInd = tsTime.values.length - 1;
+              timeMin = Math.min(timeMin ?? tsTime.values[0], tsTime.values[0]);
+              timeMax = Math.max(timeMax ?? tsTime.values[maxInd], tsTime.values[maxInd]);
+            }
           }
-        }
-        else {
-          const name = getFieldDisplayName(ts, frame);
-          tsNamed[name] = {values: ts.values, time: null};
-        }
-      });
+          else {
+            const name = applyNamespace(getFieldDisplayName(ts, frame));
+            tsNamed[name] = {values: ts.values, time: null};
+          }
+        });
+      }
       // Embed a time shallow copy against each ts in the frame and export to holder
       tsTime = tsTime || {values: [0], valuesIndex: null};
       for (const [name, ts] of Object.entries<any>(tsNamed)) {

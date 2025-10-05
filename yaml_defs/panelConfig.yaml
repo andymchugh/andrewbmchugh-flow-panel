@@ -150,6 +150,40 @@ cellColorMappings:
 # Valid values are undefined, "last", "lastNotNull"
 datapoint: "last"
 
+# Version 1.19.0 onwards: This section defines how the grafana query data should be transformed.
+dataRefTransform:
+  # This defines how query data is named. When false, query data is named as the data would be seen in
+  # a time-series panel legend. When true, that name is given a '<queryName>.' preamble. Note that not all
+  # datasources will support this. The queryName is sourced from the query result 'refId'. If not present
+  # and the flag set, a default value of 'GBL' is used. The flag defaults to false if not defined.
+  # This term is useful for people who can't provide unique display names across queries.
+  namespaced: false
+
+  # This 'queries' section defines per-query specialization terms.
+  # 'tabularKeyColumn' defines how tabular (as opposed to timeseries) data cells can be addressed.
+  # When set, tabular data gets transformed into a dataRef per keyColumn value. Note this is only ever
+  # needed if the table contains more than one row.
+  # i.e. Given a returned table from query "A" of:
+  # | name                | size | mediaType | 
+  # | --------------------|------|-----------|
+  # | browser_marketshare |   45 |       csv | 
+  # | weight_height       |  123 |       png | 
+  #
+  # and yaml config of:
+  #   dataRefTransform:
+  #     namespaced: true
+  #     queries:
+  #       A: {tabularKeyColumn: "name"}
+  #
+  # the following dataRef names will be available for driving cells:
+  # - A.browser_marketshare.size = [45]
+  # - A.browser_marketshare.mediaType = ["csv"]
+  # - A.weight_height.size = [123]
+  # - A.weight_height.mediaType = ["png"]
+  queries:
+    ParticularQueryName:
+      tabularKeyColumn: "columnNameToSourceDataRefNameValuesFrom"
+
 # This defines the default color gradientMode. It defines the default value on cell labelColor.gradientMode
 # and fillColor.gradientMode for when the field is undefined. Values are "hue" and "none" with
 # "none" being the default when undefined.
@@ -183,6 +217,8 @@ cells:
     # the Grafana query name, but to a time series returned by a query (e.g. for InfluxDB, that would
     # be the 'Alias' name).
     # It can be overriden on an attribute by attribute basis.
+    # See 'dataRefTransform.namespaced', defined at the panel scope, for whether the name entered here
+    # should be namespaced with the query name.
     dataRef: "test-data-large-sin"
 
     # Version 1.16.0 onwards: Optional alternative data source for the cell taken from the bespoke drive

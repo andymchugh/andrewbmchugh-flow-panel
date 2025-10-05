@@ -184,6 +184,15 @@ export type SiteConfig = {
   valueMappings: Map<string, FlowValueMapping[]>;
 };
 
+export type DataRefTransformQuery = {
+  tabularKeyColumn: string | undefined;
+};
+
+export type DataRefTransform = {
+  namespaced: boolean;
+  queries: Map<string, DataRefTransformQuery>;
+};
+
 export type PanelConfig = {
   test: TestConfig;
   zoomPanPinch: ZoomPanPinch;
@@ -194,6 +203,7 @@ export type PanelConfig = {
   variableThresholdScalars: Map<string, VariableThresholdScalars[]>;
   gradientMode: ColorGradientMode;
   datapoint: DatapointMode | undefined;
+  dataRefTransform: DataRefTransform;
   cellIdPreamble: string;
   cellIdExtender: string;
   cellLabelDecimalPoints: number | undefined;
@@ -228,6 +238,8 @@ export function panelConfigFactory(config: any) {
     condensed: config.tagConfig?.condensed ?? false,
   };
 
+  const dataRefTransformQueries = new Map<string, DataRefTransformQuery>(Object.entries(config.dataRefTransform?.queries || {}));
+
   return {
     test: config.test || {},
     zoomPanPinch: config.zoomPanPinch || {},
@@ -241,6 +253,10 @@ export function panelConfigFactory(config: any) {
     variableThresholdScalars: new Map<string, VariableThresholdScalars[]>(Object.entries(config.variableThresholdScalars || {})),
     gradientMode: config.gradientMode || 'none',
     datapoint: config.datapoint || 'last',
+    dataRefTransform: {
+      namespaced: config.dataRefTransform?.namespaced,
+      queries: dataRefTransformQueries,
+    },
     cellIdPreamble: config.cellIdPreamble || '',
     cellIdExtender: config.cellIdExtender || '@flowrpt',
     cellLabelDecimalPoints: (typeof config.cellLabelDecimalPoints === 'undefined') ? 0 : config.cellLabelDecimalPoints,

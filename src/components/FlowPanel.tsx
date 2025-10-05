@@ -186,7 +186,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
 
   const dataConverter = function(arr: any[]) { return arr.map((item: any) => toDataFrame(item)) };
   const dataFrames = instrument('toDataFrame', dataConverter)(data.series || []);
-  let tsData = instrument('transform', seriesTransform)(dataFrames, timeMin, timeMax);
+  let tsData = instrument('transform', seriesTransform)(dataFrames, timeMin, timeMax, panelConfig?.dataRefTransform);
 
   if (options.testDataEnabled) {
     instrument('seriesExtend', seriesExtend)(tsData, panelConfig?.test);
