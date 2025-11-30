@@ -60,12 +60,17 @@ export function appendUrlParams(url: string, params: string): string {
 }
 
 export function isUrl(str: string) {
-  try {
-    return Boolean(new URL(str));
+  // Only treat as URL if it has a scheme (://) or starts with /
+  // Everything else is inline content
+  if (str.includes('://') || str.trimStart().startsWith('/')) {
+    try {
+      return Boolean(new URL(str, document.baseURI));
+    }
+    catch(err) {
+      return false;
+    }
   }
-  catch(err) {
-    return false;
-  }
+  return false;
 }
 
 export function createUrl(url: string) {

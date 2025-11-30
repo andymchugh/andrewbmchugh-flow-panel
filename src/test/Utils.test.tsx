@@ -43,6 +43,13 @@ test('isUrl', () => {
     expect(isUrl('    https://mylink'    )).toEqual(true);
     expect(isUrl('file://mylink')).toEqual(true);
     expect(isUrl('    file://mylink'    )).toEqual(true);
+    // Test absolute paths (should be treated as URLs)
+    expect(isUrl('/path/to/resource')).toEqual(true);
+    expect(isUrl('/diagram.svg')).toEqual(true);
+    expect(isUrl('/config/panel.yaml')).toEqual(true);
+    // Test inline YAML content (should NOT be treated as URLs)
+    expect(isUrl('cells:\n  foo: bar')).toEqual(false);
+    expect(isUrl('background:\n  color: red')).toEqual(false);
 });
 
 //-----------------------------------------------------------------------------
