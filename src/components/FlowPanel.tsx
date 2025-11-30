@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { css, cx } from '@emotion/css';
 import { Button, useStyles2, useTheme2 } from '@grafana/ui';
-import { getTemplateSrv } from '@grafana/runtime';
+import { getTemplateSrv, locationService } from '@grafana/runtime';
 import { GrafanaTheme2, PanelProps, toDataFrame } from '@grafana/data';
 import { FlowOptions, DebuggingCtrs } from '../types';
 import { configInit, panelConfigFactory, PanelConfig, siteConfigFactory, SiteConfig } from 'components/Config';
@@ -82,6 +82,32 @@ function clickHandlerFactory(elementAttribs: Map<string, SvgElementAttribs>, lin
     if (event.target) {
       const element = event.target as HTMLElement;
       const attribs = elementAttribs.get(element.id);
+
+      // Handle setVariables - update dashboard variables without navigation
+      const setVariables = attribs?.setVariables;
+      if (setVariables) {
+        const updates: Record<string, any> = {};
+        Object.keys(setVariables).forEach((varName) => {
+          let varValue = setVariables[varName];
+
+          // Process variable substitution
+          varValue = varValue.replace(/\$\{cell\.name\}/g, attribs.name || '');
+          varValue = varValue.replace(/\$\{cell\.dataRef\}/g, attribs.dataRef || '');
+
+          // Replace linkVariables placeholders
+          linkVariables.forEach((value, key) => {
+            varValue = varValue.replace(new RegExp(`\\$\\{${key}\\}`, 'g'), value);
+          });
+
+          // Replace Grafana template variables
+          varValue = getTemplateSrv().replace(varValue);
+
+          updates[`var-${varName}`] = varValue;
+        });
+        locationService.partial(updates, true);
+        return;
+      }
+
       const link = attribs?.link;
       if (link) {
         const url = constructUrl(link, attribs, linkVariables, getTemplateSrv());

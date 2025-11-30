@@ -1,0 +1,74 @@
+{
+  "title": "Variable Update Test",
+  "uid": "test-var-links-001",
+  "editable": true,
+  "tags": ["flow-panel", "test", "variables"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 0,
+  "refresh": "",
+  "templating": {
+    "list": [
+      {
+        "name": "region",
+        "type": "custom",
+        "query": "us-west-2,us-east-1,eu-central-1",
+        "current": { "text": "us-west-2", "value": "us-west-2" },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "options": []
+      },
+      {
+        "name": "environment",
+        "type": "custom",
+        "query": "production,staging,development",
+        "current": { "text": "development", "value": "development" },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "options": []
+      },
+      {
+        "name": "service",
+        "type": "custom",
+        "query": "api-gateway,web-frontend,database,none",
+        "current": { "text": "none", "value": "none" },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "options": []
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "Instructions",
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
+      "options": {
+        "mode": "markdown",
+        "content": "# Variable Update Test Dashboard\n\nClick cells below to update variables without page reload.\n\n**Current Values:** Region=`${region}` | Environment=`${environment}` | Service=`${service}`"
+      }
+    },
+    {
+      "id": 2,
+      "type": "andrewbmchugh-flow-panel",
+      "title": "Variable Update Flow Diagram",
+      "gridPos": { "h": 15, "w": 24, "x": 0, "y": 3 },
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "options": {
+        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" width=\"800\" height=\"600\" viewBox=\"0 0 800 600\"><defs/><g><text x=\"400\" y=\"20\" fill=\"#424242\" font-family=\"Helvetica\" font-size=\"14\" text-anchor=\"middle\" font-weight=\"bold\">Variable Update Test - Click cells below</text><g data-cell-id=\"region-us-west\"><g id=\"cell-region-us-west\" data-label=\"US West\"><rect x=\"20\" y=\"40\" width=\"150\" height=\"60\" fill=\"#e3f2fd\" stroke=\"#1976d2\" stroke-width=\"2\" pointer-events=\"all\"/><text x=\"95\" y=\"75\" fill=\"#1976d2\" font-size=\"14\" text-anchor=\"middle\" font-weight=\"bold\">US West</text></g></g><g data-cell-id=\"region-us-east\"><g id=\"cell-region-us-east\" data-label=\"US East\"><rect x=\"190\" y=\"40\" width=\"150\" height=\"60\" fill=\"#e3f2fd\" stroke=\"#1976d2\" stroke-width=\"2\" pointer-events=\"all\"/><text x=\"265\" y=\"75\" fill=\"#1976d2\" font-size=\"14\" text-anchor=\"middle\" font-weight=\"bold\">US East</text></g></g><g data-cell-id=\"region-eu\"><g id=\"cell-region-eu\" data-label=\"Europe\"><rect x=\"360\" y=\"40\" width=\"150\" height=\"60\" fill=\"#e3f2fd\" stroke=\"#1976d2\" stroke-width=\"2\" pointer-events=\"all\"/><text x=\"435\" y=\"75\" fill=\"#1976d2\" font-size=\"14\" text-anchor=\"middle\" font-weight=\"bold\">Europe</text></g></g><g data-cell-id=\"env-production\"><g id=\"cell-env-production\" data-label=\"Production\"><rect x=\"20\" y=\"120\" width=\"150\" height=\"60\" fill=\"#ffebee\" stroke=\"#c62828\" stroke-width=\"2\" pointer-events=\"all\"/><text x=\"95\" y=\"155\" fill=\"#c62828\" font-size=\"14\" text-anchor=\"middle\" font-weight=\"bold\">Production</text></g></g><g data-cell-id=\"env-staging\"><g id=\"cell-env-staging\" data-label=\"Staging\"><rect x=\"190\" y=\"120\" width=\"150\" height=\"60\" fill=\"#fff3e0\" stroke=\"#ef6c00\" stroke-width=\"2\" pointer-events=\"all\"/><text x=\"265\" y=\"155\" fill=\"#ef6c00\" font-size=\"14\" text-anchor=\"middle\" font-weight=\"bold\">Staging</text></g></g><g data-cell-id=\"env-dev\"><g id=\"cell-env-dev\" data-label=\"Development\"><rect x=\"360\" y=\"120\" width=\"150\" height=\"60\" fill=\"#e8f5e9\" stroke=\"#2e7d32\" stroke-width=\"2\" pointer-events=\"all\"/><text x=\"435\" y=\"155\" fill=\"#2e7d32\" font-size=\"14\" text-anchor=\"middle\" font-weight=\"bold\">Development</text></g></g><g data-cell-id=\"reset-all\"><g id=\"cell-reset-all\" data-label=\"Reset All\"><rect x=\"520\" y=\"40\" width=\"230\" height=\"140\" fill=\"#fafafa\" stroke=\"#616161\" stroke-width=\"2\" pointer-events=\"all\"/><text x=\"635\" y=\"105\" fill=\"#616161\" font-size=\"16\" text-anchor=\"middle\" font-weight=\"bold\">Reset All</text><text x=\"635\" y=\"125\" fill=\"#616161\" font-size=\"11\" text-anchor=\"middle\">Clear all variables</text></g></g></g></svg>",
+        "panelConfig": "---\ncellIdPreamble: \"cell-\"\n\nlinkVariables:\n  defaultRegion: \"us-west-2\"\n  defaultEnv: \"development\"\n\ncells:\n  region-us-west:\n    setVariables:\n      region: \"us-west-2\"\n\n  region-us-east:\n    setVariables:\n      region: \"us-east-1\"\n\n  region-eu:\n    setVariables:\n      region: \"eu-central-1\"\n\n  env-production:\n    setVariables:\n      environment: \"production\"\n\n  env-staging:\n    setVariables:\n      environment: \"staging\"\n\n  env-dev:\n    setVariables:\n      environment: \"development\"\n\n  reset-all:\n    setVariables:\n      region: \"${defaultRegion}\"\n      environment: \"${defaultEnv}\"\n      service: \"none\"\n",
+        "siteConfig": "",
+        "panZoomEnabled": false,
+        "animationsEnabled": false,
+        "testDataEnabled": false
+      }
+    }
+  ]
+}

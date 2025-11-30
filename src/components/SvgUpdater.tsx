@@ -7,7 +7,7 @@ import {
   PanelConfigCellColorCompound,
   PanelConfigCellFillLevel, PanelConfigCellFlowAnimation, PanelConfigCellLabel,
   PanelConfigElementFilter,
-  SiteConfig, VariableThresholdScalars } from 'components/Config';
+  SetVariables, SiteConfig, VariableThresholdScalars } from 'components/Config';
 import { TimeSeriesData } from 'components/TimeSeries';
 import {
   cellIdFactory, CellIdMaker, getColor, primeColorCache,
@@ -36,6 +36,7 @@ export type SvgElementAttribs = {
   name: string;
   dataRef: string | null;
   link: Link | null;
+  setVariables: SetVariables | null;
   strokeColor: string | null;
   fillColor: string | null;
   styleColor: string | null;
@@ -275,12 +276,14 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
   cells.forEach((cell, cellIdShort) => {
     const panelConfigCell = panelConfig.cells.get(cellIdShort);
     const link = panelConfigCell ? panelConfigCell.link : null;
+    const setVariables = panelConfigCell ? panelConfigCell.setVariables : null;
     [cell.textElements, cell.fillElements].forEach((arr) => {
       arr.forEach((el) => {
         elementAttribs.set(el.id, {
           name: cellIdShort,
           dataRef: panelConfigCell?.dataRef || null,
           link: link || null,
+          setVariables: setVariables || null,
           strokeColor: el.getAttribute('stroke'),
           fillColor: el.getAttribute('fill'),
           styleColor: el.style?.color,

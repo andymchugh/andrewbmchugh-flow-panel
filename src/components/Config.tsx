@@ -34,6 +34,10 @@ export type Link = {
   sameTab: boolean | undefined;
 };
 
+export type SetVariables = {
+  [key: string]: string;
+};
+
 export type Background = {
   darkThemeColor: string | undefined;
   lightThemeColor: string | undefined;
@@ -131,6 +135,7 @@ export type PanelConfigCellBespoke = {
 export type PanelConfigCell = DataRefDrive & {
   linkRef: string | undefined;
   link: Link | undefined;
+  setVariables: SetVariables | undefined;
   label: PanelConfigCellLabel | undefined;
   labelColor: PanelConfigCellColor | undefined;
   labelColorCompound: PanelConfigCellColorCompound | undefined;
@@ -224,6 +229,12 @@ export function panelConfigFactory(config: any) {
       if (Array.isArray(cell.tags)) {
         cell.tags = new Set(cell.tags);
         cell.tags.forEach((tag: string) => {tagDrivable.add(tag)});
+      }
+
+      // Validate mutually exclusive: link and setVariables
+      if (cell.link && cell.setVariables) {
+        console.warn(`Cell '${cellId}' has both 'link' and 'setVariables' defined. Only 'setVariables' will be used.`);
+        cell.link = undefined;
       }
     });
 
