@@ -34,6 +34,14 @@ export type Link = {
   sameTab: boolean | undefined;
 };
 
+export type ClickActions = {
+  grafanaVariables: {
+    on: Object | undefined;
+    off: Object | undefined;
+  };
+  highlighterSelection: string | undefined;
+};
+
 export type Background = {
   darkThemeColor: string | undefined;
   lightThemeColor: string | undefined;
@@ -131,6 +139,7 @@ export type PanelConfigCellBespoke = {
 export type PanelConfigCell = DataRefDrive & {
   linkRef: string | undefined;
   link: Link | undefined;
+  clickActions: ClickActions;
   label: PanelConfigCellLabel | undefined;
   labelColor: PanelConfigCellColor | undefined;
   labelColorCompound: PanelConfigCellColorCompound | undefined;

@@ -1,5 +1,6 @@
 import { getValueFormatterIndex, formattedValueToString, GrafanaTheme2 } from '@grafana/data';
 import { 
+  ClickActions,
   DataRefDrive,
   FlowValueMapping, HighlightFactors,
   LabelSeparator, Link,
@@ -36,6 +37,7 @@ export type SvgElementAttribs = {
   name: string;
   dataRef: string | null;
   link: Link | null;
+  clickActions: ClickActions | null;
   strokeColor: string | null;
   fillColor: string | null;
   styleColor: string | null;
@@ -153,7 +155,9 @@ function recurseElements(level: number, el: HTMLElement, cellData: SvgCell, cell
     if (cellData.cellProps.label && (innerMostDiv(el) || (el.nodeName === 'text'))) {
       el.style.whiteSpace = 'pre';
     }
-    if (cellData.cellProps.link) {
+    if (cellData.cellProps.link ||
+      cellData.cellProps.clickActions?.highlighterSelection ||
+      cellData.cellProps.clickActions?.grafanaVariables?.on) {
       el.style.cursor = 'pointer';
       el.setAttribute('cursor', 'pointer');
     }
@@ -274,13 +278,13 @@ export function svgInit(doc: Document, grafanaTheme: GrafanaTheme2, panelConfig:
 
   cells.forEach((cell, cellIdShort) => {
     const panelConfigCell = panelConfig.cells.get(cellIdShort);
-    const link = panelConfigCell ? panelConfigCell.link : null;
     [cell.textElements, cell.fillElements].forEach((arr) => {
       arr.forEach((el) => {
         elementAttribs.set(el.id, {
           name: cellIdShort,
           dataRef: panelConfigCell?.dataRef || null,
-          link: link || null,
+          link: panelConfigCell?.link || null,
+          clickActions: panelConfigCell?.clickActions || null,
           strokeColor: el.getAttribute('stroke'),
           fillColor: el.getAttribute('fill'),
           styleColor: el.style?.color,

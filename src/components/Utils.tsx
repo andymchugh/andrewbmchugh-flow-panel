@@ -83,20 +83,33 @@ function tokenStr(key: string) {
   return '\$\{'.concat(key, '\}');
 }
 
-export function constructUrl(link: Link, attribs: SvgElementAttribs, linkVariables: Map<string, string>, templateSrv: TemplateSrv) {
-  // Blend reserved tokens with variables
-  const linkVars = new Map([
-    ...linkVariables,
+function substituteTokens(str: string, substitutions: Map<string, string>){
+  substitutions.forEach((value: string, key: string) => {
+    const token = tokenStr(key);
+    str = str.split(token).join(value);
+  });
+  return str;
+}
+
+function substituteReservedTokens(str: string, attribs: SvgElementAttribs){
+  const substitutions = new Map([
     ['cell.name', attribs.name],
     ['cell.dataRef', attribs.dataRef || tokenStr('cell.dataRef')],
   ]);
+  return substituteTokens(str, substitutions);
+}
 
+export function constructGrafanaVariables(grafanaVariables: Object, attribs: SvgElementAttribs, templateSrv: TemplateSrv) {
+  return Object.fromEntries(
+    Object.entries(grafanaVariables).map(([key, value]) => 
+      [`var-${key}`, templateSrv.replace(substituteReservedTokens(value, attribs))])
+    );
+}
+
+export function constructUrl(link: Link, attribs: SvgElementAttribs, linkVariables: Map<string, string>, templateSrv: TemplateSrv) {
   // Substitute tokens
-  let url = link.url
-  linkVars.forEach((value: string, key: string) => {
-    const token = tokenStr(key);
-    url = url.split(token).join(value);
-  });
+  let url = substituteTokens(link.url, linkVariables);
+  url = substituteReservedTokens(url, attribs);
 
   // Generate url
   url = createUrl(templateSrv.replace(url)) || "";

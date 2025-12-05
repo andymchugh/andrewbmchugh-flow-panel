@@ -14,13 +14,13 @@ export interface HighlighterProps {
   styles: any;
   enabled: boolean;
   highlighterConfig: PanelConfigHighlighter | undefined;
-  setSelection: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setSelection: (selection: string | undefined) => void;
   selection: string | undefined;
 };
 
-export function highlighterInitialState(optionsSelection: string, config: PanelConfigHighlighter) {
-  const selection = optionsSelection.trim();
-  return config.tagDrivable.has(selection) ? selection : undefined;
+export function highlighterState(selection: string | undefined, config: PanelConfigHighlighter) {
+  selection = selection?.trim();
+  return selection && config.tagDrivable.has(selection) ? selection : undefined;
 }
 
 function legendItems(config: PanelConfigHighlighter, selection: string | undefined) {
