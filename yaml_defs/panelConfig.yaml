@@ -669,3 +669,28 @@ cells:
     # The above 'link' field takes precedence. Only if undefined will linkRef be
     # checked.
     linkRef: "drawio"
+
+    # Version 1.20.0 onwards: Click actions impacting the current window. A cell
+    # is clickable if it has a link defined (see above) or if it has clickActions.
+    # Supported actions are:
+    # - Setting grafana variables
+    # - Setting the Highlighter bar selection
+    # Clicks support an 'on and off' click-toggling concept. For highlighting that means
+    # the first time you click, the highlighter selection is applied. If you click the
+    # same cell again, the highlighter selection is reset. For grafana variables
+    # the 'on' values are applied on first click and the 'off' values on
+    # second click. If the 'off' values are not defined, the 'on' values are reapplied.
+    clickActions:
+      # Grafana Variable values will undergo grafana variable substitution
+      # as well as reserved variable substitution prior to assignment. The following
+      # reserved variables are available for use: 
+      # ${cell.name}
+      # ${cell.dataRef}
+      grafanaVariables:
+        on:
+          myVar1: "on-myValue1-${cell.name}"
+          myVarN: "on-myValueN"
+        off:
+          myVar1: "off-myValue1-${cell.name}"
+          myVarN: "off-myValueN"
+      highlighterSelection: "inflow"
