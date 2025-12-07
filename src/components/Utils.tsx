@@ -59,6 +59,15 @@ export function appendUrlParams(url: string, params: string): string {
   return url + params;
 }
 
+export function subSourceDataUrlTokens(str: string) {
+  const tokenBaseURI = '${document.baseURI}';
+  str = str.trim();
+  if (str.startsWith(tokenBaseURI)) {
+      str = str.replace(tokenBaseURI, document.baseURI);
+  }
+  return str;
+}
+
 export function isUrl(str: string) {
   try {
     return Boolean(new URL(str));

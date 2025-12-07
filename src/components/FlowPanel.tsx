@@ -11,7 +11,7 @@ import { svgInit, svgUpdate, SvgHolder, SvgElementAttribs } from 'components/Svg
 import { seriesExtend, seriesInterpolate , seriesTransform } from 'components/TimeSeries';
 import { TimeSliderFactory } from 'components/TimeSlider';
 import { displayColorsInner, displayDataInner, displayMappingsInner, displaySvgInner } from 'components/DebuggingEditor';
-import { colorLookup, constructGrafanaVariables, constructUrl, flowDebug, getInstrumenter } from 'components/Utils';
+import { colorLookup, constructGrafanaVariables, constructUrl, flowDebug, getInstrumenter, subSourceDataUrlTokens } from 'components/Utils';
 import { addHook, sanitize } from 'dompurify';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
@@ -157,9 +157,9 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
     setSvgStr(undefined);
     setPanelConfig(undefined);
     setSiteConfig(undefined);
-    loadSvg(options.svg, setSvgStr, setVariableIdsSvg);
-    loadYaml(options.siteConfig, (config) => {setSiteConfig(siteConfigFactory(config))}, setVariableIdsSite);
-    loadYaml(options.panelConfig, (config) => {setPanelConfig(panelConfigFactory(config))}, setVariableIdsPanel);
+    loadSvg(subSourceDataUrlTokens(options.svg), setSvgStr, setVariableIdsSvg);
+    loadYaml(subSourceDataUrlTokens(options.siteConfig), (config) => {setSiteConfig(siteConfigFactory(config))}, setVariableIdsSite);
+    loadYaml(subSourceDataUrlTokens(options.panelConfig), (config) => {setPanelConfig(panelConfigFactory(config))}, setVariableIdsPanel);
   }, [options.svg, options.panelConfig, options.siteConfig, actDynamicUrlCtr]);
 
   //---------------------------------------------------------------------------
