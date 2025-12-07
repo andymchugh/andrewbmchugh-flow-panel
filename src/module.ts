@@ -10,7 +10,8 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
   .addTextInput({
     path: 'svg',
     name: 'SVG',
-    description: `This holds the SVG element or a url to the SVG element.`,
+    description: `This holds the SVG element or an absolute url to the SVG file.
+    If a relative url is needed it can be converted into an absolute url by adding a \${document.baseURI} preamble token to the link.`,
     defaultValue: 'https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/' + svgName,
     settings: {
       useTextarea: true,
@@ -20,7 +21,7 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
   .addTextInput({
     path: 'panelConfig',
     name: 'Panel Config',
-    description: `YAML file containing the panel config.`,
+    description: `YAML file (or url) containing the panel config.`,
     defaultValue: 'https://raw.githubusercontent.com/andymchugh/andrewbmchugh-flow-panel/main/examples/panelConfig1.yaml',
     settings: {
       useTextarea: true,
@@ -30,7 +31,7 @@ export const plugin = new PanelPlugin<FlowOptions>(FlowPanel).setPanelOptions((b
   .addTextInput({
     path: 'siteConfig',
     name: 'Site Config',
-    description: `YAML file containing the site config.`,
+    description: `YAML file (or url) containing the site config.`,
     defaultValue: '',
     settings: {
       useTextarea: true,

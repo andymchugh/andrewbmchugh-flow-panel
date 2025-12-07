@@ -1,6 +1,7 @@
 import { GrafanaTheme2, createTheme } from '@grafana/data';
 import { appendUrlParams, cellIdFactory, colorGradient,
     colorLookup, colorStringToRgb, getInstrumenter, isUrl, regExpMatch,
+    subSourceDataUrlTokens,
     variableThresholdScalarsInit, variableThresholdScaleValue } from 'components/Utils';
 import {SvgCell } from 'components/SvgUpdater';
 import { VariableThresholdScalars } from 'components/Config';
@@ -43,6 +44,22 @@ test('isUrl', () => {
     expect(isUrl('    https://mylink'    )).toEqual(true);
     expect(isUrl('file://mylink')).toEqual(true);
     expect(isUrl('    file://mylink'    )).toEqual(true);
+});
+
+test('subSourceDataUrlTokens', () => {
+    const tests = [
+        ['abc', 'abc'],
+        [' abc ', 'abc'],
+        ['{document.baseURI}stuff/d', '{document.baseURI}stuff/d'],
+        ['${document.baseURI}stuff/d', 'http://localhost/stuff/d'],
+        [' ${document.baseURI}stuff/d', 'http://localhost/stuff/d'],
+        ['x${document.baseURI}stuff/d', 'x${document.baseURI}stuff/d'],
+        [' ${document.baseURI}stuff/d/${document.baseURI}', 'http://localhost/stuff/d/${document.baseURI}'],
+        ];
+    
+    tests.forEach(([input, expected]) => {
+        expect(subSourceDataUrlTokens(input as string)).toEqual(expected);
+    });
 });
 
 //-----------------------------------------------------------------------------

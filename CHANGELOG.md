@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.20.0
+
+Click Actions
+-------------
+New panel config term "clickActions" introduced. Up till now cells have been clickable
+if they have a url link defined. This change extends clickability to include
+- grafanaVariable setting. Similar to links, the values defined can contain other grafana
+  variables or the reserved names for the cellName and dateRef.
+- highlighter bar selection.
+On/Off click toggling is also supported.
+
+SVG & YAML Relative Links
+-------------------------
+URL Links to the svg and yaml files have to be absolute. However as of this version, relative
+links can be defined by including a '${document.baseURI}' preamble on the link. i.e.
+${document.baseURI}d/stuff => https::mygrafanahostname:3000/d/stuff.
+
 ## 1.19.0
 
 Tabular Data and Namespaced Data Support
