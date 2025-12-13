@@ -176,6 +176,8 @@ cells:
         on:
           grafanaVariable: "on-myValue"
           secondVar: "on-secondVarValue"
+          testMulti: ['a', 'ccc']
         off:
           grafanaVariable: "off-myValue"
           secondVar: "off-secondVarValue"
+          testMulti: ['bb', 'dddd']

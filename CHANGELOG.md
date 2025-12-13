@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.20.1
+
+Click Action Fixes
+------------------
+Allow setting of grafana-variable multi-values through array definition.
+
 ## 1.20.0
 
 Click Actions
