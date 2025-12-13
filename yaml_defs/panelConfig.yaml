@@ -680,6 +680,7 @@ cells:
     # same cell again, the highlighter selection is reset. For grafana variables
     # the 'on' values are applied on first click and the 'off' values on
     # second click. If the 'off' values are not defined, the 'on' values are reapplied.
+    # To set multi-values (version 1.20.1 onwards), define the values in an array.
     clickActions:
       # Grafana Variable values will undergo grafana variable substitution
       # as well as reserved variable substitution prior to assignment. The following
@@ -690,7 +691,9 @@ cells:
         on:
           myVar1: "on-myValue1-${cell.name}"
           myVarN: "on-myValueN"
+          myMulti: ["a", "b", "c"]
         off:
           myVar1: "off-myValue1-${cell.name}"
           myVarN: "off-myValueN"
+          myMulti: ["d", "e", "f"]
       highlighterSelection: "inflow"

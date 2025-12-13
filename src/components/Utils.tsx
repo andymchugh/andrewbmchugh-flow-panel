@@ -109,10 +109,16 @@ function substituteReservedTokens(str: string, attribs: SvgElementAttribs){
 }
 
 export function constructGrafanaVariables(grafanaVariables: Object, attribs: SvgElementAttribs, templateSrv: TemplateSrv) {
-  return Object.fromEntries(
-    Object.entries(grafanaVariables).map(([key, value]) => 
-      [`var-${key}`, templateSrv.replace(substituteReservedTokens(value, attribs))])
-    );
+  const valSubst = (val: string) => {
+    return templateSrv.replace(substituteReservedTokens(val, attribs));
+  };
+
+  let vars: { [key: string]: string} = {}
+  Object.entries(grafanaVariables).forEach(([key, val]) => {
+      val = Array.isArray(val)? val.map((v) => valSubst(v)) : valSubst(val);
+      vars[`var-${key}`] = val;
+  });
+  return vars;
 }
 
 export function constructUrl(link: Link, attribs: SvgElementAttribs, linkVariables: Map<string, string>, templateSrv: TemplateSrv) {
