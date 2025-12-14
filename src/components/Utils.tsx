@@ -113,7 +113,7 @@ export function constructGrafanaVariables(grafanaVariables: Object, attribs: Svg
     return templateSrv.replace(substituteReservedTokens(val, attribs));
   };
 
-  let vars: { [key: string]: string} = {}
+  let vars: {[key: string]: string} = {}
   Object.entries(grafanaVariables).forEach(([key, val]) => {
       val = Array.isArray(val)? val.map((v) => valSubst(v)) : valSubst(val);
       vars[`var-${key}`] = val;
