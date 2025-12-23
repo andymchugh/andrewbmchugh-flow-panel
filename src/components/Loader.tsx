@@ -47,7 +47,7 @@ export async function loadYaml(source: (Object | string), fn: (yaml: Object) => 
   // The default maxAliasCount of 100 gets hit with more complex yaml docs.
   // We don't want to allow unlimited (-1) or even configurable as that allows people
   // to configure unreasonable dashboards. Instead we amp up the limit by 100x.
-  const yamlOptions = {maxAliasCount: 10000};
+  const yamlOptions = {maxAliasCount: 10000, merge: true};
   try {
     if (typeof source === 'object') {
       fn(source);
