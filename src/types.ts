@@ -21,4 +21,7 @@ export interface FlowOptions {
   timeSliderMode: TimeSliderMode;
   debuggingCtr: DebuggingCtrs;
   testDataEnabled: boolean;
+  timeSlideShowControlEnabled: boolean;
+  timeSlideShowIntervalMs: number;
+  timeSlideShowSteps: number;
 };
