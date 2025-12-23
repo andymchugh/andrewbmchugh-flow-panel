@@ -21,4 +21,5 @@ export interface FlowOptions {
   timeSliderMode: TimeSliderMode;
   debuggingCtr: DebuggingCtrs;
   testDataEnabled: boolean;
+  seriesAggregation: boolean;
 };

@@ -1,5 +1,5 @@
 import { DatapointMode, PanelConfigCell } from 'components/Config';
-import { BespokeStateHolder, getCellValue} from './SvgUpdater';
+import { BespokeStateHolder, getCellValue, GetCellValueType} from './SvgUpdater';
 import { MathNode, parse } from 'mathjs'
 import { TimeSeriesData } from './TimeSeries';
 import { getTemplateSrv } from '@grafana/runtime';
@@ -18,6 +18,9 @@ type Utils = {
 type NamespacedData =  {
   utils: Utils;
   data: any;
+  labels: any;
+  aggregations: any;
+  data_ts: any;
   // plus client defined variables
 };
 
@@ -170,9 +173,13 @@ function grafanaVariablesReplace(str: string) {
   return getTemplateSrv().replace(str);
 }
 
+function convertToNumber(str: string) {
+  return Number(str)
+}
 function clientExposedUtils(highlighterSelection: string) {
   return {
     log: flowDebug().info,
+    "Number": convertToNumber,
     variablesReplace: grafanaVariablesReplace,
     highlighterSelection: highlighterSelection,
     highlighterState: 'Ambient',
@@ -181,6 +188,8 @@ function clientExposedUtils(highlighterSelection: string) {
 
 export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSeriesData, highlighterSelection: string | undefined) {
   const namespacedData  = new Map<string, NamespacedData>();
+  let current_ts = 0;
+  let count_ts = 0 ;
 
   // Initialize each namespaced store with constants and data
   cbh.forEach((handler: CellBespokeHandler) => {
@@ -191,6 +200,8 @@ export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSerie
       const vars = Object.fromEntries([
         ['utils', clientExposedUtils(highlighterSelection || '')],
         ['data', {}],
+        ['labels', {}],
+        ['aggregations', {}],
         ...handler.clientState.constants]);
       namespacedData.set(namespace, vars);
     }
@@ -202,10 +213,19 @@ export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSerie
       if (typeof dataStore.data[dataRef] === 'undefined') {
         const drive = {dataRef: dataRef, bespokeDataRef: undefined, datapoint: bespokeDataDatapoint};
         const dataValue = getCellValue(drive, tsData, null);
-        dataStore.data[dataRef] = dataValue;
+        dataStore.data[dataRef] = dataValue.value;
+        dataStore.labels[dataRef] = dataValue.labels ? Object.fromEntries(dataValue.labels) : new Object;
+        dataStore.aggregations[dataRef] = dataValue.aggregations ? Object.fromEntries(dataValue.aggregations) : new Object;
+        // const data = { 'value': dataValue.value, 'labels': dataValue.labels, 'aggregations': dataValue.aggregations }
+        // dataStore.data[dataRef] = data;
+        current_ts += dataValue.ts;
+        count_ts ++;
       }
     });
   });
+  // set an average ts value 
+  current_ts = Math.round(current_ts/count_ts);
+
 
   // Invoke the formulas
   const namespaceUpdated = new Set<string>();
@@ -243,6 +263,19 @@ export function attribDriverManager(cbh: CellBespokeHandler[], tsData: TimeSerie
     }
     catch (err) {
       flowDebug().warn('Error occurred calculating bespoke attribute for', handler.element, 'error =', err);
+    }
+  });
+
+  // set the bespoke values in attended format (GetCellValueType)
+  cbh.forEach((handler: CellBespokeHandler) => {
+    const namespace = handler.clientState.namespace;
+    const dataStore = namespacedData.get(namespace) as NamespacedData;
+    for (const [k, v] of Object.entries(dataStore)) {
+      if ( !['data', 'utils'].includes(k) && ( typeof v === "number" || typeof v === "string" ) ) {
+        const obj = dataStore as any;
+        const value: GetCellValueType = {"value": v, "ts": current_ts, "labels": null, "aggregations": null}
+        obj[k] = value;
+      }
     }
   });
 

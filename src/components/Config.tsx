@@ -136,6 +136,20 @@ export type PanelConfigCellBespoke = {
   drives: PanelConfigCellBespokeDrive[];
 };
 
+export type PanelConfigTooltipsElement = {
+  // name: string | undefined;
+  label: PanelConfigCellLabel | undefined;
+  labelColor: PanelConfigCellColor | undefined;
+};
+
+export type PanelConfigCellTooltips = {
+  format: string | undefined;
+  // elements: PanelConfigTooltipsElement[] | undefined;
+  elements: Map<string, PanelConfigTooltipsElement>;
+  content: string | undefined;
+  newElements: Map<string, PanelConfigTooltipsElement>;
+};
+
 export type PanelConfigCell = DataRefDrive & {
   linkRef: string | undefined;
   link: Link | undefined;
@@ -152,6 +166,7 @@ export type PanelConfigCell = DataRefDrive & {
   flowAnimation: PanelConfigCellFlowAnimation | undefined;
   bespoke: PanelConfigCellBespoke | undefined;
   tags: Set<string> | undefined;
+  tooltips: PanelConfigCellTooltips | undefined;
 };
 
 export type HighlightFactors = {
@@ -431,6 +446,43 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
     if (cell.bespoke) {
       cell.bespoke.datapoint = cell.bespoke.datapoint || cell.datapoint;
     }
+
+    // cell tooltips
+    if (cell.tooltips && cell.tooltips.elements) {
+      let elements = new Map<string, PanelConfigTooltipsElement>();
+      for ( const [name, element] of Object.entries(cell.tooltips.elements)) {
+      // cell.tooltips.elements.forEach( (element: PanelConfigTooltipsElement) => {
+        if (element.label) {
+          if (typeof element.label.decimalPoints === 'undefined') {
+            element.label.decimalPoints = panelConfig.cellLabelDecimalPoints;
+          }
+          if (typeof element.label.datapoint === 'undefined') {
+            element.label.datapoint = cell.datapoint;
+          }
+          if (!element.label.valueMappings && element.label.valueMappingsRef) {
+            element.label.valueMappings = siteConfig.valueMappings.get(element.label.valueMappingsRef);
+          }
+          if (element.label.valueMappings) {
+            for (let mapping of element.label.valueMappings) {
+              mapping.valid = mapping.valid || (
+                (typeof mapping.text === 'string') &&
+                ((typeof mapping.valueMin === 'number') || (typeof mapping.valueMin === 'undefined')) &&
+                ((typeof mapping.valueMax === 'number') || (typeof mapping.valueMax === 'undefined')));
+
+              if (mapping.valid && (typeof mapping.variableSubst === 'undefined')) {
+                let interpolations: VariableInterpolation[] = [];
+                getTemplateSrv().replace(mapping.text, undefined, undefined, interpolations);
+                mapping.variableSubst = interpolations.length > 0;
+              }
+            }
+          }
+        }
+        // console.log("panelConfigDereference(): init tooltip elements for cell name:", name, "element:", element)
+        elements.set(name, element)
+      }
+      cell.tooltips.newElements = elements;
+    }
+
   });
 
   // Blend linkVariables

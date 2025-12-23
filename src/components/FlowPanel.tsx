@@ -1,17 +1,19 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { css, cx } from '@emotion/css';
 import { Button, useStyles2, useTheme2 } from '@grafana/ui';
 import { getTemplateSrv, locationService } from '@grafana/runtime';
-import { GrafanaTheme2, PanelProps, toDataFrame } from '@grafana/data';
+import { GrafanaTheme2, PanelProps } from '@grafana/data';
 import { FlowOptions, DebuggingCtrs } from '../types';
 import { configInit, panelConfigFactory, PanelConfig, siteConfigFactory, SiteConfig } from 'components/Config';
 import { HighlightState, HighlighterFactory, highlighterState } from 'components/Highlighter';
 import { loadSvg, loadYaml } from 'components/Loader';
-import { svgInit, svgUpdate, SvgHolder, SvgElementAttribs } from 'components/SvgUpdater';
-import { seriesExtend, seriesInterpolate , seriesTransform } from 'components/TimeSeries';
+import { svgInit, svgUpdate, SvgHolder, SvgElementAttribs, SvgAttribs } from 'components/SvgUpdater';
+import { seriesExtend, seriesInterpolate , seriesTransform, computeAndAttachSeriesStats } from 'components/TimeSeries';
 import { TimeSliderFactory } from 'components/TimeSlider';
 import { displayColorsInner, displayDataInner, displayMappingsInner, displaySvgInner } from 'components/DebuggingEditor';
 import { colorLookup, constructGrafanaVariables, constructUrl, flowDebug, getInstrumenter, subSourceDataUrlTokens } from 'components/Utils';
+import { TooltipTrigger, TooltipTriggerHandle, TooltipTriggerConfig } from "components/TooltipTrigger"
 import { addHook, sanitize } from 'dompurify';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
@@ -118,6 +120,69 @@ function clickHandlerFactory(elementAttribs: Map<string, SvgElementAttribs>, lin
   }
 }
 
+function tooltipHandlerFactory(
+  svgAttribs: SvgAttribs,
+  setTooltipContent: React.Dispatch<React.SetStateAction<string | React.JSX.Element>> | null, 
+  setTooltipConfig: React.Dispatch<React.SetStateAction<TooltipTriggerConfig>> | null,
+  tooltipElementIdRef: React.MutableRefObject<string|null>,
+  setTooltipOpen: React.Dispatch<React.SetStateAction<boolean>> | null,
+  tooltipTrigger: TooltipTriggerHandle | null,
+) {
+  let activeElement: HTMLElement | null = null;
+
+  return (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    if (!tooltipElementIdRef || !setTooltipConfig || !setTooltipOpen) {
+      return;
+    }
+    if (event.target) {
+      if (event.type === "mousemove") {
+         if (!activeElement) {
+           return;
+         } else {
+
+          tooltipTrigger?.setMousePosition(event.clientX, event.clientY);
+
+          tooltipElementIdRef.current = activeElement.id;
+          // console.log('tooltipHandlerFactory(): config:', config)
+         }
+      } else {
+        const element = event.target as HTMLElement;
+        const attribs = svgAttribs.elementAttribs.get(element.id);
+        if (!attribs) {
+          return;
+        }
+        // console.log("tooltipHandlerFactory(): tooltipConfig:", tooltipConfig, " - tooltipContent:", tooltipContentRef.current)
+        const cell  = svgAttribs.cells.get(attribs.name);
+        if (cell && cell.cellProps.tooltips) {
+          const cellElement = document.getElementById(cell.cellId)
+          if (cellElement === null) { return; }
+          if (event.type === 'mouseover' ) {
+            if (activeElement === null) {
+              activeElement = cellElement
+            }
+            else if (cellElement.id === activeElement.id) {
+              return;
+            }
+            // console.log("tooltipHandlerFactory(): tooltipConfig:", tooltipConfig, " - tooltipContent:", tooltipContentRef.current)
+
+            if (setTooltipContent !== null && cell.cellIdShort !== tooltipElementIdRef.current) {
+              setTooltipContent(cell.tooltip.tooltipContent)
+            }
+            tooltipTrigger?.setMousePosition(event.clientX, event.clientY);
+            // console.log('tooltipHandlerFactory: mouseover :' + cell.cellIdShort, cell);
+            // event.stopPropagation();
+          }
+          else if(event.type === 'mouseout') {
+            if ( !cellElement?.contains(event.relatedTarget as HTMLElement) ) { 
+              setTooltipOpen(false);
+              activeElement = null;
+            }
+          }
+        }
+      }
+    }
+  }
+}
 
 export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZone, eventBus }) => {
   //---------------------------------------------------------------------------
@@ -134,9 +199,42 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   const debuggingCtrRef = useRef<DebuggingCtrs>({...options.debuggingCtr});
   const svgHolderRef = useRef<SvgHolder>();
   const clickHandlerRef = useRef<any>(null);
+  const mouseOverHandlerRef = useRef<any>(null);
   const svgDocBlankRef = useRef<Document>(new DOMParser().parseFromString('<svg/>', "text/xml"));
   const grafanaTheme = useRef<GrafanaTheme2>(useTheme2());
   const clickCellNameLast = useRef<string | undefined>();
+
+  //---------------------------------------------------------------------------
+  // TooltipTrigger
+
+  const setTooltipContentRef = useRef<React.Dispatch<React.SetStateAction<string | React.JSX.Element>> | null>(null);
+  const registerSetterSetTooltipContent = useCallback( (setter: React.Dispatch<React.SetStateAction<string | React.JSX.Element>>) => {
+    setTooltipContentRef.current = setter;
+  }, [] );
+  const tooltipContentRef = useRef<React.JSX.Element | string >("");
+  const setTooltipOpenRef = useRef<React.Dispatch<React.SetStateAction<boolean>> | null>(null);
+  const registerSetterSetTooltipOpen = useCallback( (setter: React.Dispatch<React.SetStateAction<boolean>>) => {
+    setTooltipOpenRef.current = setter;
+  }, [] );
+
+  const setTooltipConfigRef = useRef<React.Dispatch<React.SetStateAction<TooltipTriggerConfig>> | null>(null);
+  const registerSetterSetTooltipConfig = useCallback( (setter: React.Dispatch<React.SetStateAction<TooltipTriggerConfig>>) => {
+    setTooltipConfigRef.current = setter;
+  }, [] );
+  const tooltipElementIdRef = useRef<string>("");
+  // const tooltipContainerRef = useRef<HTMLDivElement | null>(null);
+  const tooltipTriggerRef = useRef<TooltipTriggerHandle>(null);
+  useEffect(()=> {
+    if (tooltipTriggerRef.current) {
+      // tooltipTriggerRef.current.setContainerDim(0,0);
+      tooltipContentRef.current = tooltipTriggerRef.current.getTooltipContentRef();
+      // tooltipConfigRef.current = tooltipTriggerRef.current.getTooltipConfigRef();
+      // console.log("useEffect(/tooltipTriggerRef): tooltipContentRef", tooltipContentRef);
+      // tooltipContainerRef.current = tooltipTriggerRef.current.getTooltipRef();
+    }
+  }, [tooltipTriggerRef.current])
+
+  const tooltipOverlayRef = useRef<HTMLDivElement | null>(null);
 
   //---------------------------------------------------------------------------
   // Dynamic URL Terms: If we load from url we record any variable substitutions
@@ -180,7 +278,15 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   }
 
   //---------------------------------------------------------------------------
-  // Initialise DOM and config
+  // Initialize DOM and config
+
+  useEffect( () => {
+    if (tooltipOverlayRef.current) {
+      const overlayRect = tooltipOverlayRef.current?.getBoundingClientRect() ?? new DOMRect(0, 0, 0, 0);
+      // console.log('FlowPanel.useEffect(/tooltipOverlayRef): container rect:', overlayRect);
+      tooltipTriggerRef.current?.setOverlayRect(overlayRect);
+    }
+  }, [tooltipOverlayRef.current])
 
   useEffect(() => {
     if (svgStr && panelConfig && siteConfig) {
@@ -199,9 +305,19 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
       clickHandlerRef.current = clickHandlerFactory(svgAttribs.elementAttribs, panelConfig.linkVariables, driveHighlighter, clickCellNameLast);
 
       driveHighlighter(options.highlighterSelection);
+      mouseOverHandlerRef.current = tooltipHandlerFactory(
+        svgAttribs,
+        setTooltipContentRef.current,
+        setTooltipConfigRef.current,
+        tooltipElementIdRef,
+        setTooltipOpenRef.current,
+        tooltipTriggerRef.current,
+      );
+      setHighlighterSelection(highlighterState(options.highlighterSelection, panelConfig.highlighter));
       setInitialized(true);
     }
   }, [initialized, svgStr, panelConfig, siteConfig, options.highlighterSelection]);
+  
   
   //---------------------------------------------------------------------------
   // Interpolate time-series data
@@ -213,8 +329,10 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   const timeMin = Number(templateSrv.replace("${__from}"));
   const timeMax = Number(templateSrv.replace("${__to}"));
 
-  const dataConverter = function(arr: any[]) { return arr.map((item: any) => toDataFrame(item)) };
-  const dataFrames = instrument('toDataFrame', dataConverter)(data.series || []);
+  const dataFrames = data.series || [];
+  if ( options.seriesAggregation ) {
+    instrument('seriesAggregation', computeAndAttachSeriesStats)(dataFrames);
+  }
   let tsData = instrument('transform', seriesTransform)(dataFrames, timeMin, timeMax, panelConfig?.dataRefTransform);
 
   if (options.testDataEnabled) {
@@ -222,6 +340,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   }
   
   instrument('seriesInterpolate', seriesInterpolate)(tsData, timeSliderScalarRef.current);
+
 
   //---------------------------------------------------------------------------
   // Update the SVG Attributes with the interpolated time-series data 
@@ -242,7 +361,15 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
     });
   
     // Update the svg with current time-series and variable settings
-    instrument('svgUpdate', svgUpdate)(svgHolder, tsData, highlighterSelection, animationsEnabled);
+    instrument('svgUpdate', svgUpdate)(
+      svgHolder,
+      tsData,
+      highlighterSelection,
+      animationsEnabled,
+      setTooltipContentRef.current,
+      tooltipContentRef,
+      tooltipElementIdRef,
+    );
   }
   const svgElement = (svgHolder ? svgHolder.doc : svgDocBlankRef.current).childNodes[0] as HTMLElement;
 
@@ -388,13 +515,16 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   // Create the JSX
 
   const jsx = instrument('createJsx', () => (
-    <div>
+    <div style={{ position: "relative", width, height }}>
       <TransformWrapper
         disabled={!options.panZoomEnabled}
         doubleClick={{mode: "reset"}}
-        wheel={{activationKeys: panelConfig?.zoomPanPinch.wheelActivationKeys || []}}>
+        wheel={{activationKeys: panelConfig?.zoomPanPinch.wheelActivationKeys || []}}
+      >
         <TransformComponent>
-          <div className={cx(
+          <div 
+            ref={tooltipOverlayRef}
+            className={cx(
             styles.wrapper,
             css`
             height: ${svgViewHeight}px;
@@ -414,18 +544,35 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
               `
               )}
               onClick={clickHandlerRef.current}
+              onMouseOver={mouseOverHandlerRef.current}
+              onMouseOut={mouseOverHandlerRef.current}
+              onMouseMove={mouseOverHandlerRef.current}
               // The externally received svg is sanitized when read in via sanitizeSvgStr which uses
               // dompurify. We don't re-sanitize it on each rendering as we are in control of the
               // modifications being made.
               dangerouslySetInnerHTML={{__html: svgElement.outerHTML}}/>
           </div>
         </TransformComponent>
+
       </TransformWrapper>
       {firstSeparator ? <hr/> : undefined}
       <div>{highlighterEnabled && highlighter}</div>
       {secondSeparator ? <hr/> : undefined}
       <div>{timeSliderEnabled && timeSlider}</div>
       {animationControlOwn ? animationControl : undefined}
+      { tooltipOverlayRef.current && 
+        createPortal(
+          <TooltipTrigger
+            ref={tooltipTriggerRef}
+            content=""
+            config={{x:0, y:0, maxWidth: width, maxHeight: height,}}
+            open={false}
+            registerSetterSetTooltipContent={registerSetterSetTooltipContent}
+            registerSetterSetTooltipOpen={registerSetterSetTooltipOpen}
+            registerSetterSetTooltipConfig={registerSetterSetTooltipConfig}
+          />,
+          tooltipOverlayRef.current
+        )}
     </div>
   ))();
   return jsx;

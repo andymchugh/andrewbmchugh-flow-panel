@@ -1,4 +1,4 @@
-import { FieldType, getFieldDisplayName } from '@grafana/data';
+import { DataFrame, FieldType, getFieldDisplayName, reduceField, ReducerID } from '@grafana/data';
 import { sliderTime } from 'components/TimeSlider';
 import { DataRefTransform, DataRefTransformQuery, TestConfig } from './Config';
 
@@ -8,6 +8,8 @@ export type TimeSeries = {
     values: number[];
   }
   values: Array<number | string | null>;
+  labels: Map<string, string>;
+  aggregations: Map<string, number>;
 };
 
 export type TimeSeriesData = {
@@ -17,13 +19,23 @@ export type TimeSeriesData = {
   ts: Map<string, TimeSeries>;
 };
 
+export type SeriesStats = {
+  min?: number;
+  max?: number;
+  mean?: number;
+  last?: number;
+  lastNotNull?: number;
+  count?: number;
+};
+
+
 export function seriesExtend(tsData: TimeSeriesData, testConfig: TestConfig | undefined) {
   const timeMin = tsData.timeMin;
   const timeMax = tsData.timeMax;
   const dataSparse = testConfig?.testDataSparse;
   const dataExtendedZero = testConfig?.testDataExtendedZero;
   const baseOffset = typeof testConfig?.testDataBaseOffset === 'number' ? testConfig.testDataBaseOffset : 1;
-  const create = function(datapoints: number, scalar: number, fn: (inp: number) => number, asString: boolean) {
+  const create = function(datapoints: number, scalar: number, fn: (inp: number) => number, asString: boolean, labels: Map<string,string>| null) {
     const intervalTime = Math.ceil((timeMax - timeMin) / datapoints);
     const intervalValue = 2 * Math.PI / datapoints;
     let timeValues = [];
@@ -36,32 +48,38 @@ export function seriesExtend(tsData: TimeSeriesData, testConfig: TestConfig | un
       const val2 = asString && (typeof val1 === 'number') ? '*' + Math.ceil(val1).toString() + '*' : val1;
       dataValues.push(val2);
     }
+    if (labels === null ) {
+      labels = new Map();
+    }
+
     return {
       time: {values: timeValues},
       values: dataValues,
+      labels: labels,
+      aggregations: new Map(),
     };
   }
 
   let dataSets = [
-    {name: 'test-data-small-sin', datapoints: 75, scalar: 100, fn: Math.sin, asString: false},
-    {name: 'test-data-large-sin', datapoints: 50, scalar: 500, fn: Math.sin, asString: false},
-    {name: 'test-data-small-cos', datapoints: 60, scalar: 100, fn: Math.cos, asString: false},
-    {name: 'test-data-large-cos', datapoints: 88, scalar: 500, fn: Math.cos, asString: false},
+    {name: 'test-data-small-sin', datapoints: 75, scalar: 100, fn: Math.sin, asString: false, labels: new Map<string,string>([['label1', 'value1'], ['label2_num', '2'],]) },
+    {name: 'test-data-large-sin', datapoints: 50, scalar: 500, fn: Math.sin, asString: false, labels: null},
+    {name: 'test-data-small-cos', datapoints: 60, scalar: 100, fn: Math.cos, asString: false, labels: null},
+    {name: 'test-data-large-cos', datapoints: 88, scalar: 500, fn: Math.cos, asString: false, labels: null},
   ];
 
   if (testConfig?.testDataStringData) {
-    dataSets.push({name: 'test-data-string', datapoints: 65, scalar: 500, fn: Math.cos, asString: true});
+    dataSets.push({name: 'test-data-string', datapoints: 65, scalar: 500, fn: Math.cos, asString: true, labels: null});
   }
 
   dataSets.forEach((ds) => {
     if (!tsData.ts.get(ds.name)) {
-      tsData.ts.set(ds.name, create(ds.datapoints, ds.scalar, ds.fn, ds.asString));
+      tsData.ts.set(ds.name, create(ds.datapoints, ds.scalar, ds.fn, ds.asString, ds.labels));
     }
   });
   if (testConfig?.testDataNoTime) {
     const name = 'test-data-no-time';
     if (!tsData.ts.get(name)) {
-      tsData.ts.set(name, {values: [123], time: {values: [0], valuesIndex: null}});
+      tsData.ts.set(name, {values: [123], time: {values: [0], valuesIndex: null}, labels: new Map(), aggregations: new Map()});
     }
   }
 }
@@ -126,7 +144,33 @@ export function seriesTransform(series: any[], panelTimeMin: number, panelTimeMa
           }
           else {
             const name = applyNamespace(getFieldDisplayName(ts, frame));
-            tsNamed[name] = {values: ts.values, time: null};
+            const labels = new Map<string, string>();
+            const aggregations = new Map<string, number>();
+            if (ts.labels) {
+              for ( const [key, value] of Object.entries(ts.labels)) {
+                if ( typeof value === 'string' ) {
+                  labels.set(key,value)
+                }
+              }
+            }
+            if (ts.state) {
+              let src = undefined;
+              if (ts.state.calcs != undefined) {
+                src = ts.state.calcs
+              }
+              else if (ts.state.range != undefined ) {
+                src = ts.state.range
+              }
+              if( src != undefined ) {
+                for ( const [key, value] of Object.entries(src)) {
+                  if ( typeof value === 'number' ) {
+                    aggregations.set(key,value)
+                  }
+                }
+              }
+            }
+
+            tsNamed[name] = {values: ts.values, time: null, labels: labels, aggregations: aggregations};
           }
         });
       }
@@ -189,4 +233,33 @@ export function seriesInterpolate(tsData: TimeSeriesData, timeSliderScalar: numb
     }
   });
   return tsData;
+}
+
+export function computeAndAttachSeriesStats(
+  frames: DataFrame[]
+): SeriesStats[] {
+  return frames.map(frame => {
+    const valueField = frame.fields.find(f => f.type === FieldType.number);
+    if (!valueField) {
+      return {};
+    }
+
+    const calcs = reduceField({
+      field: valueField,
+      reducers: [
+        ReducerID.lastNotNull,
+        ReducerID.min,
+        ReducerID.max,
+        ReducerID.mean,
+      ],
+    });
+
+    valueField.state = valueField.state ?? {};
+    valueField.state.calcs = {
+      ...(valueField.state.calcs ?? {}),
+      ...calcs,
+    };
+
+    return calcs as SeriesStats;
+  });
 }
