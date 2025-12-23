@@ -91,12 +91,47 @@ export function bespokeDriveHandlerFactory(level: number, cellId: string, cellPr
   // Regardless of whether there are any drives, defined constants and formulas need to be
   // maintained, so at least one entry is required.
   if (level === 1) {
+
     if (dataRef) {
-      state.dataRefs.add(dataRef);
+      // build constant ref into namespace to the dataRef name
+      if( typeof(dataRef) === 'object') {
+        for (const [k, v] of Object.entries(dataRef)) {
+          const value = v as string;
+          state.constants.set(k, value);
+          state.dataRefs.add(value);
+          // only get first element
+          break;
+        }
+      } else {
+        // define implicit "currentRef" on default dataRef, so it can be used in formulas
+        state.constants.set("currentRef", dataRef);
+        state.dataRefs.add(dataRef);
+      }
     }
     config.dataRefs?.forEach((v) => {
+      if( typeof(v) === 'object') {
+        for (const [k, dRef] of Object.entries(v)) {
+          const value = dRef as string;
+          state.constants.set(k, value);
+          state.dataRefs.add(value);
+          // only get first element
+          break;
+        }
+      } else {
       state.dataRefs.add(v);
+      }
     });
+
+    try {
+      // Pull in the clients constants
+      for (const [k, v] of Object.entries(config.constants || {})) {
+        state.constants.set(k, v);
+      }
+    }
+    catch (err) {
+      flowDebug().warn('Error occurred creating bespoke constant for',  element, 'error =', err, 'config =', config);
+    }
+
     config.formulas?.forEach((v) => {
       try {
         state.formulas.push(parse(v as string));
