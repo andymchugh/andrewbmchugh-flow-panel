@@ -164,7 +164,7 @@ export const TimeSliderFactory = (props: TimeSliderProps) => {
 
   useEffect(() => {
     const stepMs = props.timeSliderPlayIntervalMs ?? 500;
-    const step = (1 / (props.timeSlideShowSteps+1)); // 0.01
+    const step = (1 / (props.timeSlideShowSteps-1)); // 0.01
 
     if (!props.timeSlideShowIsPlayingContentRef.current) {
       if (playTimerRef.current !== null) {
@@ -177,7 +177,13 @@ export const TimeSliderFactory = (props: TimeSliderProps) => {
       if ( current >= 1 ) {
         props.timeSliderScalarRef.current = 0
       } else {
-        props.timeSliderScalarRef.current += step;
+        const tmp = props.timeSliderScalarRef.current + step;
+        // check rounding problems
+        if (tmp + 1E-4 >=1) {
+          props.timeSliderScalarRef.current = 1
+        } else {
+          props.timeSliderScalarRef.current = tmp;
+        }
       }
       setTimeValue(props.timeSliderScalarRef.current * stateRef.current.range);
     }
@@ -188,9 +194,13 @@ export const TimeSliderFactory = (props: TimeSliderProps) => {
       if (current >= 1) {
         props.timeSliderScalarRef.current = 0;
       } else {
-        props.timeSliderScalarRef.current = Math.min(current + step, 1);
+        const tmp = current + step;
+        if (tmp + 1E-4 >=1) {
+          props.timeSliderScalarRef.current = 1
+        } else {
+          props.timeSliderScalarRef.current = Math.min( tmp, 1);
+        }
       }
-
       setTimeValue(props.timeSliderScalarRef.current * stateRef.current.range);
     }, stepMs);
 
