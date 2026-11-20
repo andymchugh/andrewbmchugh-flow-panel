@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="520px" height="330px" viewBox="0 0 520 330">
+  <g id="cell-pump1">
+    <rect x="20" y="20" width="140" height="80" rx="8" ry="8" fill="#ffffff" stroke="#6c8ebf" stroke-width="2"/>
+    <text x="90" y="66" text-anchor="middle" font-family="Helvetica" font-size="13" fill="#000000">Pump 1 status</text>
+  </g>
+  <g id="cell-pump2">
+    <rect x="190" y="20" width="140" height="80" rx="8" ry="8" fill="#ffffff" stroke="#6c8ebf" stroke-width="2"/>
+    <text x="260" y="66" text-anchor="middle" font-family="Helvetica" font-size="13" fill="#000000">Pump 2 status</text>
+  </g>
+  <g id="cell-resetAll">
+    <rect x="360" y="20" width="140" height="80" rx="8" ry="8" fill="#f8cecc" stroke="#b85450" stroke-width="2"/>
+    <text x="430" y="66" text-anchor="middle" font-family="Helvetica" font-size="13" fill="#000000">Reset all (silent)</text>
+  </g>
+  <g id="cell-startPump1">
+    <rect x="20" y="130" width="140" height="80" rx="8" ry="8" fill="#d5e8d4" stroke="#82b366" stroke-width="2"/>
+    <text x="90" y="176" text-anchor="middle" font-family="Helvetica" font-size="13" fill="#000000">Start pump 1</text>
+  </g>
+  <g id="cell-stopPump1">
+    <rect x="190" y="130" width="140" height="80" rx="8" ry="8" fill="#d5e8d4" stroke="#82b366" stroke-width="2"/>
+    <text x="260" y="176" text-anchor="middle" font-family="Helvetica" font-size="13" fill="#000000">Stop pump 1</text>
+  </g>
+  <g id="cell-failPump1">
+    <rect x="360" y="130" width="140" height="80" rx="8" ry="8" fill="#fff2cc" stroke="#d6b656" stroke-width="2"/>
+    <text x="430" y="176" text-anchor="middle" font-family="Helvetica" font-size="13" fill="#000000">Device fault</text>
+  </g>
+  <g id="cell-slowPump1">
+    <rect x="20" y="240" width="140" height="70" rx="8" ry="8" fill="#fff2cc" stroke="#d6b656" stroke-width="2"/>
+    <text x="90" y="280" text-anchor="middle" font-family="Helvetica" font-size="13" fill="#000000">Slow device</text>
+  </g>
+</svg>

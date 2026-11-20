@@ -4,7 +4,7 @@ import { Button, useStyles2, useTheme2 } from '@grafana/ui';
 import { getTemplateSrv, locationService } from '@grafana/runtime';
 import { GrafanaTheme2, PanelProps, toDataFrame } from '@grafana/data';
 import { FlowOptions, DebuggingCtrs } from '../types';
-import { configInit, panelConfigFactory, PanelConfig, siteConfigFactory, SiteConfig } from 'components/Config';
+import { configInit, panelConfigFactory, PanelConfig, siteConfigFactory, SiteConfig, Link } from 'components/Config';
 import { HighlightState, HighlighterFactory, highlighterState } from 'components/Highlighter';
 import { loadSvg, loadYaml } from 'components/Loader';
 import { svgInit, svgUpdate, SvgHolder, SvgElementAttribs } from 'components/SvgUpdater';
@@ -12,6 +12,7 @@ import { seriesExtend, seriesInterpolate , seriesTransform } from 'components/Ti
 import { TimeSliderFactory } from 'components/TimeSlider';
 import { displayColorsInner, displayDataInner, displayMappingsInner, displaySvgInner } from 'components/DebuggingEditor';
 import { colorLookup, constructGrafanaVariables, constructUrl, flowDebug, getInstrumenter, subSourceDataUrlTokens } from 'components/Utils';
+import { ControlOutcome, ControlState, applyControlOutcome, controlResultsMerge, dispatchControlLink } from 'components/ControlLink';
 import { addHook, sanitize } from 'dompurify';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
@@ -77,7 +78,7 @@ const getStyles = () => {
   };
 };
 
-function clickHandlerFactory(elementAttribs: Map<string, SvgElementAttribs>, linkVariables: Map<string, string>, driveHighlighter: (selectionNew: string | undefined) => void, clickCellNameLast: React.MutableRefObject<string | undefined>) {
+function clickHandlerFactory(elementAttribs: Map<string, SvgElementAttribs>, linkVariables: Map<string, string>, driveHighlighter: (selectionNew: string | undefined) => void, clickCellNameLast: React.MutableRefObject<string | undefined>, controlDispatch: (cellName: string, link: Link, attribs: SvgElementAttribs) => void) {
   return (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     if (event.target) {
       const element = event.target as HTMLElement;
@@ -107,11 +108,17 @@ function clickHandlerFactory(elementAttribs: Map<string, SvgElementAttribs>, lin
 
       // Drive link
       const link = attribs?.link;
-      if (link) {
-        const url = constructUrl(link, attribs, linkVariables, getTemplateSrv());
-        if (url) {
-          const sameTarget = link.sameTab && !event.ctrlKey && !event.shiftKey;
-          window.open(url, (sameTarget ? '_self' : undefined));
+      if (link && attribs) {
+        if (link.open === 'tab') {
+          const url = constructUrl(link, attribs, linkVariables, getTemplateSrv());
+          if (url) {
+            const sameTarget = link.sameTab && !event.ctrlKey && !event.shiftKey;
+            window.open(url, (sameTarget ? '_self' : undefined));
+          }
+        }
+        else {
+          // Control links ('silent' or 'result') send a request instead of opening a tab
+          controlDispatch(attribs.name, link, attribs);
         }
       }
     }
@@ -137,6 +144,15 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
   const svgDocBlankRef = useRef<Document>(new DOMParser().parseFromString('<svg/>', "text/xml"));
   const grafanaTheme = useRef<GrafanaTheme2>(useTheme2());
   const clickCellNameLast = useRef<string | undefined>();
+
+  //---------------------------------------------------------------------------
+  // Control link state: results from 'result' links and errors from any failed
+  // control request. Both drive the cells on the next render.
+
+  const [controlState, setControlState] = useState<ControlState>({ results: new Map(), errors: new Map() });
+  const applyControlOutcomeFn = (cellName: string, resultDataRef: string | undefined, outcome: ControlOutcome) => {
+    setControlState((prev) => applyControlOutcome(prev, cellName, resultDataRef, outcome));
+  };
 
   //---------------------------------------------------------------------------
   // Dynamic URL Terms: If we load from url we record any variable substitutions
@@ -196,7 +212,12 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
         const state = highlighterState(selection, panelConfig.highlighter)
         setHighlighterSelection(state);
       }
-      clickHandlerRef.current = clickHandlerFactory(svgAttribs.elementAttribs, panelConfig.linkVariables, driveHighlighter, clickCellNameLast);
+      const controlDispatch = (cellName: string, link: Link, attribs: SvgElementAttribs) => {
+        dispatchControlLink(link, attribs, panelConfig.linkVariables, getTemplateSrv(), fetch, (outcome) => {
+          applyControlOutcomeFn(cellName, link.resultDataRef, outcome);
+        });
+      };
+      clickHandlerRef.current = clickHandlerFactory(svgAttribs.elementAttribs, panelConfig.linkVariables, driveHighlighter, clickCellNameLast, controlDispatch);
 
       driveHighlighter(options.highlighterSelection);
       setInitialized(true);
@@ -221,6 +242,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
     instrument('seriesExtend', seriesExtend)(tsData, panelConfig?.test);
   }
   
+  controlResultsMerge(tsData, controlState.results);
   instrument('seriesInterpolate', seriesInterpolate)(tsData, timeSliderScalarRef.current);
 
   //---------------------------------------------------------------------------
@@ -242,7 +264,7 @@ export const FlowPanel: React.FC<Props> = ({ options, data, width, height, timeZ
     });
   
     // Update the svg with current time-series and variable settings
-    instrument('svgUpdate', svgUpdate)(svgHolder, tsData, highlighterSelection, animationsEnabled);
+    instrument('svgUpdate', svgUpdate)(svgHolder, tsData, highlighterSelection, animationsEnabled, controlState.errors);
   }
   const svgElement = (svgHolder ? svgHolder.doc : svgDocBlankRef.current).childNodes[0] as HTMLElement;
 

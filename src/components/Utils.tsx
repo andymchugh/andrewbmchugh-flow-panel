@@ -92,7 +92,7 @@ function tokenStr(key: string) {
   return '\$\{'.concat(key, '\}');
 }
 
-function substituteTokens(str: string, substitutions: Map<string, string>){
+export function substituteTokens(str: string, substitutions: Map<string, string>){
   substitutions.forEach((value: string, key: string) => {
     const token = tokenStr(key);
     str = str.split(token).join(value);
@@ -100,7 +100,7 @@ function substituteTokens(str: string, substitutions: Map<string, string>){
   return str;
 }
 
-function substituteReservedTokens(str: string, attribs: SvgElementAttribs){
+export function substituteReservedTokens(str: string, attribs: SvgElementAttribs){
   const substitutions = new Map([
     ['cell.name', attribs.name],
     ['cell.dataRef', attribs.dataRef || tokenStr('cell.dataRef')],

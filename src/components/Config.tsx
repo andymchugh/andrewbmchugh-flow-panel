@@ -1,4 +1,5 @@
 import { VariableInterpolation, getTemplateSrv } from "@grafana/runtime";
+import { flowDebug } from 'components/Utils';
 
 export type DatapointMode = 'last' | 'lastNotNull';
 export type ColorGradientMode = 'none' | 'hue';
@@ -28,10 +29,26 @@ export type ThresholdPattern = {
 };
 
 
+export type LinkOpen = 'tab' | 'silent' | 'result';
+export type LinkResultTime = 'received' | 'end';
+export type LinkErrorRepresentation = {
+  text: string | undefined;
+  color: string | undefined;
+};
+
 export type Link = {
   url: string;
   params: LinkUrlParams;
   sameTab: boolean | undefined;
+  open: LinkOpen;
+  method: string;
+  body: Object | undefined;
+  headers: Record<string, string> | undefined;
+  resultDataRef: string | undefined;
+  resultPath: string | undefined;
+  resultTime: LinkResultTime;
+  timeoutMs: number;
+  error: LinkErrorRepresentation | undefined;
 };
 
 export type ClickActions = {
@@ -293,6 +310,35 @@ export function siteConfigFactory(config: any) {
   } as SiteConfig;
 }
 
+const gLinkOpenValues: LinkOpen[] = ['tab', 'silent', 'result'];
+const gLinkResultTimeValues: LinkResultTime[] = ['received', 'end'];
+const gLinkTimeoutDefaultMs = 5000;
+
+export function linkControlNormalise(link: Link, cellName: string) {
+  if (typeof link.open === 'undefined') {
+    link.open = 'tab';
+  }
+  if (!gLinkOpenValues.includes(link.open)) {
+    flowDebug().warn(`Flow panel: cell '${cellName}' link.open '${link.open}' is not one of ${gLinkOpenValues.join(', ')}. Using 'tab'.`);
+    link.open = 'tab';
+  }
+  if (link.open === 'result' && !link.resultDataRef) {
+    flowDebug().warn(`Flow panel: cell '${cellName}' link.open 'result' needs link.resultDataRef. Using 'silent'.`);
+    link.open = 'silent';
+  }
+  if (typeof link.resultTime === 'undefined') {
+    link.resultTime = 'received';
+  }
+  if (!gLinkResultTimeValues.includes(link.resultTime)) {
+    flowDebug().warn(`Flow panel: cell '${cellName}' link.resultTime '${link.resultTime}' is not one of ${gLinkResultTimeValues.join(', ')}. Using 'received'.`);
+    link.resultTime = 'received';
+  }
+  link.method = (link.method || 'GET').toString().toUpperCase();
+  if (typeof link.timeoutMs !== 'number' || !(link.timeoutMs > 0)) {
+    link.timeoutMs = gLinkTimeoutDefaultMs;
+  }
+}
+
 function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig, isDark: boolean) {
   const siteColorMappings = isDark? siteConfig.cellColorMappings.darkTheme : siteConfig.cellColorMappings.lightTheme;
   const panelColorMappings = isDark? panelConfig.cellColorMappings.darkTheme : panelConfig.cellColorMappings.lightTheme;
@@ -346,7 +392,7 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
     }
   }
 
-  panelConfig.cells.forEach((cell) => {
+  panelConfig.cells.forEach((cell, cellName) => {
     if (typeof cell.datapoint === 'undefined') {
       cell.datapoint = panelConfig.datapoint;
     }
@@ -370,6 +416,7 @@ function panelConfigDereference(siteConfig: SiteConfig, panelConfig: PanelConfig
       cell.link.sameTab = typeof cell.link.sameTab === 'boolean' ? cell.link.sameTab :
         typeof panelConfig.linkWindow?.sameTab === 'boolean' ? panelConfig.linkWindow.sameTab :
         typeof siteConfig.linkWindow?.sameTab === 'boolean' ? siteConfig.linkWindow.sameTab : false;
+      linkControlNormalise(cell.link, cellName);
     }
 
     if (cell.label) {

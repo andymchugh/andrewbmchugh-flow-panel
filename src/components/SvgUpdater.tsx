@@ -15,6 +15,7 @@ import {
   variableThresholdScalarsInit, variableThresholdScaleValue, isShapeElement, 
   regExpMatch} from 'components/Utils';
 import { highlightState, HighlightState } from './Highlighter';
+import { ControlError, formatControlErrorText } from 'components/ControlLink';
 import {
   CellFillLevelDriver, getClipper, isFillLevelElement } from 'components/FillLevel';
 import { getTemplateSrv } from '@grafana/runtime';
@@ -503,7 +504,7 @@ function getThresholdColorCompound(sdb: SvgDriveBase,
   return compound;
 }
 
-export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highlighterSelection: string | undefined, animationsEnabled: boolean) {
+export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highlighterSelection: string | undefined, animationsEnabled: boolean, controlErrors: Map<string, ControlError> = new Map()) {
   const variableValues = svgHolder.attribs.variableValues;
   const elementAttribs = svgHolder.attribs.elementAttribs;
   const highlightFactors = svgHolder.attribs.highlightFactors;
@@ -532,6 +533,14 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     const cellLabelMappedValue = cellLabelData?.valueMappings ? valueMapping(cellLabelData.valueMappings, cellLabelValue) : null;
     const cellLabel = cellLabelMappedValue || (cellLabelData && (typeof cellLabelValue === 'number') ? formatCellValue(cellLabelData, cellLabelValue) : cellLabelValue);
 
+    // Error representation of a failed control link. Only applies while the last
+    // request for this cell failed; a later successful request clears it.
+    const controlError = controlErrors.get(cellData.cellIdShort);
+    const controlErrorRepr = controlError ? cellData.cellProps.link?.error : undefined;
+    const controlErrorColor = controlErrorRepr?.color;
+    const controlErrorText = (controlError && controlErrorRepr?.text !== undefined) ?
+      formatControlErrorText(controlErrorRepr.text, controlError) : undefined;
+
     const cellStrokeColor = cellData.cellProps.strokeColorCompound ?
       getThresholdColorCompound(sdb, cellValueSeed, cellData.cellProps.strokeColorCompound, cellBespokeData) :
       getThresholdColor(sdb, cellValueSeed, cellData.cellProps.strokeColor, cellBespokeData);
@@ -552,11 +561,12 @@ export function svgUpdate(svgHolder: SvgHolder, tsData: TimeSeriesData, highligh
     const cellFlowAnimState = cellFlowAnimData ? getFlowAnimationState(cellFlowAnimData, animationsEnabled ? cellFlowAnimSeed : null ) : null;
 
     cellData.fillElements.forEach((el: HTMLElement) => {
-      if (cellData.cellProps.labelColor || cellData.cellProps.labelColorCompound) {
-        el.style.color = cellLabelColor?.color || elementAttribs.get(el.id)?.styleColor || '';
+      // The error colour is managed whenever it is configured so it can be restored on recovery
+      if (cellData.cellProps.labelColor || cellData.cellProps.labelColorCompound || cellData.cellProps.link?.error?.color) {
+        el.style.color = controlErrorColor || cellLabelColor?.color || elementAttribs.get(el.id)?.styleColor || '';
       }
       if (cellLabelData) {
-        el.replaceChildren(cellData.text + (cellLabel || ''));
+        el.replaceChildren(cellData.text + (controlErrorText ?? (cellLabel || '')));
       }
     });
     if (cellData.cellProps.strokeColor || cellData.cellProps.strokeColorCompound) {

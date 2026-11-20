@@ -1,0 +1,122 @@
+---
+
+#------------------------------------------------------------------------------
+# Control links example. Requires the mock control server in examples/controlServer:
+#   node examples/controlServer/server.mjs
+#
+# To run behind a same-origin proxy (e.g. Apache ProxyPass /control to the server),
+# set controlBase to "" so the links become relative: "/control/pump/pump1".
+
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+cellLabelDecimalPoints: 0
+
+linkVariables:
+  controlBase: "http://localhost:8090"
+
+cells:
+  # A click refreshes the status from the server. The response is an object so the
+  # fields 'pump1.state' and 'pump1.level' are available to drive the cell.
+  pump1:
+    link:
+      url: "${controlBase}/control/pump/pump1"
+      open: "result"
+      method: "GET"
+      resultDataRef: "pump1"
+      resultPath: "pump"
+      error:
+        text: "STATUS ERR ${status}"
+        color: "red"
+    label:
+      dataRef: "pump1.state"
+      separator: "cr"
+
+  pump2:
+    link:
+      url: "${controlBase}/control/pump/pump2"
+      open: "result"
+      method: "GET"
+      resultDataRef: "pump2"
+      resultPath: "pump"
+      error:
+        text: "STATUS ERR ${status}"
+        color: "red"
+    label:
+      dataRef: "pump2.level"
+      separator: "cr"
+      units: "none"
+
+  # 'silent' sends the request without showing a result. Errors only go to the console.
+  resetAll:
+    link:
+      url: "${controlBase}/control/reset"
+      open: "silent"
+      method: "POST"
+    label:
+      separator: "cr"
+
+  # Each action writes the new pump state to the 'pump1' result, so the pump1 cell
+  # shows the change and the time-slider shows one step per action.
+  startPump1:
+    link:
+      url: "${controlBase}/control/pump/pump1"
+      open: "result"
+      method: "POST"
+      body:
+        action: "start"
+      resultDataRef: "pump1"
+      resultPath: "pump"
+      error:
+        text: "ERR ${status}"
+        color: "red"
+    label:
+      separator: "cr"
+
+  stopPump1:
+    link:
+      url: "${controlBase}/control/pump/pump1"
+      open: "result"
+      method: "POST"
+      body:
+        action: "stop"
+      resultDataRef: "pump1"
+      resultPath: "pump"
+      error:
+        text: "ERR ${status}"
+        color: "red"
+    label:
+      separator: "cr"
+
+  # The server answers HTTP 503 for this action. The cell shows the error text
+  # and the status, and the error is also logged to the console.
+  failPump1:
+    link:
+      url: "${controlBase}/control/pump/pump1"
+      open: "result"
+      method: "POST"
+      body:
+        action: "fail"
+      resultDataRef: "pump1"
+      resultPath: "pump"
+      error:
+        text: "FAIL ${status} ${message}"
+        color: "red"
+    label:
+      separator: "cr"
+
+  # The server waits longer than the timeout, so the request fails with a timeout message.
+  slowPump1:
+    link:
+      url: "${controlBase}/control/pump/pump1"
+      open: "result"
+      method: "POST"
+      body:
+        action: "slow"
+      timeoutMs: 1500
+      resultDataRef: "pump1"
+      resultPath: "pump"
+      error:
+        text: "TIMEOUT ${message}"
+        color: "red"
+    label:
+      separator: "cr"

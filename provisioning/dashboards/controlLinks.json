@@ -1,0 +1,92 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# Control links\n\nClicking a control cell sends a REST request to the mock control server (examples/controlServer) instead of opening a tab.\n\n- **Pump 1 status / Pump 2 status**: GET the pump, and the response drives the cell label. Pump 1 is an object result, so its fields `pump1.state` and `pump1.level` are available.\n- **Start pump 1 / Stop pump 1**: POST an action. Each response is placed on the time-slider at the time it arrived, and the value holds until the next response.\n- **Reset all**: silent. The request is sent, nothing is shown, and any error only goes to the console.\n- **Device fault**: the server answers HTTP 503. The cell shows the configured error text in red.\n- **Slow device**: the server waits longer than the 1.5 s timeout. The cell shows the timeout as an error.\n\nStart the server with `node examples/controlServer/server.mjs` and use the time-slider to step through the actions.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "10.0.0",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 14,
+        "x": 10,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "animationControlEnabled": false,
+        "animationsEnabled": false,
+        "debuggingCtr": {
+          "colorsCtr": 0,
+          "dataCtr": 0,
+          "displaySvgCtr": 0,
+          "mappingsCtr": 0,
+          "timingsCtr": 0
+        },
+        "highlighterEnabled": false,
+        "highlighterSelection": "",
+        "panZoomEnabled": true,
+        "panelConfig": "---\n\n#------------------------------------------------------------------------------\n# Control links example. Requires the mock control server in examples/controlServer:\n#   node examples/controlServer/server.mjs\n#\n# To run behind a same-origin proxy (e.g. Apache ProxyPass /control to the server),\n# set controlBase to \"\" so the links become relative: \"/control/pump/pump1\".\n\ncellIdPreamble: \"cell-\"\ngradientMode: \"hue\"\ncellLabelDecimalPoints: 0\n\nlinkVariables:\n  controlBase: \"http://localhost:8090\"\n\ncells:\n  # A click refreshes the status from the server. The response is an object so the\n  # fields 'pump1.state' and 'pump1.level' are available to drive the cell.\n  pump1:\n    link:\n      url: \"${controlBase}/control/pump/pump1\"\n      open: \"result\"\n      method: \"GET\"\n      resultDataRef: \"pump1\"\n      resultPath: \"pump\"\n      error:\n        text: \"STATUS ERR ${status}\"\n        color: \"red\"\n    label:\n      dataRef: \"pump1.state\"\n      separator: \"cr\"\n\n  pump2:\n    link:\n      url: \"${controlBase}/control/pump/pump2\"\n      open: \"result\"\n      method: \"GET\"\n      resultDataRef: \"pump2\"\n      resultPath: \"pump\"\n      error:\n        text: \"STATUS ERR ${status}\"\n        color: \"red\"\n    label:\n      dataRef: \"pump2.level\"\n      separator: \"cr\"\n      units: \"none\"\n\n  # 'silent' sends the request without showing a result. Errors only go to the console.\n  resetAll:\n    link:\n      url: \"${controlBase}/control/reset\"\n      open: \"silent\"\n      method: \"POST\"\n    label:\n      separator: \"cr\"\n\n  # Each action writes the new pump state to the 'pump1' result, so the pump1 cell\n  # shows the change and the time-slider shows one step per action.\n  startPump1:\n    link:\n      url: \"${controlBase}/control/pump/pump1\"\n      open: \"result\"\n      method: \"POST\"\n      body:\n        action: \"start\"\n      resultDataRef: \"pump1\"\n      resultPath: \"pump\"\n      error:\n        text: \"ERR ${status}\"\n        color: \"red\"\n    label:\n      separator: \"cr\"\n\n  stopPump1:\n    link:\n      url: \"${controlBase}/control/pump/pump1\"\n      open: \"result\"\n      method: \"POST\"\n      body:\n        action: \"stop\"\n      resultDataRef: \"pump1\"\n      resultPath: \"pump\"\n      error:\n        text: \"ERR ${status}\"\n        color: \"red\"\n    label:\n      separator: \"cr\"\n\n  # The server answers HTTP 503 for this action. The cell shows the error text\n  # and the status, and the error is also logged to the console.\n  failPump1:\n    link:\n      url: \"${controlBase}/control/pump/pump1\"\n      open: \"result\"\n      method: \"POST\"\n      body:\n        action: \"fail\"\n      resultDataRef: \"pump1\"\n      resultPath: \"pump\"\n      error:\n        text: \"FAIL ${status} ${message}\"\n        color: \"red\"\n    label:\n      separator: \"cr\"\n\n  # The server waits longer than the timeout, so the request fails with a timeout message.\n  slowPump1:\n    link:\n      url: \"${controlBase}/control/pump/pump1\"\n      open: \"result\"\n      method: \"POST\"\n      body:\n        action: \"slow\"\n      timeoutMs: 1500\n      resultDataRef: \"pump1\"\n      resultPath: \"pump\"\n      error:\n        text: \"TIMEOUT ${message}\"\n        color: \"red\"\n    label:\n      separator: \"cr\"\n",
+        "siteConfig": "---\n# No site config needed for this example\nlinkVariables: {}\n",
+        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"520px\" height=\"330px\" viewBox=\"0 0 520 330\">\n  <g id=\"cell-pump1\">\n    <rect x=\"20\" y=\"20\" width=\"140\" height=\"80\" rx=\"8\" ry=\"8\" fill=\"#ffffff\" stroke=\"#6c8ebf\" stroke-width=\"2\"/>\n    <text x=\"90\" y=\"66\" text-anchor=\"middle\" font-family=\"Helvetica\" font-size=\"13\" fill=\"#000000\">Pump 1 status</text>\n  </g>\n  <g id=\"cell-pump2\">\n    <rect x=\"190\" y=\"20\" width=\"140\" height=\"80\" rx=\"8\" ry=\"8\" fill=\"#ffffff\" stroke=\"#6c8ebf\" stroke-width=\"2\"/>\n    <text x=\"260\" y=\"66\" text-anchor=\"middle\" font-family=\"Helvetica\" font-size=\"13\" fill=\"#000000\">Pump 2 status</text>\n  </g>\n  <g id=\"cell-resetAll\">\n    <rect x=\"360\" y=\"20\" width=\"140\" height=\"80\" rx=\"8\" ry=\"8\" fill=\"#f8cecc\" stroke=\"#b85450\" stroke-width=\"2\"/>\n    <text x=\"430\" y=\"66\" text-anchor=\"middle\" font-family=\"Helvetica\" font-size=\"13\" fill=\"#000000\">Reset all (silent)</text>\n  </g>\n  <g id=\"cell-startPump1\">\n    <rect x=\"20\" y=\"130\" width=\"140\" height=\"80\" rx=\"8\" ry=\"8\" fill=\"#d5e8d4\" stroke=\"#82b366\" stroke-width=\"2\"/>\n    <text x=\"90\" y=\"176\" text-anchor=\"middle\" font-family=\"Helvetica\" font-size=\"13\" fill=\"#000000\">Start pump 1</text>\n  </g>\n  <g id=\"cell-stopPump1\">\n    <rect x=\"190\" y=\"130\" width=\"140\" height=\"80\" rx=\"8\" ry=\"8\" fill=\"#d5e8d4\" stroke=\"#82b366\" stroke-width=\"2\"/>\n    <text x=\"260\" y=\"176\" text-anchor=\"middle\" font-family=\"Helvetica\" font-size=\"13\" fill=\"#000000\">Stop pump 1</text>\n  </g>\n  <g id=\"cell-failPump1\">\n    <rect x=\"360\" y=\"130\" width=\"140\" height=\"80\" rx=\"8\" ry=\"8\" fill=\"#fff2cc\" stroke=\"#d6b656\" stroke-width=\"2\"/>\n    <text x=\"430\" y=\"176\" text-anchor=\"middle\" font-family=\"Helvetica\" font-size=\"13\" fill=\"#000000\">Device fault</text>\n  </g>\n  <g id=\"cell-slowPump1\">\n    <rect x=\"20\" y=\"240\" width=\"140\" height=\"70\" rx=\"8\" ry=\"8\" fill=\"#fff2cc\" stroke=\"#d6b656\" stroke-width=\"2\"/>\n    <text x=\"90\" y=\"280\" text-anchor=\"middle\" font-family=\"Helvetica\" font-size=\"13\" fill=\"#000000\">Slow device</text>\n  </g>\n</svg>\n",
+        "testDataEnabled": false,
+        "timeSliderEnabled": true,
+        "timeSliderMode": "local"
+      },
+      "pluginVersion": "10.0.0",
+      "type": "andrewbmchugh-flow-panel"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [
+    "flow-panel",
+    "control-links"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Control Links",
+  "uid": "flow-control-links",
+  "version": 1,
+  "weekStart": ""
+}
