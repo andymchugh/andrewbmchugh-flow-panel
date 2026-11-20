@@ -1,5 +1,25 @@
 # Changelog
 
+## Unreleased
+
+Control Links
+-------------
+New link settings let a cell send a REST request to a control server instead of opening a tab.
+Set `link.open` to:
+- `silent`: send the request and show nothing.
+- `result`: send the request and write the response to `resultDataRef`. Scalar responses are
+  stored under that name. JSON objects are flattened, e.g. `pump1.state`, so different cells can
+  be driven from one response.
+- `tab` (default): the original behaviour.
+
+Related settings are `method`, `body`, `headers`, `resultPath`, `timeoutMs` and `resultTime`.
+Results are placed on the time-slider at the time they arrived and hold their value until the
+next response (`resultTime: "end"` pins them to the end of the range instead). Failed requests
+are logged to the console. `error.text` and `error.color` show a failure on the cell.
+
+The example dashboard 'Control Links' and a mock control server in `examples/controlServer` demonstrate
+the feature.
+
 ## 1.20.1
 
 Click Action Fixes

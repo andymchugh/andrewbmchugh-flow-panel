@@ -8,6 +8,9 @@ export type TimeSeries = {
     values: number[];
   }
   values: Array<number | string | null>;
+  // When set the series holds its last value at or before the target time, rather
+  // than picking the closest point. Used by control link results.
+  hold?: boolean;
 };
 
 export type TimeSeriesData = {
@@ -150,12 +153,29 @@ export function seriesTransform(series: any[], panelTimeMin: number, panelTimeMa
   };
 }
 
+// Returns the index of the last time at or before targetTime. Times are ascending.
+// Null when targetTime is before the first point.
+function holdIndex(times: number[], targetTime: number): number | null {
+  let index: number | null = null;
+  for (let i = 0; i < times.length; i++) {
+    if (times[i] > targetTime) {
+      break;
+    }
+    index = i;
+  }
+  return index;
+}
+
 // This receives the timeSlider position and uses it to interpolate the time-series
 // data.
 export function seriesInterpolate(tsData: TimeSeriesData, timeSliderScalar: number) {
   const targetTime = sliderTime(tsData, timeSliderScalar);
 
   tsData.ts.forEach((ts) => {
+    if (ts.hold) {
+      ts.time.valuesIndex = holdIndex(ts.time.values, targetTime);
+      return;
+    }
     // ts.time can be shared across series so we only have to interpolate it once.
     if (!ts.time.valuesIndex) {
       let closestDeltaTime = null;

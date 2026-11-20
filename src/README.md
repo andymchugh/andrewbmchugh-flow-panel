@@ -149,6 +149,7 @@ To explore each feature, copy/paste the SVG and yaml data into your panel. That 
 |Bespoke Drive|The bespoke drive demonstrates how to drive any svg attribute via mathjs formulas. See the [Bespoke Drive Example](#Bespoke-drive-example) below for details.|Variable `myVar`|[svg](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/bespokeDrive.svg), [panelConfig](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/bespokeDrive.yaml)|
 |Color Mappings for Themes|SVGs created in draw.io 26.0 and onwards contain both light and dark theme colors. The cell colors defined in thresholds allow you to specify a single color and the colorMappings allow you to adjust the value of that color for each theme. i.e. In the cell config specify red, amber and green on the thresholds. Then in the colorMappings specify the exact colors you want in each theme for red, amber and green.||[svg](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/examples/ambiThemeSvg1.svg), [panelConfig](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/colorMappingsPanel.yaml), [siteConfig](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/colorMappingsSite.yaml)|
 |Compound Color|This demonstrates compound colors, the ability to drive a cell color field based off of an aggregation of dataRefs. The panel shows labelColor, fillColor and strokeColor being driven based off of aggregation functions 'max' and 'min'. By default thresholds inherit their array position as their order but the order term can be explicitly set. The 'inverse' box demonstrates an inverted threshold order resulting in min-data displaying as max color. Where the single 'color' drive is defined alongside a compound drive, the single drive is prepended to the compound in element 0. This is demonstrated in the 'both' cell.||[svg](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/compoundColor.svg), [panelConfig](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/compoundColor.yaml)|
+|Control Links|Clicking these cells sends REST requests to a control server instead of opening a tab. GET requests show the status of a pump; POST requests send actions. The responses drive the cells and are placed on the time-slider, one step per action. The 'Reset all' cell is silent, the 'Device fault' cell shows an HTTP 503 as an error, and the 'Slow device' cell shows a timeout. Start the server with 'node examples/controlServer/server.mjs' first.|Variable `controlBase`, set to an empty string when the server is behind the same proxy as Grafana|[svg](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/controlLinks.svg), [panelConfig](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/controlLinks.yaml), [dashboard](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboards/controlLinks.json)|
 |Decimal Points|This demonstrates the panel level decimalPoints overrides. Each box has a different decimalPoint setting at the cell level with the last box being undefined at the cell level and so falling back on the panel level default.||[svg](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/decimalPointTest.svg), [panelConfig](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/decimalPointTest.yaml)|
 |Fill Filter|Fill colors, when applied to simple shapes, provide a great way to visualize thresholds. But for more complex shapes, that contain a background with foregound detail, the fillColor needs to apply to one or the other, otherwise the detail gets lost. This is managed using the yaml fillColorElementFilter. It requires you to understand a bit about how your shape is constructed, but with that knowledge you can then specify which parts of the shape should be filled. The best way to introspect your shape is to view the SVG in Visual Studio after formatting it using the SVG formatter extension. Find your shape by searching on your cell-id and then explore the yaml filter based on what you see.||[svg](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/complexShapes.svg), [panelConfig](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/complexShapes.yaml)|
 |Fill Level|Fill levels are underpinned by the SVG clip-path feature. The yaml maps the data to fill percentages and that then drives an applied clip-path rect to achieve the desired fill level. The panel demonstrates the following features: (1) A range of ellipse, rect and path shapes all being filled correctly. (2) The four rects-in-a-cross demonstrate the four fill directions. (3) The 'blue' demonstrates a static fill color defined in the SVG. (4) The bottom four rects show the percentage capping, the optional 'off' setting and the own-dataref. Note that shapes with complex inner detail such as the DB and circle-inner-cross do not render perfectly as they contain multiple path elements and so have multiple overlapping clip and fill regions.||[svg](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/fillLevel.svg), [panelConfig](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/fillLevel.yaml)|
@@ -161,6 +162,71 @@ To explore each feature, copy/paste the SVG and yaml data into your panel. That 
 |Units|This demonstrates normal units with associated grafana scaling alongside custom units specified using the unitsPostfix yaml field. It demonstrates normal ascii alongside unicode characters.||[svg](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/examples/darkThemeSvg1.svg), [panelConfig](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/units.yaml)||
 |Value Mappings|This demonstrates value mappings via range based substitution of numbers at both the panelConfig level and the siteConfig level. Grafana variable substitutions are applied to the text values in the 'low' state.|Variable `exampleVar`|[svg](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/valueMappings.svg), [panelConfig](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/valueMappings.yaml), [siteConfig](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/valueMappingsSite.yaml)|
 |Zoom Pan Pinch|This demonstrates the Zoom-Pan-Pinch configurability which supports enablement along with wheel activation keys. The activation keys are helpful as there's a clash of interests between dashboard scroll and panel zoom.|Pan / Zoom Enabled|[svg](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/examples/darkThemeSvg1.svg), [panelConfig](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/provisioning/dashboardData/zoomPanPinch.yaml)|
+
+### Control Links
+
+A cell's link can send a REST request instead of opening a tab. This lets you send control actions to a web server that can drive a device, and show the outcome in the panel. Set `link.open` to:
+
+- `tab` (the default): open the url in a tab, as before.
+- `silent`: send the request and show nothing. Failures only go to the console log.
+- `result`: send the request and write the response to the `resultDataRef` name. The name then drives cells like any other dataRef.
+
+```yaml
+cells:
+  pump1:
+    link:
+      url: "/control/pump/pump1"
+      open: "result"
+      method: "POST"
+      body:
+        action: "start"
+      resultDataRef: "pump1"
+      resultPath: "pump"
+      error:
+        text: "ERR ${status}"
+        color: "red"
+    label:
+      dataRef: "pump1.state"
+      separator: "cr"
+```
+
+- **Results**: A scalar response is stored under `resultDataRef`. A JSON object is flattened, so `pump1.state` and `pump1.level` can drive different cells.
+- **Timeline**: By default (`resultTime: "received"`) each response is placed on the time-slider at the time it arrived. Its value holds until the next response for that name. Several actions are therefore distinguishable on the timeline. Set `resultTime: "end"` to pin the value to the end of the time range instead.
+- **Errors**: Non-2xx responses, network failures and timeouts (`timeoutMs`, default 5000) are logged to the console. With `error.text` and `error.color` defined, the cell also shows the error. The tokens `${status}` and `${message}` are available in the text.
+- **Same origin**: Requests are sent with the browser's same-origin credentials, so a control server behind the same proxy as Grafana needs no CORS setup. A server on another origin must allow CORS.
+
+The full list of fields is in the [panelConfig reference](https://github.com/andymchugh/andrewbmchugh-flow-panel/blob/main/yaml_defs/panelConfig.yaml).
+
+#### Serving the control server behind Apache
+
+Put Grafana and the control server on one URL so the relative `url` values work. Restrict who can send actions to the control server with Apache's authentication. The following is a starting point and assumes the `proxy`, `proxy_http`, `authn_file`, `authz_user` and `authz_groupfile` modules are enabled:
+
+```apache
+<VirtualHost *:443>
+  ServerName grafana.example.com
+
+  ProxyPreserveHost On
+
+  # Control server: any user who can log in may read, only operators may act
+  ProxyPass        /control/ http://127.0.0.1:8090/control/
+  ProxyPassReverse /control/ http://127.0.0.1:8090/control/
+  <Location /control/>
+    AuthType Basic
+    AuthName "Device control"
+    AuthUserFile /etc/apache2/control.htpasswd
+    Require valid-user
+    <LimitExcept GET HEAD>
+      Require group operators
+    </LimitExcept>
+  </Location>
+
+  # Grafana
+  ProxyPass        / http://127.0.0.1:3000/
+  ProxyPassReverse / http://127.0.0.1:3000/
+</VirtualHost>
+```
+
+Browsers send `POST` requests from the panel without a CSRF token. The control server should therefore check the `Origin` or `Referer` header, or require a token, before it acts on a request.
 
 ### Bespoke Drive Example
 This panel demonstrates the bespoke drive in the following ways:

@@ -664,6 +664,70 @@ cells:
       # the panel level 'linkWindow.sameTab' and then to the site level 'linkWindow.sameTab'.
       sameTab: true
 
+      # Version 1.21.0 onwards: 'open' selects what clicking the cell does. The default 'tab'
+      # opens the url as described above. The control values send a REST request instead, so
+      # no tab is opened:
+      # 'tab': open the url in a tab/window (the default).
+      # 'silent': send the request and show nothing. Failures only go to the console log,
+      #           unless 'error' is defined.
+      # 'result': send the request and write the response to the 'resultDataRef' name. Cells
+      #           can then be driven by that name, e.g. with 'label.dataRef'.
+      # Control links use fetch, so they work with a same-origin proxy (cookies are sent). For a
+      # cross-origin control server the server must allow CORS.
+      open: "tab"
+
+      # Version 1.21.0 onwards: The HTTP method for control links. Defaults to "GET". Use "POST",
+      # "PUT", etc. for actions. A body is only sent for methods other than GET and HEAD.
+      method: "GET"
+
+      # Version 1.21.0 onwards: Optional JSON body for control links. Grafana variables, the
+      # reserved ${cell.name} and ${cell.dataRef} tokens and linkVariables are substituted in
+      # each value. The body is serialised to JSON after substitution, so a value containing
+      # quotes cannot change the structure of the JSON.
+      body:
+        action: "start"
+        pump: "${cell.name}"
+
+      # Version 1.21.0 onwards: Optional extra request headers. Values undergo the same
+      # substitution as the body. Use these for things like API keys set from grafana variables.
+      headers:
+        X-Api-Key: "${apiKey}"
+
+      # Version 1.21.0 onwards: The name a 'result' response is written to. A scalar response
+      # (e.g. 42, true or "on") is stored under this name exactly. A JSON object is flattened, so
+      # {"state": {"power": 1}} becomes 'resultDataRef.state.power'. Note the separator is '.'.
+      # Booleans are stored as 1 or 0. This name is then used like any other dataRef.
+      resultDataRef: "pump1"
+
+      # Version 1.21.0 onwards: Optional path to the part of a JSON response to use. Dot separated,
+      # e.g. "data.device" selects the object under data.device. Requires a JSON response.
+      resultPath: "pump"
+
+      # Version 1.21.0 onwards: Where a 'result' is placed on the timeline.
+      # 'received' (the default): each response is placed at the time it arrived. Its value holds
+      #           until the next response for that name, and the time-range is extended to the
+      #           newest response so it is at the live end of the time-slider. This keeps several
+      #           control actions distinguishable on the timeline.
+      # 'end': the value is pinned to the end of the panel's time range. Only the latest value
+      #        is kept.
+      resultTime: "received"
+
+      # Version 1.21.0 onwards: The time in milliseconds to wait for a response. When it is
+      # reached the request is abandoned and reported as an error. Defaults to 5000.
+      timeoutMs: 5000
+
+      # Version 1.21.0 onwards: How a failed control request (HTTP error status, network failure,
+      # timeout or unusable response) is shown on the cell. Failures are always logged to the
+      # console. When 'error' is not defined that is all that happens.
+      # 'text' replaces the cell's label text. It supports the tokens ${status} (HTTP status, empty
+      #        for network failures and timeouts) and ${message} (the HTTP status text, 'timeout after
+      #        <n>ms' or the network error). Text needs the cell to define a 'label'.
+      # 'color' sets the label colour (e.g. "red").
+      # The error stays on the cell until a later request for that cell succeeds.
+      error:
+        text: "ERR ${status} ${message}"
+        color: "red"
+
     # This defines an ID to a link defined in the siteConfig. If you want to share a
     # link just within the panelConfig you should instead use a yaml anchor/alias.
     # The above 'link' field takes precedence. Only if undefined will linkRef be
